@@ -2,9 +2,21 @@ import React from 'react';
 
 function PokemonList(props) {
   const numbers = props.pokemon;
+  const totalPkmn = 898;
   const listItems = numbers.map((poke, index) =>
-    <li key={index}>
-      {poke.pokemon.name}
+    <li key={index} className="poke-list">
+      {poke.pokemon.url.substring(34, poke.pokemon.url.length - 1) < totalPkmn ? (
+        <div>
+          {poke.pokemon.name}
+          <img className="poke-image" src={`https://pokeres.bastionbot.org/images/pokemon/${poke.pokemon.url.substring(34, poke.pokemon.url.length - 1)}.png`} alt={poke.pokemon.name}/>
+          
+          <h1>{poke.pokemon.url.substring(34, poke.pokemon.url.length - 1)}</h1>
+        </div>
+        ) : (
+        <div>
+             {/*MISSING IMAGES OF SPECIAL POKEMON (Megas, regionals, etc)*/}
+        </div>
+        )}
     </li>
   );
   return (
@@ -17,11 +29,13 @@ class myComponent extends React.Component {
     this.state = {
       error: null,
       isLoaded: false,
-      pokemon: []
+      pokemon: [],
+      type: this.props.type,
+      apiUrl: 'https://pokeapi.co/api/v2/type/' + this.props.type,
     };
   }
   componentDidMount() {
-    const apiUrl = 'https://pokeapi.co/api/v2/type/ground';
+    var apiUrl = 'https://pokeapi.co/api/v2/type/' + this.props.type;
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
@@ -32,10 +46,24 @@ class myComponent extends React.Component {
         console.log('This is your data', data.pokemon)
       });
   }
+  componentDidUpdate() {
+    var apiUrl = 'https://pokeapi.co/api/v2/type/' + this.props.type;
+    fetch(apiUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({
+          isLoaded: true,
+          pokemon: data.pokemon
+        });
+      });
+  }
   render() {
     const state = this.state;
+    const props = this.props;
+    const type = props.type.toUpperCase()
     return(
       <div>
+        <h1>{type}</h1>
         <PokemonList pokemon={state.pokemon}/>
       </div>
     );
