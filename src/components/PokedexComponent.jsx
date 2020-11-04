@@ -7,10 +7,10 @@ function PokemonList(props) {
     <li key={index} className="poke-list">
       {poke.pokemon.url.substring(34, poke.pokemon.url.length - 1) < totalPkmn ? (
         <div>
-          {poke.pokemon.name}
+          {poke.pokemon.name.charAt(0).toUpperCase() + poke.pokemon.name.slice(1)}
           <img className="poke-image" src={`https://pokeres.bastionbot.org/images/pokemon/${poke.pokemon.url.substring(34, poke.pokemon.url.length - 1)}.png`} alt={poke.pokemon.name}/>
           
-          <h1>{poke.pokemon.url.substring(34, poke.pokemon.url.length - 1)}</h1>
+          {/*<h1>{poke.pokemon.url.substring(34, poke.pokemon.url.length - 1)}</h1>*/}
         </div>
         ) : (
         <div>
@@ -60,10 +60,10 @@ class myComponent extends React.Component {
   render() {
     const state = this.state;
     const props = this.props;
-    const type = props.type.toUpperCase()
+    const type = props.type.charAt(0).toUpperCase() + props.type.slice(1);
     return(
       <div>
-        <h1>{type}</h1>
+        <h1>{type + ' Type:'}</h1>
         <PokemonList pokemon={state.pokemon}/>
       </div>
     );
