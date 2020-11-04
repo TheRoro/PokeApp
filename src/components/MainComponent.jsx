@@ -19,7 +19,6 @@ class Main extends React.Component {
       <div>
           <h1>Hello Pokemon world</h1>
           <Type onSelectType = {this.handleType}/>
-          <h1>{this.state.type}</h1>
           <Pokedex type={this.state.type}/>
       </div>
     );
