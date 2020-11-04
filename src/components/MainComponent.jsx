@@ -8,14 +8,7 @@ class Main extends React.Component {
     this.state = {
       type: 'water'
     };
-
-    this.toggleChildMenu = this.toggleChildMenu.bind(this);
  }
-  toggleChildMenu(newType) {
-    this.setState(state => ({
-      type: newType
-    }));
-  }
   handleType = (type) => {
       this.setState(state => ({
         type: type
@@ -25,7 +18,7 @@ class Main extends React.Component {
     return (
       <div>
           <h1>Hello Pokemon world</h1>
-          <Type onSelectType = {this.toggleChildMenu}/>
+          <Type onSelectType = {this.handleType}/>
           <h1>{this.state.type}</h1>
           <Pokedex type={this.state.type}/>
       </div>
