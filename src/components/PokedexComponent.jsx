@@ -30,12 +30,12 @@ class myComponent extends React.Component {
       error: null,
       isLoaded: false,
       pokemon: [],
-      type: this.props.type,
-      apiUrl: 'https://pokeapi.co/api/v2/type/' + this.props.type,
+      type1: this.props.type1,
+      apiUrl: 'https://pokeapi.co/api/v2/type/' + this.props.type1,
     };
   }
   componentDidMount() {
-    var apiUrl = 'https://pokeapi.co/api/v2/type/' + this.props.type;
+    var apiUrl = 'https://pokeapi.co/api/v2/type/' + this.props.type1;
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
@@ -47,7 +47,7 @@ class myComponent extends React.Component {
       });
   }
   componentDidUpdate() {
-    var apiUrl = 'https://pokeapi.co/api/v2/type/' + this.props.type;
+    var apiUrl = 'https://pokeapi.co/api/v2/type/' + this.props.type1;
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
@@ -60,10 +60,12 @@ class myComponent extends React.Component {
   render() {
     const state = this.state;
     const props = this.props;
-    const type = props.type.charAt(0).toUpperCase() + props.type.slice(1);
+    const type1 = props.type1.charAt(0).toUpperCase() + props.type1.slice(1);
+    const type2 = props.type2.charAt(0).toUpperCase() + props.type2.slice(1);
     return(
       <div>
-        <h1>{type + ' Type:'}</h1>
+        <h1>{type1 + ' Type:'}</h1>
+        <h1>{type2 + ' Type:'}</h1>
         <PokemonList pokemon={state.pokemon}/>
       </div>
     );
