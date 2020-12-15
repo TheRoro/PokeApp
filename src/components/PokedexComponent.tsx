@@ -1,9 +1,17 @@
 import React from 'react';
 
-function PokemonList(props) {
-  const numbers = props.pokemon;
-  const totalPkmn = 898;
-  const listItems = numbers.map((poke, index) =>
+const TOTAL_POKEMON = 898;
+
+type ListProps = {
+  pokemon: any,
+}
+
+const PokemonList: React.FC<ListProps> = ({
+  pokemon
+}) => {
+  const numbers = pokemon;
+  const totalPkmn = TOTAL_POKEMON;
+  const listItems = numbers.map((poke: any, index: any) =>
     <li key={index} className="poke-list">
       {poke.pokemon.url.substring(34, poke.pokemon.url.length - 1) < totalPkmn ? (
         <div>
@@ -19,32 +27,62 @@ function PokemonList(props) {
         )}
     </li>
   );
-  return (
+ return(
+  <div>
     <ul>{listItems}</ul>
-  );
+  </div>
+)};
+
+type State = {
+  isLoaded: boolean,
+  pokemon: any[],
+  pokemon2: any[],
+  pokemonFinal: any[],
+  apiUrl: string,
+  apiUrl2: string,
 }
-class myComponent extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      error: null,
-      isLoaded: false,
-      pokemon: [],
-      type1: this.props.type1,
-      apiUrl: 'https://pokeapi.co/api/v2/type/' + this.props.type1,
-    };
-  }
+
+type Props = {
+  type1: string,
+  type2: string
+}
+
+class Pokedex extends React.Component<Props,State> {
+  state: State = {
+    isLoaded: false,
+    pokemon: [],
+    pokemon2: [],
+    pokemonFinal: [],
+    apiUrl: 'https://pokeapi.co/api/v2/type/' + this.props.type1,
+    apiUrl2: 'https://pokeapi.co/api/v2/type/' + this.props.type2,
+  };
+  
+  
   componentDidMount() {
     var apiUrl = 'https://pokeapi.co/api/v2/type/' + this.props.type1;
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
-        this.setState({
+        this.setState((state) => ({
           isLoaded: true,
           pokemon: data.pokemon
-        });
+        }));
+
         console.log('This is your data', data.pokemon)
       });
+    if (this.props.type2 !== '') {
+      var apiUrl2 = 'https://pokeapi.co/api/v2/type/' + this.props.type2;
+      fetch(apiUrl2)
+        .then((response) => response.json())
+        .then((data) => {
+          this.setState((state) => ({
+            isLoaded: true,
+            pokemon2: data.pokemon
+          }));
+
+          console.log('This is your data', this.state.pokemon2)
+        });
+    }
   }
   componentDidUpdate() {
     var apiUrl = 'https://pokeapi.co/api/v2/type/' + this.props.type1;
@@ -71,4 +109,4 @@ class myComponent extends React.Component {
     );
   }
 }
-export default myComponent;
+export default Pokedex;
