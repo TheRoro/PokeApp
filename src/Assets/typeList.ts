@@ -1,3 +1,3 @@
-const TypeList = ["Bug", "Dark", "Dragon", "Electric", "Fairy", "Fighting", "Fire", "Flying", "GHOST", "GRASS", "GROUND", "ICE", "NORMAL", "POISON", 'PSYCHIC', "ROCK", "STEEL", "WATER"];
+const TypeList = ["Bug", "Dark", "Dragon", "Electric", "Fairy", "Fighting", "Fire", "Flying", "Ghost", "Grass", "Ground", "Ice", "Normal", "Poison", "Psychic", "Rock", "Steel", "Water"];
 
 export default TypeList;

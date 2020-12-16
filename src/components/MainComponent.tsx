@@ -1,8 +1,7 @@
 import React from 'react';
 import Type from './Type';
 import Calc from './Calculator2';
-import Calculator from './Calculator';
-import Pokedex from './PokedexComponent';
+// import Pokedex from './PokedexComponent';
 
 type State = {
   type1: string,
