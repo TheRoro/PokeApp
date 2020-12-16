@@ -68,7 +68,7 @@ class Pokedex extends React.Component<Props,State> {
           pokemon: data.pokemon
         }));
 
-        console.log('This is your data', data.pokemon)
+        console.log('These are the pokemon of', this.props.type1, 'type: ',  this.state.pokemon)
       });
     if (this.props.type2 !== '') {
       var apiUrl2 = 'https://pokeapi.co/api/v2/type/' + this.props.type2;
@@ -80,7 +80,7 @@ class Pokedex extends React.Component<Props,State> {
             pokemon2: data.pokemon
           }));
 
-          console.log('This is your data', this.state.pokemon2)
+          console.log('These are the pokemon of', this.props.type2, 'type: ', this.state.pokemon2)
         });
     }
   }

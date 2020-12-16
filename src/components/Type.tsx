@@ -103,13 +103,13 @@ class Type extends React.Component<Props,State> {
           <label>
             Pokemon Type:
             <select value={this.state.type1} onChange={this.handleChange}>
-            {options.map((option) => (
-              <option value={option.value}>{option.label}</option>
+            {options.map((option, index) => (
+              <option value={option.value} key={index}>{option.label}</option>
             ))}
             </select>
             <select value={this.state.type2} onChange={this.handleChange2}>
-            {options.map((option) => (
-              <option value={option.value}>{option.label}</option>
+            {options.map((option, index) => (
+              <option value={option.value} key={index}>{option.label}</option>
             ))}
             </select>
             <Button variant="primary" type="submit">Search</Button>
