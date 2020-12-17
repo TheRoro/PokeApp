@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  color: #FFFFFF;
+  font-family: 'Montserrat', sans-serif;
+  background-color: #1B1B1B;
 }
 
 .poke-image {
@@ -9,4 +12,31 @@
 
 .poke-list {
   list-style: none;
+}
+
+.main {
+  background-color: #1B1B1B;
+}
+
+.home {
+  color: #FFFFFF;
+  background-color: #1B1B1B;
+}
+
+.nav.navbar-nav.navbar-right li a {
+  color: #FFFFFF;
+}
+
+.title1 {
+  font-size: 7em;
+  font-weight: 900;
+  margin-top: 1.8em;
+}
+
+.text1 {
+  font-size: 2em;
+}
+
+.MyNavbar {
+  margin-top: 10px;
 }
