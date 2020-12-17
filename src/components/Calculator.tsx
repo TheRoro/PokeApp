@@ -74,14 +74,14 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
     }
 
     const computeTypeCoverage = (type1: string, type2: string, index1: IndexType, index2: IndexType) => {
-        if(type1 === "" && type2 === ""){
+        if(type1 === "None" && type2 === "None"){
             alert("Pon un tipo ps wbn");
             return undefined;
         }
         let temp = [];
         var pair: [number, string];
         var value: number;
-        if(type1 === "" && typeof index2 === "number"){
+        if(type1 === "None" && typeof index2 === "number"){
             for (let i = 0; i < TOTAL_TYPES; i++) {
                 value = TypeChart[i][index2]*0.5;
                 pair = [value, TypeList[i]];
@@ -90,7 +90,7 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
             findEffects(temp);
             return temp;
         }
-        if(type2 === "" && typeof index1 === "number"){
+        if(type2 === "None" && typeof index1 === "number"){
             for (let i = 0; i < TOTAL_TYPES; i++) {
                 value = TypeChart[i][index1]*0.5;
                 pair = [value, TypeList[i]];

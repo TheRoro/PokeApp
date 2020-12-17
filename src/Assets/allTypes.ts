@@ -1,7 +1,7 @@
 const AllTypes = [
     {
       label: "None",
-      value: "",
+      value: "None",
     },
     {
       label: "Bug",

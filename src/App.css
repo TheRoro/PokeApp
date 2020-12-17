@@ -67,6 +67,15 @@ a:hover {
   font-size: 2.3em;
 }
 
+.BtnLink {
+  cursor: pointer;
+}
+
+.BtnLink:hover {
+  opacity: 80%;
+  cursor: pointer;
+}
+
 .calculateBtn {
   font-size: 2.3em;
 }
@@ -74,10 +83,19 @@ a:hover {
 .calculateBtn:hover {
   font-size: 2.3em;
   cursor: pointer;
-  opacity: 80%;
   text-decoration: none;
-  border-bottom: 1px solid #FFFFFF;
 }
+
+.BtnLink:hover .lines {
+  visibility: visible;
+}
+
+.lines {
+  margin-top: 5%;
+  background-color: #FFFFFF;
+  visibility: hidden;
+}
+
 
 .MyNavbar {
   font-size: 1.3em;
@@ -146,4 +164,15 @@ a:hover {
 }
 .Water{
   color: #304FFE;
+}
+.None {
+  display: none;
+}
+
+select {
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  width: 150px;
+  height: 30px;
+  align-items: center;
 }
