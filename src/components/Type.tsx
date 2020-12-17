@@ -101,7 +101,7 @@ class Type extends React.Component<Props,State> {
       return (
         <form onSubmit={this.handleSubmit}>
           <label>
-            Pokemon Type:
+            <p className="textselect">Select The Types:</p>
             <select value={this.state.type1} onChange={this.handleChange}>
             {options.map((option, index) => (
               <option value={option.value} key={index}>{option.label}</option>
