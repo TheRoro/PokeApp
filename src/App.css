@@ -3,6 +3,19 @@
   color: #FFFFFF;
   font-family: 'Montserrat', sans-serif;
   background-color: #1B1B1B;
+  height: 100%;
+}
+
+a {
+  color: #FFFFFF;
+}
+
+a:hover {
+  color: #FFFFFF;
+}
+
+.pokeapp {
+  height: 100%;
 }
 
 .poke-image {
@@ -21,22 +34,116 @@
 .home {
   color: #FFFFFF;
   background-color: #1B1B1B;
+  margin-top: 11em;
 }
 
-.nav.navbar-nav.navbar-right li a {
+.type {
   color: #FFFFFF;
+  background-color: #1B1B1B;
+  margin-top: 2em;
 }
 
 .title1 {
-  font-size: 7em;
+  font-size: 6em;
   font-weight: 900;
-  margin-top: 1.8em;
+}
+
+.title2 {
+  font-size: 5em;
+  font-weight: 900;
+}
+
+.title3 {
+  font-size: 4.5em;
+  font-weight: 900;
 }
 
 .text1 {
-  font-size: 2em;
+  font-size: 2.3em;
+  font-weight: 100;
+}
+
+.text2 {
+  font-size: 2.3em;
+}
+
+.calculateBtn {
+  font-size: 2.3em;
+}
+
+.calculateBtn:hover {
+  font-size: 2.3em;
+  cursor: pointer;
+  opacity: 80%;
+  text-decoration: none;
+  border-bottom: 1px solid #FFFFFF;
 }
 
 .MyNavbar {
-  margin-top: 10px;
+  font-size: 1.3em;
+}
+
+.titlenavbar{
+  font-size: 1.3em;
+}
+
+.textselect {
+  font-size: 2em;
+}
+
+/* Types */
+
+.Bug{
+  color: #C0E11D;
+}
+.Dark{
+  color: #51453C;
+}
+.Dragon{
+  color: #6200EA;
+}
+.Electric{
+  color: #FFFF00;
+}
+.Fairy{
+  color: #FF6FDE;
+}
+.Fighting {
+  color: #B42400;
+}
+.Fire {
+  color: #FF9200;
+}
+.Flying{
+  color: #9FA8DA;
+}
+.Ghost{
+  color: #9575CD;
+}
+.Grass{
+  color: #00D12F;
+}
+.Ground{
+  color: #C4A96A;
+}
+.Ice{
+  color: #18FFFF;
+}
+.Normal{
+  color: #EFEBE9;
+}
+.Poison{
+  color: #AA00FF;
+}
+.Psychic{
+  color: #FF00C5;
+}
+.Rock{
+  color: #A8814C;
+}
+.Steel{
+  color: #9E9E9E;
+}
+.Water{
+  color: #304FFE;
 }
