@@ -1,7 +1,9 @@
 import React from 'react';
+import Navbar from 'react-bootstrap/Navbar';
+
 import Home from './components/HomeComponent';
 import TypeCalculator from './components/TypeCalculator';
-import Navbar from 'react-bootstrap/Navbar';
+import SearchPokemon from './components/SearchPokemon';
 
 import './App.css';
 
@@ -25,7 +27,7 @@ function App() {
         <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text className="text-light mr-4">
-            <Link to="/main" className="text-light">Search Pokemon</Link>
+            <Link to="/search" className="text-light">Search Pokemon</Link>
           </Navbar.Text>
           <Navbar.Text className="text-light mr-4">
             <Link to="/typecal" className="text-light">Type Calculator</Link>
@@ -35,6 +37,9 @@ function App() {
       <Switch>
         <Route path="/typecal">
           <TypeCalculator/>
+        </Route>
+        <Route path="/search">
+          <SearchPokemon/>
         </Route>
         <Route path="/">
           <Home/>

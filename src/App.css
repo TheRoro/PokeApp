@@ -176,3 +176,10 @@ select {
   height: 30px;
   align-items: center;
 }
+
+input {
+  background-color: #ffffff;
+  width: 30vw;
+  height: 7vh;
+  border-radius: 10px;
+}
