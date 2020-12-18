@@ -52,10 +52,10 @@ const SearchPokemon: React.FC<Props> = () =>{
                 Loading...
             </div>);
             const ans = await validateName(pkmnName[1]);
-            var apiUrl = 'http://pokeapi.co/api/v2/pokemon/' + pkmnName[1] + '/';
+            var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + pkmnName[1] + '/';
             if (!ans) {
                 if(pkmnName[0] === "Deoxys")
-                    apiUrl = 'http://pokeapi.co/api/v2/pokemon/deoxys-normal/';
+                    apiUrl = 'https://pokeapi.co/api/v2/pokemon/deoxys-normal/';
             }    
             const resp = await axios.get(apiUrl);
             console.log(resp.data);
