@@ -19,8 +19,13 @@ a:hover {
 }
 
 .poke-image {
-  height: 100px;
-  width: 100px;
+  height: 480px;
+  width: 480px;
+}
+
+.bidoof-404 {
+  height: 70px;
+  width: 70px;
 }
 
 .poke-list {
@@ -55,6 +60,11 @@ a:hover {
 
 .title3 {
   font-size: 4.5em;
+  font-weight: 900;
+}
+
+.title4 {
+  font-size: 2.5em;
   font-weight: 900;
 }
 
@@ -182,4 +192,35 @@ input {
   width: 30vw;
   height: 7vh;
   border-radius: 10px;
+}
+
+/* Stats Bars */
+
+.statBar {
+  height: 30px;
+  border-radius: 5px;
+}
+
+.BarRed {
+  background-color: #B42400;
+}
+
+.BarDarkOrange {
+  background-color: #FF4D00;
+}
+
+.BarOrange {
+  background-color: #FFBB00;
+}
+
+.BarYellow {
+  background-color:#DDFF00;
+}
+
+.BarGreen {
+  background-color: #00D12F;
+}
+
+.BarBlue {
+  background-color: #18FFFF;
 }
