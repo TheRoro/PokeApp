@@ -86,7 +86,7 @@ const PokemonDetails: React.FC<Props> = ({
               </Row>
               <Row className="justify-content-center mt-4">
                   <Col xs="auto">
-                    <Link to="/search/details2" className="text-light">
+                    <Link to="/search/evolution" className="text-light">
                         <i className="fas fa-angle-down fa-2x"></i>
                     </Link>
                   </Col>

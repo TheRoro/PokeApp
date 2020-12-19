@@ -5,6 +5,7 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import Bidoof404 from '../Assets/404-bidoof.png';
+import EvolutionChain from './EvolutionChain';
 import PokemonDetails from './PokemonDetails';
 import pkmnInfoInit from '../Assets/pkmnInfoInit.json';
 
@@ -89,8 +90,8 @@ const SearchPokemon: React.FC<Props> = () =>{
             <Route path={`${match.path}/details`}>
                 <PokemonDetails pkmnId={pkmnId} pkmnName={pkmnName} pkmnInfo={pkmnInfo} pkmnImg={pkmnImg}/>
             </Route>
-            <Route path={`${match.path}/details2`}>
-                <PokemonDetails pkmnId={pkmnId} pkmnName={pkmnName} pkmnInfo={pkmnInfo} pkmnImg={pkmnImg}/>
+            <Route path={`${match.path}/evolution`}>
+                <EvolutionChain pkmnName={pkmnName[0]}/>
             </Route>
             <Route path={`${match.path}/`}>
                 <Container>
