@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import Bidoof404 from '../Assets/404-bidoof.png';
 import PokemonDetails from './PokemonDetails';
+import pkmnInfoInit from '../Assets/pkmnInfoInit.json';
 
 import {
     Switch,
@@ -23,11 +24,11 @@ const SearchPokemon: React.FC<Props> = () =>{
     let match = useRouteMatch();
     const history = useHistory();
     const [pkmnName, setpkmnName] = React.useState<pokemonName>(['Luxray', 'luxray']);
-    const [pkmnInfo, setpkmnInfo] = React.useState<pokemonInfo>();
+    const [pkmnInfo, setpkmnInfo] = React.useState<pokemonInfo>(pkmnInfoInit);
     const [pkmnId, setpkmnId] = React.useState<number>(405);
     const [pkmnImg, setpkmnImg] = React.useState(<img className="poke-image" src={`https://pokeres.bastionbot.org/images/pokemon/405.png`} alt={'luxray'}/>);
     const [loading, setLoading] = React.useState(<div></div>);
-
+    
     const handleChangeName = async (e: React.ChangeEvent<HTMLInputElement>) => {
         let temp = [];
         let formatName = '';
