@@ -46,11 +46,15 @@ const StatBar: React.FC<Props> = ({
 
     return(
         <Container>
-            <Row>
-                <Col>
-                    {name +': ' + value}
+            <Row className="justify-content-end">
+                <Col xs="auto">
+                    <Row>
+                        <Col>
+                            {name +': ' + value}
+                        </Col>
+                    </Row>
                 </Col>
-                <Col xs={8}>
+                <Col xs={8} sm={6} lg={7}>
                     <div className={`statBar ${barColor}`} style={ { width: `${percentage}%` } }>
                     </div>
                 </Col> 

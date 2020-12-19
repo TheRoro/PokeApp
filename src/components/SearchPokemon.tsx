@@ -28,7 +28,7 @@ const SearchPokemon: React.FC<Props> = () =>{
     const [pkmnId, setpkmnId] = React.useState<number>(405);
     const [pkmnImg, setpkmnImg] = React.useState(<img className="poke-image" src={`https://pokeres.bastionbot.org/images/pokemon/405.png`} alt={'luxray'}/>);
     const [loading, setLoading] = React.useState(<div></div>);
-    
+
     const handleChangeName = async (e: React.ChangeEvent<HTMLInputElement>) => {
         let temp = [];
         let formatName = '';
@@ -87,6 +87,9 @@ const SearchPokemon: React.FC<Props> = () =>{
         <div className="mt-3">
             <Switch>
             <Route path={`${match.path}/details`}>
+                <PokemonDetails pkmnId={pkmnId} pkmnName={pkmnName} pkmnInfo={pkmnInfo} pkmnImg={pkmnImg}/>
+            </Route>
+            <Route path={`${match.path}/details2`}>
                 <PokemonDetails pkmnId={pkmnId} pkmnName={pkmnName} pkmnInfo={pkmnInfo} pkmnImg={pkmnImg}/>
             </Route>
             <Route path={`${match.path}/`}>
