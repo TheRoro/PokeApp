@@ -18,10 +18,10 @@ const EvolutionChain: React.FC<Props> = ({
 }) => {
     const [chainUrl, setChainUrl] = React.useState("https://pokeapi.co/api/v2/evolution-chain/209/");
     const [speciesUrl, setSpeciesUrl] = React.useState("https://pokeapi.co/api/v2/pokemon-species/");
-    const [speciesInfo, setSpeciesInfo] = React.useState(speciesInfoInit);
     const [pkName, setpkName] = React.useState('');
-    const [evolutionChainInfo, setEvoChainInfo] = React.useState(<Container>Evolution Chain:</Container>);
-
+    const [stage1, setStage1] = React.useState(<Col><p className="text1">Loading...</p></Col>)
+    const [stage2, setStage2] = React.useState(<div></div>)
+    const [stage3, setStage3] = React.useState(<div></div>)
     useEffect(() => {
         if(pkName !== pkmnName.toLowerCase()){
             const fetchInfo = async () => {
@@ -31,44 +31,48 @@ const EvolutionChain: React.FC<Props> = ({
                 setChainUrl(species.data.evolution_chain.url);
                 console.log(species.data.evolution_chain.url);
                 const evolution = await axios.get(species.data.evolution_chain.url);
-                console.log(evolution.data.chain.species);
-                console.log(evolution.data.chain.evolves_to[0].evolution_details[0].min_level);
-                console.log(evolution.data.chain.evolves_to[0].species);
-                console.log(evolution.data.chain.evolves_to[0].evolves_to[0].evolution_details[0].min_level);
-                console.log(evolution.data.chain.evolves_to[0].evolves_to[0].species);
-                setEvoChainInfo(
-                <Row className="mt-4">
-                    <Col>
-                        <Row className="justify-content-center">
-                            <h1 className="text1">{evolution.data.chain.species.name}</h1>
-                        </Row>
-                        <Row className="justify-content-center">
-                            <img className="poke-chain" src={`https://pokeres.bastionbot.org/images/pokemon/${evolution.data.chain.species.url.slice(42, -1)}.png`} alt={evolution.data.chain.species.name}/>
-                        </Row>
-                    </Col>
-                    <Col>
-                        <Row className="justify-content-center">
-                            <h1 className="text1">{evolution.data.chain.evolves_to[0].species.name}</h1>
-                        </Row>
-                        <Row className="justify-content-center">
-                            <img className="poke-chain" src={`https://pokeres.bastionbot.org/images/pokemon/${evolution.data.chain.evolves_to[0].species.url.slice(42, -1)}.png`} alt={evolution.data.chain.species.name}/>
-                        </Row>
-                        <Row className="justify-content-center">
-                            <p className="text1">{evolution.data.chain.evolves_to[0].evolution_details[0].min_level}</p>
-                        </Row>
-                    </Col>
-                    <Col>
-                        <Row className="justify-content-center">
-                            <h1 className="text1">{evolution.data.chain.evolves_to[0].evolves_to[0].species.name}</h1>
-                        </Row>
-                        <Row className="justify-content-center">
-                            <img className="poke-chain" src={`https://pokeres.bastionbot.org/images/pokemon/${evolution.data.chain.evolves_to[0].evolves_to[0].species.url.slice(42, -1)}.png`} alt={evolution.data.chain.species.name}/>
-                        </Row> 
-                        <Row className="justify-content-center">
-                            <p className="text1">{evolution.data.chain.evolves_to[0].evolves_to[0].evolution_details[0].min_level}</p>
-                        </Row>                    
-                    </Col>
-                </Row>);
+
+                setStage1(
+                <Col>
+                    <Row className="justify-content-center">
+                        <h1 className="text1">{evolution.data.chain.species.name}</h1>
+                    </Row>
+                    <Row className="justify-content-center">
+                        <img className="poke-chain" src={`https://pokeres.bastionbot.org/images/pokemon/${evolution.data.chain.species.url.slice(42, -1)}.png`} alt={evolution.data.chain.species.name}/>
+                    </Row>
+                </Col>
+                );
+                
+                if(evolution.data.chain.evolves_to.length !== 0) {
+                    setStage2(
+                        <Col>
+                            <Row className="justify-content-center">
+                                <h1 className="text1">{evolution.data.chain.evolves_to[0].species.name}</h1>
+                            </Row>
+                            <Row className="justify-content-center">
+                                <img className="poke-chain" src={`https://pokeres.bastionbot.org/images/pokemon/${evolution.data.chain.evolves_to[0].species.url.slice(42, -1)}.png`} alt={evolution.data.chain.species.name}/>
+                            </Row>
+                            <Row className="justify-content-center">
+                                <p className="text1">{evolution.data.chain.evolves_to[0].evolution_details[0].min_level}</p>
+                            </Row>
+                        </Col>
+                    );
+                    if(evolution.data.chain.evolves_to[0].evolves_to.length !== 0) {
+                        setStage3(
+                            <Col>
+                                <Row className="justify-content-center">
+                                    <h1 className="text1">{evolution.data.chain.evolves_to[0].evolves_to[0].species.name}</h1>
+                                </Row>
+                                <Row className="justify-content-center">
+                                    <img className="poke-chain" src={`https://pokeres.bastionbot.org/images/pokemon/${evolution.data.chain.evolves_to[0].evolves_to[0].species.url.slice(42, -1)}.png`} alt={evolution.data.chain.species.name}/>
+                                </Row> 
+                                <Row className="justify-content-center">
+                                    <p className="text1">{evolution.data.chain.evolves_to[0].evolves_to[0].evolution_details[0].min_level}</p>
+                                </Row>                    
+                            </Col>
+                        );
+                    }
+                }
             };
             fetchInfo();
         }
@@ -82,7 +86,7 @@ const EvolutionChain: React.FC<Props> = ({
                         <i className="fas fa-angle-up fa-2x"></i>
                     </Link>
                   </Col>
-              </Row>
+            </Row>
             <Row className="justify-content-center">
                 <Col xs="auto">
                     <Row className="justify-content-center">
@@ -92,7 +96,11 @@ const EvolutionChain: React.FC<Props> = ({
                     </Row>
                 </Col>
             </Row>
-            {evolutionChainInfo}
+            <Row className="mt-4">
+                {stage1}
+                {stage2}
+                {stage3}
+            </Row>
         </Container>
     );
 }
