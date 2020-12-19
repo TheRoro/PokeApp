@@ -25,6 +25,13 @@ a:hover {
   max-height: 400px;
 }
 
+.poke-chain {
+  height: 100%;
+  width: 100%;
+  max-width: 200px;
+  max-height: 200px;
+}
+
 .bidoof-404 {
   height: 70px;
   width: 70px;
