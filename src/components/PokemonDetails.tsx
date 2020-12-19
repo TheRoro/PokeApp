@@ -19,7 +19,7 @@ const PokemonDetails: React.FC<Props> = ({
     pkmnId,
     pkmnImg,
 }) =>{
-    const [type1, setType1] = React.useState<string>('');
+    const [type1, setType1] = React.useState<string>('Electric');
     const [type2, setType2] = React.useState<string>('');
 
     const capitalize = ((s: string) => {
@@ -81,7 +81,7 @@ const PokemonDetails: React.FC<Props> = ({
               </Row>
               <Row className="justify-content-md-center">
                   <Col md="auto">
-                    <p>\/</p>
+                    <i className="fas fa-angle-down"></i>
                   </Col>
               </Row>
             </Container>
