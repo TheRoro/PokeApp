@@ -105,16 +105,11 @@ a:hover {
   text-decoration: none;
 }
 
-.BtnLink:hover .lines {
-  visibility: visible;
-}
-
 .lines {
   margin-top: 5%;
   background-color: #FFFFFF;
-  visibility: hidden;
+  width: 80%;
 }
-
 
 .MyNavbar {
   font-size: 1.3em;
