@@ -33,16 +33,18 @@ const EvolutionChain: React.FC<Props> = ({
                 const evolution = await axios.get(species.data.evolution_chain.url);
 
                 setStage1(
-                <Row className="align-items-center">
-                    <Col xs={12} className="mb-4">
-                        <Row className="justify-content-center">
-                            <h1 className="text1">{evolution.data.chain.species.name}</h1>
-                        </Row>
-                        <Row className="justify-content-center">
-                            <img className="poke-chain" src={`https://pokeres.bastionbot.org/images/pokemon/${evolution.data.chain.species.url.slice(42, -1)}.png`} alt={evolution.data.chain.species.name}/>
-                        </Row>
-                    </Col>
-                </Row>
+                <Col xs={12} md={4}>
+                    <Row className="align-items-center">
+                        <Col xs={12} className="mb-4">
+                            <Row className="justify-content-center">
+                                <h1 className="text1">{evolution.data.chain.species.name}</h1>
+                            </Row>
+                            <Row className="justify-content-center">
+                                <img className="poke-chain" src={`https://pokeres.bastionbot.org/images/pokemon/${evolution.data.chain.species.url.slice(42, -1)}.png`} alt={evolution.data.chain.species.name}/>
+                            </Row>
+                        </Col>
+                    </Row>
+                </Col>
                 );
                 
                 if(evolution.data.chain.evolves_to.length !== 0) {
@@ -68,9 +70,11 @@ const EvolutionChain: React.FC<Props> = ({
                         </Col>
                     );
                     setStage2(
-                        <Row className="align-items-center">
-                            {listSpecies}
-                        </Row>
+                        <Col xs={12} md={4}>
+                            <Row className="align-items-center">
+                                {listSpecies}
+                            </Row>
+                        </Col>
                     );
                     if(evolution.data.chain.evolves_to[0].evolves_to.length !== 0) {
                         const stage3 = [];
@@ -95,9 +99,11 @@ const EvolutionChain: React.FC<Props> = ({
                             </Col>
                         );
                         setStage3(
-                            <Row className="align-items-center">
-                                {listSpecies3}                  
-                            </Row>
+                            <Col xs={12} md={4}>
+                                <Row className="align-items-center">
+                                    {listSpecies3}                  
+                                </Row>
+                            </Col>
                         );
                     }
                 }
@@ -124,16 +130,10 @@ const EvolutionChain: React.FC<Props> = ({
                     </Row>
                 </Col>
             </Row>
-            <Row className="mt-4 align-items-center">
-                <Col xs={12} md={4}>
-                    {stage1}
-                </Col>
-                <Col xs={12} md={4}>
-                    {stage2}
-                </Col>
-                <Col xs={12} md={4}>
-                    {stage3}
-                </Col>
+            <Row className="mt-4 align-items-center justify-content-center">
+                {stage1}
+                {stage2}
+                {stage3}
             </Row>
         </Container>
     );
