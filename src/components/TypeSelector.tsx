@@ -22,44 +22,54 @@ const TypeSelector: React.FC<Props> = ({type1, type2, setType1, setType2}) =>{
         setType2(newType.toString());
     }
     return(
-        <div className="type">
-        <Container>
-              <Row className="justify-content-center">
-                  <Col md="auto">
-                      <h1 className="title2 centered-text">Type Calculator</h1>
-                  </Col>
-              </Row>
-              <Row className="mt-5">
-                  <Col>
-                      <p className="text2">Select the Types: </p>
-                  </Col>
-                  <Col>
-                      <select value={type1} onChange={handleChangeType1}>
-                          {AllTypes.map((option, index) => (
-                              <option value={option.value} key={index}>{option.label}</option>
-                          ))}
-                      </select>
-                  </Col>
-                  <Col>
-                      <select value={type2} onChange={handleChangeType2}>
-                          {AllTypes.map((option, index) => (
-                              <option value={option.value} key={index}>{option.label}</option>
-                          ))}
-                      </select>
-                  </Col>
-              </Row>
-              <Row className="mt-4">
-                  <Col md={{ span: 8, offset: 2 }}>
-                      <h1 className={`title3 ${type1}`}>Type 1: {type1}</h1>
-                  </Col>
-              </Row>
-              <Row className="mt-4">
-                  <Col md={{ span: 8, offset: 2 }}>
-                      <h1 className={`title3 ${type2}`}>Type 2: {type2}</h1>
-                  </Col>
-              </Row>
-        </Container>
-    </div>
+        <Row className="align-items-center full-height">
+            <Col xs={12}>
+                <Row className="justify-content-center">
+                    <Col md="auto">
+                        <h1 className="title2 centered-text">Type Calculator</h1>
+                    </Col>
+                </Row>
+                <Row className="mt-5 pb-4">
+                    <Col xs={12} sm={6} md={6}>
+                        <Row className="justify-content-center">
+                            <Col xs="auto">
+                                <p className="text2 centered-text">Select the Types: </p>
+                            </Col>
+                        </Row>
+                    </Col>
+                    <Col xs={12} sm={6} md={6} className="mt-4 mt-sm-0">
+                        <Row className="justify-content-center mb-3">
+                            <Col xs="auto">
+                                <select value={type1} onChange={handleChangeType1}>
+                                {AllTypes.map((option, index) => (
+                                    <option value={option.value} key={index}>{option.label}</option>
+                                ))}
+                            </select>
+                            </Col>
+                        </Row>
+                        <Row className="justify-content-center mt-3">
+                            <Col xs="auto">
+                                <select value={type2} onChange={handleChangeType2}>
+                                {AllTypes.map((option, index) => (
+                                    <option value={option.value} key={index}>{option.label}</option>
+                                ))}
+                                </select>
+                            </Col>
+                        </Row>
+                    </Col>
+                </Row>
+                <Row className="justify-content-center mt-5">
+                    <Col xs="auto">
+                        <h1 className={`title3 centered-text ${type1}`}>Type 1: {type1}</h1>
+                    </Col>
+                </Row>
+                <Row className="justify-content-center mt-3">
+                    <Col xs="auto">
+                        <h1 className={`title3 centered-text ${type2}`}>Type 2: {type2}</h1>
+                    </Col>
+                </Row>
+            </Col>
+        </Row>
     );
 }
 

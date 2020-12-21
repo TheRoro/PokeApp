@@ -109,21 +109,21 @@ const EvolutionChain: React.FC<Props> = ({
       }, []);
 
     return(
-        <Container>
+        <Container className="evolution">
             <Navigation left="/search/stats" right="/search/stats"/>
-            <Row className="justify-content-center">
-                <Col xs="auto">
+            <Row className="align-items-center full-height">
+                <Col xs={12} className="mb-5">
                     <Row className="justify-content-center">
                         <Col xs="auto">
-                            <h1 className="title2">Evolution Line:</h1>
+                            <h1 className="title2 centered-text">Evolution Line:</h1>
                         </Col>
                     </Row>
+                    <Row className="mt-5 align-items-center justify-content-center">
+                        {stage1}
+                        {stage2}
+                        {stage3}
+                    </Row>
                 </Col>
-            </Row>
-            <Row className="mt-4 align-items-center justify-content-center">
-                {stage1}
-                {stage2}
-                {stage3}
             </Row>
         </Container>
     );
