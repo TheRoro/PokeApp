@@ -242,7 +242,7 @@ const Calc: React.FC<CalculatorProps> = ({ type1 }) =>{
     return(
     <Row className="align-items-center full-height">
         <Col xs={12}>
-            <Row className="justify-content-sm-start justify-content-center">
+            <Row className="justify-content-md-start justify-content-center">
                 <Col xs="auto">
                     <h1 className={`title2 centered-text ${type1}`}>Type: {type1}</h1>
                 </Col>
