@@ -1,5 +1,5 @@
 import React from 'react';
-import Type from '../Legacy/Type';
+import Type from './Type';
 import Calc from '../Calculator/Calculator';
 // import Pokedex from './PokedexComponent';
 
