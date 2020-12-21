@@ -22,7 +22,7 @@ const PokemonStats: React.FC<Props> = ({
     pkmnImg,
 }) =>{
     const [type1, setType1] = React.useState<string>('Electric');
-    const [type2, setType2] = React.useState<string>('');
+    const [type2, setType2] = React.useState<string>('None');
 
     const capitalize = ((s: string) => {
         let temp = s[0].toUpperCase() + s.slice(1);
