@@ -3,11 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import axios from 'axios';
-import speciesInfoInit from '../Assets/speciesInfoInit.json';
-
-import {
-    Link
-} from "react-router-dom";
+import Navigation from './Navigation';
 
 type Props = {
     pkmnName: string,
@@ -114,13 +110,7 @@ const EvolutionChain: React.FC<Props> = ({
 
     return(
         <Container>
-            <Row className="justify-content-center mt-4">
-                  <Col xs="auto">
-                    <Link to="/search/details" className="text-light">
-                        <i className="fas fa-angle-up fa-2x"></i>
-                    </Link>
-                  </Col>
-            </Row>
+            <Navigation left="/search/stats" right="/search/stats"/>
             <Row className="justify-content-center">
                 <Col xs="auto">
                     <Row className="justify-content-center">

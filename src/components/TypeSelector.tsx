@@ -24,9 +24,9 @@ const TypeSelector: React.FC<Props> = ({type1, type2, setType1, setType2}) =>{
     return(
         <div className="type">
         <Container>
-              <Row className="justify-content-md-center">
+              <Row className="justify-content-center">
                   <Col md="auto">
-                      <h1 className="title2">Type Calculator</h1>
+                      <h1 className="title2 centered-text">Type Calculator</h1>
                   </Col>
               </Row>
               <Row className="mt-5">

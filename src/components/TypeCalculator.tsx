@@ -44,7 +44,7 @@ const TypeCal: React.FC<Props> = () =>{
               <Col md="auto">
                 <Link to="/results" style={{ textDecoration: 'none' }}>
                   <div className="BtnLink">
-                    <p className="calculateBtn mb-0">Calculate</p>
+                    <p className="calculateBtn mb-0 centered-text">Calculate</p>
                     <hr className="lines mt-0"/>
                   </div>
                 </Link>
