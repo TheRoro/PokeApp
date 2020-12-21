@@ -1,6 +1,6 @@
 import React from 'react';
-import Type from './Type';
-import Calc from '../Calculator';
+import Type from '../Legacy/Type';
+import Calc from '../Calculator/Calculator';
 // import Pokedex from './PokedexComponent';
 
 type State = {

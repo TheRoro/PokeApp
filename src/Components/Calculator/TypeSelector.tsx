@@ -1,8 +1,7 @@
 import React from 'react';
-import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import AllTypes from '../Assets/allTypes';
+import AllTypes from '../../Assets/allTypes';
 
 type Props = {
     type1: string,

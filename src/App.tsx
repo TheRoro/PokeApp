@@ -1,9 +1,9 @@
 import React from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 
-import Home from './components/HomeComponent';
-import TypeCalculator from './components/TypeCalculator';
-import SearchPokemon from './components/SearchPokemon';
+import Home from './Components/Home/HomeComponent';
+import TypeCalculator from './Components/Calculator/TypeCalculator';
+import SearchPokemon from './Components/Search/SearchPokemon';
 
 import './App.css';
 
