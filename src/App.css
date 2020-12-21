@@ -18,6 +18,45 @@ a:hover {
   height: 100%;
 }
 
+.stats {
+  height: 95%;
+}
+
+.full-height {
+  height:100%;
+}
+
+.full-width {
+  width:100%;
+}
+
+.MyNavbar {
+  font-size: 1.3em;
+  height: 10%;
+  min-height: 50px;
+}
+
+.main {
+  background-color: #1B1B1B;
+}
+
+.home {
+  color: #FFFFFF;
+  background-color: #1B1B1B;
+  height: 75%;
+  width: 100%;
+}
+
+.search {
+  height: 90%;
+}
+
+.type {
+  color: #FFFFFF;
+  background-color: #1B1B1B;
+  margin-top: 2em;
+}
+
 .poke-image {
   height: 100%;
   width: 100%;
@@ -32,38 +71,32 @@ a:hover {
   max-height: 200px;
 }
 
+.search-engine {
+  min-width: 150px;
+  max-width: 400px;
+  height: 7vh;
+  min-height: 10px;
+  max-height: 65px;
+}
+
 .bidoof-404 {
-  height: 70px;
-  width: 70px;
+  height: auto;
+  width: auto;
+  max-width: 60px;
+  max-height: 60px;
 }
 
 .poke-list {
   list-style: none;
 }
 
-.main {
-  background-color: #1B1B1B;
-}
-
-.home {
-  color: #FFFFFF;
-  background-color: #1B1B1B;
-  margin-top: 11em;
-}
-
-.type {
-  color: #FFFFFF;
-  background-color: #1B1B1B;
-  margin-top: 2em;
-}
-
 .title1 {
-  font-size: 6em;
+  font-size:calc(30px + 4.5vw);
   font-weight: 900;
 }
 
 .title2 {
-  font-size: 5em;
+  font-size:calc(30px + 3vw);
   font-weight: 900;
 }
 
@@ -73,12 +106,26 @@ a:hover {
 }
 
 .title4 {
-  font-size: 2.5em;
+  font-size:calc(25px + 1.5vw);
   font-weight: 900;
 }
 
+.texthint {
+  font-size:calc(10px + 1vw);
+  color: #666666;
+}
+
+.search-text {
+  min-height: 100px;
+  width: 100%;
+}
+
+.centered-text {
+  text-align: center;
+}
+
 .text1 {
-  font-size: 2.3em;
+  font-size:calc(15px + 1.5vw);
   font-weight: 100;
 }
 
@@ -88,10 +135,10 @@ a:hover {
 
 .BtnLink {
   cursor: pointer;
+  display: inline-block;
 }
 
 .BtnLink:hover {
-  opacity: 50%;
   cursor: pointer;
 }
 
@@ -108,11 +155,7 @@ a:hover {
 .lines {
   margin-top: 5%;
   background-color: #FFFFFF;
-  width: 80%;
-}
-
-.MyNavbar {
-  font-size: 1.3em;
+  width: auto;
 }
 
 .titlenavbar{

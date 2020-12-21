@@ -15,17 +15,19 @@ class Home extends React.Component<Props,State> {
   render() {
     return (
       <div className="home">
-          <Container>
-                <Row className="justify-content-md-center">
-                    <Col md="auto">
-                        <h1 className="title1">PokeApp</h1>
-                    </Col>
+          <Container className="full-height">
+            <Row className="align-items-center full-height">
+              <Col>
+                <Row className="justify-content-center">
+                  <Col xs={12}>
+                      <h1 className="title1 centered-text">PokeApp</h1>
+                  </Col>
+                  <Col xs={12}>
+                      <p className="text1 centered-text">The Pokemon Web App, you've been waiting for...</p>
+                  </Col>
                 </Row>
-                <Row className="justify-content-md-center">
-                    <Col md="auto">
-                        <p className="text1">The Pokemon Web App, you've been waiting for...</p>
-                    </Col>
-                </Row>
+              </Col>
+            </Row>
           </Container>
       </div>
     );
