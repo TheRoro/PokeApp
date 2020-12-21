@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import TypeChart from '../Assets/typeChart';
-import TypeMap from '../Assets/typeMap';
-import TypeList from '../Assets/typeList';
+import TypeChart from '../../Assets/typeChart';
+import TypeMap from '../../Assets/typeMap';
+import TypeList from '../../Assets/typeList';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 

@@ -3,7 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import axios from 'axios';
-import Navigation from './Navigation';
+import Navigation from '../Tools/Navigation';
 
 type Props = {
     pkmnName: string,

@@ -4,10 +4,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
-import Bidoof404 from '../Assets/404-bidoof.png';
+import Bidoof404 from '../../Assets/404-bidoof.png';
 import EvolutionChain from './EvolutionChain';
 import PokemonStats from './PokemonStats';
-import pkmnInfoInit from '../Assets/pkmnInfoInit.json';
+import pkmnInfoInit from '../../Assets/pkmnInfoInit.json';
 
 import {
     Switch,
