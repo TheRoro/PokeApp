@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import TypeChart from '../Assets/typeChart';
 import TypeMap from '../Assets/typeMap';
 import TypeList from '../Assets/typeList';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 const TOTAL_TYPES = 18;
 
@@ -143,64 +145,148 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
 
     if(Array.isArray(effects)) {
         if(Array.isArray(effects[0]) && effects[0].length !== 0) {
-            immunities = <div>
-                <h1>Immunities</h1>
-                {effects[0].map((type, index) => (
-                    <p key={index}> {type}</p>
-                ))}
-            </div>
+            immunities = 
+            <Row className="mt-5 mb-5">
+                <Col xs={12}>
+                    <Row className="justify-content-md-start justify-content-center">
+                        <h1 className="text3 centered-text">Immunities:</h1>
+                    </Row>
+                    <Row className="justify-content-start types">
+                        {effects[0].map((type, index) => (
+                            <Col key={index} xs={12} sm={6} md={4} lg={3} xl={3}>
+                                <Row className="justify-content-md-start justify-content-center">
+                                    <Col xs="auto">
+                                        <p className={`${type} title3`} key={index}> {type}</p>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        ))} 
+                    </Row>
+                </Col>
+            </Row>
         }
         if(Array.isArray(effects[1]) && effects[1].length !== 0) {
-            damage025 = <div>
-                <h2>Resitances x0.25</h2>
-                {effects[1].map((type, index) => (
-                    <p key={index}> {type}</p>
-                ))}
-            </div>
+            damage025 = 
+            <Row className="mt-5 mb-5">
+                <Col xs={12}>
+                    <Row className="justify-content-md-start justify-content-center">
+                        <h1 className="text3 centered-text">Resistances x0.25:</h1>
+                    </Row>
+                    <Row className="justify-content-start types">
+                        {effects[1].map((type, index) => (
+                            <Col key={index} xs={12} sm={6} md={4} lg={3} xl={3}>
+                                <Row className="justify-content-md-start justify-content-center">
+                                    <Col xs="auto">
+                                        <p className={`${type} title3`} key={index}> {type}</p>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        ))} 
+                    </Row>
+                </Col>
+            </Row>
         }
         if(Array.isArray(effects[2]) && effects[2].length !== 0) {
-            damage050 = <div>
-                <h2>Resitances x0.50</h2>
-                    {effects[2].map((type, index) => (
-                    <p key={index}> {type}</p>
-                ))}      
-            </div>
+            damage050 = 
+            <Row className="mt-5 mb-5">
+                <Col xs={12}>
+                    <Row className="justify-content-md-start justify-content-center">
+                        <h1 className="text3 centered-text">Resistances x0.50:</h1>
+                    </Row>
+                    <Row className="justify-content-start types">
+                        {effects[2].map((type, index) => (
+                            <Col key={index} xs={12} sm={6} md={4} lg={3} xl={3}>
+                                <Row className="justify-content-md-start justify-content-center">
+                                    <Col xs="auto">
+                                        <p className={`${type} title3`} key={index}> {type}</p>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        ))} 
+                    </Row>
+                </Col>
+            </Row>
         }
         if(Array.isArray(effects[3]) && effects[3].length !== 0) {
-            normalDamage = <div>
-                <h2>Normal Damage</h2>
-                    {effects[3].map((type, index) => (
-                    <p key={index}> {type}</p>
-                ))} 
-            </div>
+            normalDamage = 
+            <Row className="mt-5 mb-5">
+                <Col xs={12}>
+                    <Row className="justify-content-md-start justify-content-center">
+                        <h1 className="text3 centered-text">Normal Damage:</h1>
+                    </Row>
+                    <Row className="justify-content-start types">
+                        {effects[3].map((type, index) => (
+                            <Col key={index} xs={12} sm={6} md={4} lg={3} xl={3}>
+                                <Row className="justify-content-md-start justify-content-center">
+                                    <Col xs="auto">
+                                        <p className={`${type} title3`} key={index}> {type}</p>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        ))} 
+                    </Row>
+                </Col>
+            </Row>
         }
         if(Array.isArray(effects[4]) && effects[4].length !== 0) {
-            damage2 = <div>
-                <h2>Effective X2</h2>
-                {effects[4].map((type, index) => (
-                    <p key={index}> {type}</p>
-                ))} 
-            </div>
+            damage2 = 
+            <Row className="mt-5 mb-5">
+                <Col xs={12}>
+                    <Row className="justify-content-md-start justify-content-center">
+                        <h1 className="text3 centered-text">Damage x2:</h1>
+                    </Row>
+                    <Row className="justify-content-start types">
+                        {effects[4].map((type, index) => (
+                            <Col key={index} xs={12} sm={6} md={4} lg={3} xl={3}>
+                                <Row className="justify-content-md-start justify-content-center">
+                                    <Col xs="auto">
+                                        <p className={`${type} title3`} key={index}> {type}</p>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        ))} 
+                    </Row>
+                </Col>
+            </Row>
         }
         if(Array.isArray(effects[5]) && effects[5].length !== 0) {
-            damage4 = <div>
-                <h2>Effective X4</h2> 
-                {effects[5].map((type, index) => (
-                    <p key={index}> {type}</p>
-                ))} 
-            </div>
+            damage4 = 
+            <Row className="mt-3 mb-3">
+                <Col xs={12}>
+                    <Row className="justify-content-md-start justify-content-center">
+                        <h1 className="text3 centered-text">Damage x4:</h1>
+                    </Row>
+                    <Row className="justify-content-start types">
+                        {effects[5].map((type, index) => (
+                            <Col key={index} xs={12} sm={6} md={4} lg={3} xl={3}>
+                                <Row className="justify-content-md-start justify-content-center">
+                                    <Col xs="auto">
+                                        <p className={`${type} title3`} key={index}> {type}</p>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        ))} 
+                    </Row>
+                </Col>
+            </Row>
         }
     }
     return(
-    <div>
-        <h1 className="title2">Types Result:</h1>
-        {immunities}
-        {damage025}
-        {damage050}
-        {normalDamage}
-        {damage2}
-        {damage4}
-    </div>
+    <Row className="align-items-center full-height">
+        <Col xs={12}>
+            <Row className="justify-content-center">
+                <Col xs="auto">
+                    <h1 className="title2 centered-text">Results:</h1>
+                </Col>
+            </Row>
+            {immunities}
+            {damage025}
+            {damage050}
+            {normalDamage}
+            {damage2}
+            {damage4}
+        </Col>
+    </Row>
     )
   };
 

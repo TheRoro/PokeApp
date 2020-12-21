@@ -25,32 +25,49 @@ const TypeCal: React.FC<Props> = () =>{
     return (
     <Router>
       <Switch>
-        <Route path="/results">
-          <Container>
-            <Row className="justify-content-md-start">
-              <Col md="auto">
-                <Link to="/">
-                  <p className="calculateBtn">Back</p>
-                </Link>
-              </Col>
-            </Row>
-          </Container>
-          <Calculator type1={type1} type2={type2}/>
+        <Route exact path="/typecal/results">
+          <div className="typecal">
+            <Container className="results">
+              <Row className="justify-content-start">
+                <Col xs="auto">
+                  <Link to="/typecal/select">
+                    <i className="fas fa-angle-left fa-2x"></i>
+                  </Link>
+                </Col>
+              </Row>
+              <Calculator type1={type1} type2={type2}/>
+            </Container>
+          </div>
         </Route>
-        <Route path="/">
-          <TypeSelector type1={type1} type2={type2} setType1={setType1} setType2={setType2}/>
-          <Container className="mt-5" fluid>
-            <Row className="justify-content-md-center">
-              <Col md="auto">
-                <Link to="/results" style={{ textDecoration: 'none' }}>
-                  <div className="BtnLink">
-                    <p className="calculateBtn mb-0 centered-text">Calculate</p>
-                    <hr className="lines mt-0"/>
-                  </div>
-                </Link>
-              </Col>
-            </Row>
-          </Container>
+        <Route exact path="/typecal/select">
+          <div className="typecal">
+            <Container className="type">
+            <TypeSelector type1={type1} type2={type2} setType1={setType1} setType2={setType2}/>
+              <Row className="justify-content-center align-items-end lastrow">
+                <Col xs="auto" className="hover">
+                  <Link to="/typecal/results" style={{ textDecoration: 'none' }}>
+                      <p className="text4 mb-0">Calculate</p>
+                      <hr className="lines mt-0"/>
+                  </Link>
+                </Col>
+              </Row>
+            </Container>
+          </div>
+        </Route>
+        <Route exact path="/">
+          <div className="typecal">
+            <Container className="type">
+            <TypeSelector type1={type1} type2={type2} setType1={setType1} setType2={setType2}/>
+              <Row className="justify-content-center align-items-end lastrow">
+                <Col xs="auto" className="hover">
+                  <Link to="/typecal/results" style={{ textDecoration: 'none' }}>
+                      <p className="text4 mb-0">Calculate</p>
+                      <hr className="lines mt-0"/>
+                  </Link>
+                </Col>
+              </Row>
+            </Container>
+          </div>
         </Route>
       </Switch>
     </Router>

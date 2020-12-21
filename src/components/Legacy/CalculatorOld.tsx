@@ -30,13 +30,6 @@ class Calculator extends React.Component<Props,State> {
         result2: []
     };
     componentDidMount() {
-        console.log("Mounting...");
-        console.log("Prev 1:", this.state.prev1);
-        console.log("Index 1:",this.state.index1);
-        console.log("Prev 2:", this.state.prev2);
-        console.log("Index 2:", this.state.index2);
-        console.log("Props 1:", this.props.type1);
-        console.log("Props 2:", this.props.type2);
         this.setState({
             index1: TypeMap.get(this.props.type1),
             index2: TypeMap.get(this.props.type2)
@@ -54,13 +47,6 @@ class Calculator extends React.Component<Props,State> {
     }
     componentDidUpdate() {
         if (this.state.index1 !== TypeMap.get(this.props.type1) || this.state.index2 !== TypeMap.get(this.props.type2)){
-            console.log("Updating...");
-            console.log("Prev 1:", this.state.prev1);
-            console.log("Index 1:",this.state.index1);
-            console.log("Prev 2:", this.state.prev2);
-            console.log("Index 2:", this.state.index2);
-            console.log("Props 1:", this.props.type1);
-            console.log("Props 2:", this.props.type2);
             this.setState((state) => ({
                 prev1: state.index1,
                 prev2: state.index2,
@@ -68,33 +54,18 @@ class Calculator extends React.Component<Props,State> {
                 index2: TypeMap.get(this.props.type2),
             }));
             if(this.state.index1) {
-                console.log("Updating index 1");
                 this.setState({
                     result1: TypeChart[this.state.index1]
                 });
-                console.log("Expected:", TypeChart[this.state.index1]);
-                console.log("Actual:", this.state.result1);
             }
             if(this.state.index2) {
-                console.log("Updating index 2");
                 this.setState({
                     result2: TypeChart[this.state.index2]
                 });
-                console.log("Expected:", TypeChart[this.state.index2]);
-                console.log("Actual:", this.state.result2);
             }
-            console.log("Results:");
-            console.log("Prev 1:", this.state.prev1);
-            console.log("Index 1:",this.state.index1);
-            console.log("Prev 2:", this.state.prev2);
-            console.log("Index 2:", this.state.index2);
-            console.log("Props 1:", this.props.type1);
-            console.log("Props 2:", this.props.type2);
         }
     }
     render() {
-        console.log(this.state.result1);
-        console.log(this.state.result2);
         return (
         <div>
             I'm the calculator

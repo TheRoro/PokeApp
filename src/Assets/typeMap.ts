@@ -13,7 +13,7 @@ let TypeMap = new Map([
     ["Ice", 11],
     ["Normal", 12],
     ["Poison", 13],
-    ["Pyschic", 14],
+    ["Psychic", 14],
     ["Rock", 15],
     ["Steel", 16],
     ["Water", 17],

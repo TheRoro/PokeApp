@@ -30,12 +30,12 @@ function App() {
             <Link to="/search" className="text-light">Search Pokemon</Link>
           </Navbar.Text>
           <Navbar.Text className="text-light mr-4">
-            <Link to="/typecal" className="text-light">Type Calculator</Link>
+            <Link to="/typecal/select" className="text-light">Type Calculator</Link>
           </Navbar.Text>
         </Navbar.Collapse>
       </Navbar>
       <Switch>
-        <Route path="/typecal">
+        <Route exact path="/typecal/select">
           <TypeCalculator/>
         </Route>
         <Route path="/search">
