@@ -276,7 +276,7 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
         <Col xs={12}>
             <Row className="justify-content-center">
                 <Col xs="auto">
-                    <h1 className="title2 centered-text">Results:</h1>
+                    <h1 className="title2 centered-text">Defensive Coverage:</h1>
                 </Col>
             </Row>
             {immunities}

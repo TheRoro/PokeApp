@@ -4,6 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import StatBar from '../Tools/StatBar';
 import Navigation from '../Tools/Navigation';
+import DefensiveCoverage from './DefensiveCoverage';
 
 type pokemonName = string[];
 
@@ -40,7 +41,7 @@ const PokemonStats: React.FC<Props> = ({
     return(
         <Container className="stats">
             <Navigation left="/search" right="/search/evolution"/>
-            <Row className="align-items-center full-height">
+            <Row className="align-items-center">
                 <Col xs={12} className="mb-5">
                     <Row className="justify-content-center">
                         <Col xs="auto">
@@ -85,6 +86,7 @@ const PokemonStats: React.FC<Props> = ({
                     </Row>
                 </Col>
             </Row>
+            <DefensiveCoverage type1={type1} type2={type2}/>
         </Container>
     );
 
