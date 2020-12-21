@@ -5,6 +5,7 @@ import Col from 'react-bootstrap/Col';
 import StatBar from '../Tools/StatBar';
 import Navigation from '../Tools/Navigation';
 import DefensiveCoverage from './DefensiveCoverage';
+import OffensiveCoverage from './OffensiveCoverage';
 
 type pokemonName = string[];
 
@@ -87,6 +88,7 @@ const PokemonStats: React.FC<Props> = ({
                 </Col>
             </Row>
             <DefensiveCoverage type1={type1} type2={type2}/>
+            <OffensiveCoverage type1={type1} type2={type2}/>
         </Container>
     );
 
