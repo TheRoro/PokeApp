@@ -110,7 +110,7 @@ const EvolutionChain: React.FC<Props> = ({
 
     return(
         <Container className="evolution">
-            <Navigation left="/search/stats" right="/search/stats"/>
+            <Navigation left="/search/stats" right="/search/attacks"/>
             <Row className="align-items-center full-height">
                 <Col xs={12} className="mb-5">
                     <Row className="justify-content-center">

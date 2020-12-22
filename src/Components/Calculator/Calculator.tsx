@@ -274,11 +274,6 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
     return(
     <Row className="align-items-center full-height">
         <Col xs={12}>
-            <Row className="justify-content-center">
-                <Col xs="auto">
-                    <h1 className="title2 centered-text">Defensive Coverage:</h1>
-                </Col>
-            </Row>
             {immunities}
             {damage025}
             {damage050}

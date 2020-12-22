@@ -7,6 +7,7 @@ import axios from 'axios';
 import Bidoof404 from '../../Assets/404-bidoof.png';
 import EvolutionChain from './EvolutionChain';
 import PokemonStats from './PokemonStats';
+import Attacks from './Attacks';
 import pkmnInfoInit from '../../Assets/pkmnInfoInit.json';
 
 import {
@@ -89,6 +90,9 @@ const SearchPokemon: React.FC<Props> = () =>{
             </Route>
             <Route path={`${match.path}/evolution`}>
                 <EvolutionChain pkmnName={pkmnName[0]}/>
+            </Route>
+            <Route path={`${match.path}/attacks`}>
+                <Attacks pkmnInfo={pkmnInfo}/>
             </Route>
             <Route path={`${match.path}/`}>
                 <Container className="full-height">
