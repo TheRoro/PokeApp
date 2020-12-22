@@ -14,10 +14,10 @@ const DefensiveCoverage: React.FC<Props> = ({
 }) =>{
 
     return (
-        <div className="defensive">
-            <Row className="justify-content-center">
+        <div className="defensive mt-5">
+            <Row className="justify-content-center mt-2">
                 <Col xs="auto">
-                    <h1 className="title2 centered-text">Offensive Coverage:</h1>
+                    <h1 className="centered-text title4">Defensive Coverage:</h1>
                 </Col>
             </Row>
             <Calculator type1={type1} type2={type2}/>

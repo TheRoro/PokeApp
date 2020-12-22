@@ -114,6 +114,11 @@ a:hover {
   font-weight: 900;
 }
 
+.calctitle {
+  font-size:calc(30px + 2vw);
+  font-weight: 700;
+}
+
 .title3 {
   font-size:calc(30px + 1vw);
   font-weight: 700;
@@ -122,6 +127,17 @@ a:hover {
 .title4 {
   font-size:calc(25px + 1.5vw);
   font-weight: 900;
+}
+
+.title5 {
+  font-size:calc(20px + 1.3vw);
+  font-weight: 900;
+}
+
+.typetitle {
+  font-size:calc(20px + 1.5vw);
+  font-weight: 500;
+  /* text-shadow: 2px 1px 0 #DCDCDC; */
 }
 
 .texthint {
@@ -155,6 +171,12 @@ a:hover {
 .text4 {
   font-size:calc(20px + 1vw);
   font-weight: 100;
+}
+
+.typetext {
+  font-size:calc(20px + 0.5vw);
+  font-weight: 700;
+  /* text-shadow: 2px 1px 0 #DCDCDC; */
 }
 
 .hover:hover {
