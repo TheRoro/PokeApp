@@ -4,6 +4,8 @@ import TypeSelector from './TypeSelector';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import DefensiveCoverage from '../Search/DefensiveCoverage';
+import OffensiveCoverage from '../Search/OffensiveCoverage';
 
 import {
     BrowserRouter as Router,
@@ -35,7 +37,20 @@ const TypeCal: React.FC<Props> = () =>{
                   </Link>
                 </Col>
               </Row>
-              <Calculator type1={type1} type2={type2}/>
+              {/* <Row className="justify-content-center">
+                <Col xs="auto">
+                  <h1 className="title2 centered-text">Results:</h1>
+                </Col>
+              </Row> */}
+              <Row className="justify-content-center">
+                  <Col xs="auto"><h1 className={`centered-text calctitle ${type1}`}>Type 1: {type1}</h1></Col>
+              </Row>
+              {type2 !== 'None' &&
+              <Row className="justify-content-center">
+                  <Col xs="auto"><h1 className={`centered-text calctitle ${type2}`}>Type 2: {type2}</h1></Col>
+              </Row>}
+              <DefensiveCoverage type1={type1} type2={type2}/>
+              <OffensiveCoverage type1={type1} type2={type2}/>
             </Container>
           </div>
         </Route>

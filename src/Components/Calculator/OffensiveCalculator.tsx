@@ -103,14 +103,14 @@ const Calc: React.FC<CalculatorProps> = ({ type1 }) =>{
             <Row className="mt-5 mb-5">
                 <Col xs={12}>
                     <Row className="justify-content-md-start justify-content-center">
-                        <h1 className="text3 centered-text">Opponent is Immune:</h1>
+                        <h1 className="text4 centered-text">Immune Against:</h1>
                     </Row>
                     <Row className="justify-content-start types">
                         {effects[0].map((type, index) => (
-                            <Col key={index} xs={12} sm={6} md={4} lg={3} xl={3}>
+                            <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
                                 <Row className="justify-content-md-start justify-content-center">
                                     <Col xs="auto">
-                                        <p className={`${type} title3`} key={index}> {type}</p>
+                                        <p className={`${type} typetext`} key={index}> {type}</p>
                                     </Col>
                                 </Row>
                             </Col>
@@ -124,14 +124,14 @@ const Calc: React.FC<CalculatorProps> = ({ type1 }) =>{
             <Row className="mt-5 mb-5">
                 <Col xs={12}>
                     <Row className="justify-content-md-start justify-content-center">
-                        <h1 className="text3 centered-text">Not Very Effective:</h1>
+                        <h1 className="text4 centered-text">Not Very Effective Against:</h1>
                     </Row>
                     <Row className="justify-content-start types">
                         {effects[1].map((type, index) => (
-                            <Col key={index} xs={12} sm={6} md={4} lg={3} xl={3}>
+                            <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
                                 <Row className="justify-content-md-start justify-content-center">
                                     <Col xs="auto">
-                                        <p className={`${type} title3`} key={index}> {type}</p>
+                                        <p className={`${type} typetext`} key={index}> {type}</p>
                                     </Col>
                                 </Row>
                             </Col>
@@ -145,14 +145,14 @@ const Calc: React.FC<CalculatorProps> = ({ type1 }) =>{
             <Row className="mt-5 mb-5">
                 <Col xs={12}>
                     <Row className="justify-content-md-start justify-content-center">
-                        <h1 className="text3 centered-text">Normal Damage:</h1>
+                        <h1 className="text4 centered-text">Normal Damage Against:</h1>
                     </Row>
                     <Row className="justify-content-start types">
                         {effects[2].map((type, index) => (
-                            <Col key={index} xs={12} sm={6} md={4} lg={3} xl={3}>
+                            <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
                                 <Row className="justify-content-md-start justify-content-center">
                                     <Col xs="auto">
-                                        <p className={`${type} title3`} key={index}> {type}</p>
+                                        <p className={`${type} typetext`} key={index}> {type}</p>
                                     </Col>
                                 </Row>
                             </Col>
@@ -163,17 +163,17 @@ const Calc: React.FC<CalculatorProps> = ({ type1 }) =>{
         }
         if(Array.isArray(effects[3]) && effects[3].length !== 0) {
             damage2 = 
-            <Row className="mt-5 mb-5">
+            <Row className="mt-3 mb-5">
                 <Col xs={12}>
                     <Row className="justify-content-md-start justify-content-center">
-                        <h1 className="text3 centered-text">Super Effective:</h1>
+                        <h1 className="text4 centered-text">Super Effective Against:</h1>
                     </Row>
                     <Row className="justify-content-start types">
                         {effects[3].map((type, index) => (
-                            <Col key={index} xs={12} sm={6} md={4} lg={3} xl={3}>
+                            <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
                                 <Row className="justify-content-md-start justify-content-center">
                                     <Col xs="auto">
-                                        <p className={`${type} title3`} key={index}> {type}</p>
+                                        <p className={`${type} typetext`} key={index}> {type}</p>
                                     </Col>
                                 </Row>
                             </Col>
@@ -186,15 +186,15 @@ const Calc: React.FC<CalculatorProps> = ({ type1 }) =>{
     return(
     <Row className="align-items-center full-height">
         <Col xs={12}>
-            <Row className="justify-content-md-start justify-content-center">
+            <Row className="justify-content-center mt-3">
                 <Col xs="auto">
-                    <h1 className={`title2 centered-text ${type1}`}>Type: {type1}</h1>
+                    <h1 className={`typetitle centered-text ${type1}`}>{type1} type</h1>
                 </Col>
             </Row>
+            {damage2}
             {immunities}
             {damage050}
-            {normalDamage}
-            {damage2}
+            {/* {normalDamage} */}
         </Col>
     </Row>
     )

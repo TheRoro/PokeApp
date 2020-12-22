@@ -17,7 +17,7 @@ const OffensiveCoverage: React.FC<Props> = ({
         <div className="offensive">
             <Row className="justify-content-center">
                 <Col xs="auto">
-                    <h1 className="title2 centered-text">Offensive Coverage:</h1>
+                    <h1 className="title4 centered-text">Offensive Coverage:</h1>
                 </Col>
             </Row>
             <OffensiveCalculator type1={type1}/>
