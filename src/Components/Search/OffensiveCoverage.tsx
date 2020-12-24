@@ -21,7 +21,7 @@ const OffensiveCoverage: React.FC<Props> = ({
                 </Col>
             </Row>
             <OffensiveCalculator type1={type1}/>
-            {type2 != 'None' && <OffensiveCalculator type1={type2}/>}
+            {type2 !== 'None' && <OffensiveCalculator type1={type2}/>}
         </div>
     );
 }
