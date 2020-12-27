@@ -77,7 +77,7 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
 
     const computeTypeCoverage = (type1: string, type2: string, index1: IndexType, index2: IndexType) => {
         if(type1 === "None" && type2 === "None"){
-            alert("Pon un tipo ps wbn");
+            alert("Select at least one type");
             return undefined;
         }
         let temp = [];
@@ -120,7 +120,6 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
             return temp;
         }
         else {
-            //alert("La cagaste o wbn");
             return undefined;
         }
     }

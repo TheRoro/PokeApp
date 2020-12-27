@@ -1,5 +1,6 @@
 import React from 'react';
 import Calculator from './Calculator';
+import Button from 'react-bootstrap/Button';
 import TypeSelector from './TypeSelector';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -11,7 +12,8 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link
+    Link,
+    Redirect
 } from 'react-router-dom';
 
 type Props = {
@@ -27,6 +29,7 @@ const TypeCal: React.FC<Props> = () =>{
     return (
     <Router>
       <Switch>
+        {(type1 !== "None" || type2 !== "None") &&
         <Route exact path="/typecal/results">
           <div className="typecal">
             <Container className="results">
@@ -37,11 +40,6 @@ const TypeCal: React.FC<Props> = () =>{
                   </Link>
                 </Col>
               </Row>
-              {/* <Row className="justify-content-center">
-                <Col xs="auto">
-                  <h1 className="title2 centered-text">Results:</h1>
-                </Col>
-              </Row> */}
               <Row className="justify-content-center">
                   <Col xs="auto"><h1 className={`centered-text calctitle ${type1}`}>Type 1: {type1}</h1></Col>
               </Row>
@@ -53,6 +51,10 @@ const TypeCal: React.FC<Props> = () =>{
               <OffensiveCoverage type1={type1} type2={type2}/>
             </Container>
           </div>
+        </Route>}
+        <Route exact path="/typecal/results">
+          {/* <h1>alert("Select at least one type");</h1> */}
+          <Redirect to="/typecal/select" />
         </Route>
         <Route exact path="/typecal/select">
           <div className="typecal">
