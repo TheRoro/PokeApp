@@ -62,10 +62,10 @@ const Calc: React.FC<CalculatorProps> = ({ type1 }) =>{
     }
 
     const computeTypeCoverage = (type1: string,  index1: IndexType) => {
-        if(type1 === "None"){
-            alert("Pon un tipo ps wbn");
-            return undefined;
-        }
+        // if(type1 === "None" && type2 === "None"){
+        //     alert("Pon un tipo ps wbn");
+        //     return undefined;
+        // }
         let temp = [];
         var pair: [number, string];
         var value: number;
