@@ -21,21 +21,21 @@ function App() {
       <Navbar expand="md" variant="dark" className="MyNavbar">
         <Navbar.Brand>
           <Navbar.Text className="text-light">
-            <Link to="/" className="text-light titlenavbar">PokeApp</Link>
+            <Link to="/" className="titlenavbar nav-link">PokeApp</Link>
           </Navbar.Text>
         </Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-end">
-          <Navbar.Text className="text-light mr-4">
-            <Link to="/search" className="text-light">Search Pokemon</Link>
+          <Navbar.Text className="mr-4">
+            <Link to="/search" className="nav-link">Search Pokemon</Link>
           </Navbar.Text>
-          <Navbar.Text className="text-light mr-4">
-            <Link to="/typecal/select" className="text-light">Type Calculator</Link>
+          <Navbar.Text className="mr-4">
+            <Link to="/calc" className="nav-link">Type Calculator</Link>
           </Navbar.Text>
         </Navbar.Collapse>
       </Navbar>
       <Switch>
-        <Route exact path="/typecal/select">
+        <Route path="/calc">
           <TypeCalculator/>
         </Route>
         <Route path="/search">
