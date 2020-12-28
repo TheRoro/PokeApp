@@ -1,7 +1,6 @@
 import React from 'react';
-import Calculator from './Calculator';
-import Button from 'react-bootstrap/Button';
 import TypeSelector from './TypeSelector';
+import NoTypesAlert from './NoTypesAlert';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -9,9 +8,10 @@ import DefensiveCoverage from '../Search/DefensiveCoverage';
 import OffensiveCoverage from '../Search/OffensiveCoverage';
 
 import {
-    BrowserRouter as Router,
     Switch,
     Route,
+    useRouteMatch,
+    useHistory,
     Link,
     Redirect
 } from 'react-router-dom';
@@ -23,19 +23,20 @@ type Props = {
 type typeName = string;
 
 const TypeCal: React.FC<Props> = () =>{
-    const [type1, setType1] = React.useState<typeName>('Fire');
-    const [type2, setType2] = React.useState<typeName>('Fighting');
+    let match = useRouteMatch();
+    const history = useHistory();
+    const [type1, setType1] = React.useState<typeName>('Water');
+    const [type2, setType2] = React.useState<typeName>('Poison');
 
     return (
-    <Router>
       <Switch>
         {(type1 !== "None" || type2 !== "None") &&
-        <Route exact path="/typecal/results">
+        <Route path={`${match.path}/results`}>
           <div className="typecal">
             <Container className="results">
               <Row className="justify-content-start">
                 <Col xs="auto">
-                  <Link to="/typecal/select">
+                  <Link to="/calc">
                     <i className="fas fa-angle-left fa-2x"></i>
                   </Link>
                 </Col>
@@ -52,42 +53,27 @@ const TypeCal: React.FC<Props> = () =>{
             </Container>
           </div>
         </Route>}
-        <Route exact path="/typecal/results">
+        <Route path={`${match.path}/results`}>
           {/* <h1>alert("Select at least one type");</h1> */}
-          <Redirect to="/typecal/select" />
+          <Redirect to={`${match.path}/`} />
         </Route>
-        <Route exact path="/typecal/select">
+        <Route path={`${match.path}/`}>
           <div className="typecal">
             <Container className="type">
             <TypeSelector type1={type1} type2={type2} setType1={setType1} setType2={setType2}/>
-              <Row className="justify-content-center align-items-end lastrow">
+            {type1 === "None" && type2 === "None" && <NoTypesAlert/>}
+              {(type1 !== "None" || type2 !== "None") && <Row className="justify-content-center align-items-end lastrow">
                 <Col xs="auto" className="hover">
-                  <Link to="/typecal/results" style={{ textDecoration: 'none' }}>
+                  <Link to={`${match.path}/results`} style={{ textDecoration: 'none' }}>
                       <p className="text4 mb-0">Calculate</p>
                       <hr className="lines mt-0"/>
                   </Link>
                 </Col>
-              </Row>
-            </Container>
-          </div>
-        </Route>
-        <Route exact path="/">
-          <div className="typecal">
-            <Container className="type">
-            <TypeSelector type1={type1} type2={type2} setType1={setType1} setType2={setType2}/>
-              <Row className="justify-content-center align-items-end lastrow">
-                <Col xs="auto" className="hover">
-                  <Link to="/typecal/results" style={{ textDecoration: 'none' }}>
-                      <p className="text4 mb-0">Calculate</p>
-                      <hr className="lines mt-0"/>
-                  </Link>
-                </Col>
-              </Row>
+              </Row>}
             </Container>
           </div>
         </Route>
       </Switch>
-    </Router>
     );
 }
 
