@@ -14,6 +14,14 @@ a:hover {
   color: #FFFFFF;
 }
 
+.nav-link {
+  color: #FFFFFF !important;
+}
+
+.nav-link:hover {
+  opacity: 0.7;
+}
+
 .pokeapp {
   height: 100%;
 }
