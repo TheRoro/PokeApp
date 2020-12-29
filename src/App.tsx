@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from 'react-bootstrap/Navbar';
-
+import RNavBar from './Components/Navbar/ResponsiveNavbar';
 import Home from './Components/Home/HomeComponent';
 import TypeCalculator from './Components/Calculator/TypeCalculator';
 import SearchPokemon from './Components/Search/SearchPokemon';
@@ -18,22 +18,7 @@ function App() {
   return (
     <Router>
     <div className="pokeapp">
-      <Navbar expand="md" variant="dark" className="MyNavbar">
-        <Navbar.Brand>
-          <Navbar.Text className="text-light">
-            <Link to="/" className="titlenavbar nav-link">PokeApp</Link>
-          </Navbar.Text>
-        </Navbar.Brand>
-        <Navbar.Toggle />
-        <Navbar.Collapse className="justify-content-end">
-          <Navbar.Text className="mr-4">
-            <Link to="/search" className="nav-link">Search Pokemon</Link>
-          </Navbar.Text>
-          <Navbar.Text className="mr-4">
-            <Link to="/calc" className="nav-link">Type Calculator</Link>
-          </Navbar.Text>
-        </Navbar.Collapse>
-      </Navbar>
+      <RNavBar/>
       <Switch>
         <Route path="/calc">
           <TypeCalculator/>
