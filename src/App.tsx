@@ -1,9 +1,9 @@
 import React from 'react';
-import Navbar from 'react-bootstrap/Navbar';
 import RNavBar from './Components/Navbar/ResponsiveNavbar';
 import Home from './Components/Home/HomeComponent';
 import TypeCalculator from './Components/Calculator/TypeCalculator';
 import SearchPokemon from './Components/Search/SearchPokemon';
+import SearchMove from './Components/Search-Move/SearchMove';
 
 import './App.css';
 
@@ -25,6 +25,9 @@ function App() {
         </Route>
         <Route path="/search">
           <SearchPokemon/>
+        </Route>
+        <Route path="/move">
+          <SearchMove/>
         </Route>
         <Route path="/">
           <Home/>

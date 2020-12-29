@@ -32,6 +32,9 @@ const SideBar: React.FC<Props> = ({
                     <SidebarLink to="/calc" onClick={toggle}>
                         Type Calculator
                     </SidebarLink>
+                    <SidebarLink to="/move" onClick={toggle}>
+                        Search Move
+                    </SidebarLink>
                 </SidebarMenu>
             </SidebarWrapper>
         </SidebarContainer>
