@@ -29,7 +29,7 @@ const PokemonStats: React.FC<Props> = ({
 
     return(
         <Container className="stats">
-            <Navigation left="/move" right="/move/???"/>
+            <Navigation left="/move" right=""/>
             <Row className="align-items-center full-height">
                 <Col xs={12} className="">
                     <Row className="justify-content-center mb-5">

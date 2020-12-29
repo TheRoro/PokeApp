@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import DefensiveCoverage from '../Search/DefensiveCoverage';
 import OffensiveCoverage from '../Search/OffensiveCoverage';
+import Navigation from '../Tools/Navigation';
 
 import {
     Switch,
@@ -34,13 +35,7 @@ const TypeCal: React.FC<Props> = () =>{
         <Route path={`${match.path}/results`}>
           <div className="typecal">
             <Container className="results">
-              <Row className="justify-content-start">
-                <Col xs="auto">
-                  <Link to="/calc">
-                    <i className="fas fa-angle-left fa-2x"></i>
-                  </Link>
-                </Col>
-              </Row>
+              <Navigation left="/calc" right=""/>
               <Row className="justify-content-center">
                   <Col xs="auto"><h1 className={`centered-text calctitle ${type1}`}>Type 1: {type1}</h1></Col>
               </Row>
@@ -54,7 +49,6 @@ const TypeCal: React.FC<Props> = () =>{
           </div>
         </Route>}
         <Route path={`${match.path}/results`}>
-          {/* <h1>alert("Select at least one type");</h1> */}
           <Redirect to={`${match.path}/`} />
         </Route>
         <Route path={`${match.path}/`}>
