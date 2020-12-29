@@ -6,41 +6,113 @@ import Navigation from '../Tools/Navigation';
 
 type Props = {
     moveInfo: any,
+    moveName: string
 }
 
 const PokemonStats: React.FC<Props> = ({
     moveInfo,
+    moveName
 }) =>{
-    const [type1, setType1] = React.useState<string>('Electric');
-    const [type2, setType2] = React.useState<string>('None');
-
-    const capitalize = ((s: string) => {
-        let temp = s[0].toUpperCase() + s.slice(1);
-        return temp
-    })
+    const [effect, setEffect] = React.useState<string>(moveInfo.effect_entries[0].short_effect);
+    const setGoodEffect = () => {
+        let temp = moveInfo.effect_entries[0].short_effect;
+        let index = temp.search("effect_chance");
+        if(index !== -1) {
+            temp = temp.replace("$effect_chance", moveInfo.effect_chance.toString());
+        }
+        setEffect(temp);
+    }
 
     useEffect(() => {
+        setGoodEffect();
     },);
 
     return(
         <Container className="stats">
             <Navigation left="/move" right="/move/???"/>
-            <Row className="align-items-center">
-                <Col xs={12} className="mb-5">
-                    <Row className="justify-content-center">
+            <Row className="align-items-center full-height">
+                <Col xs={12} className="">
+                    <Row className="justify-content-center mb-5">
                         <Col xs="auto">
-                            <h1 className="title2 centered-text">{moveInfo.name}</h1>
+                            <h1 className={`title2 centered-text ${moveInfo.type.name[0].toUpperCase() + moveInfo.type.name.slice(1)}`}>{moveName}</h1>
                         </Col>
                     </Row>
-                    <Row className="justify-content-center align-items-center mt-4">
-                        <Col xs={12} sm={12} md={6}>
-                            {JSON.stringify(moveInfo.power)}
+                    <Row>
+                        <Col xs={{ span: 6, offset: 3 }} sm={{ span: 6, offset: 3 }}>
+                            <Row className="justify-content-start">
+                                <Col xs="auto">
+                                    <p className="text5">Category: {moveInfo.damage_class.name[0].toUpperCase() + moveInfo.damage_class.name.slice(1)}</p>
+                                </Col>
+                            </Row>
                         </Col>
-                        <Col xs={12} sm={12} md={6}>
-                            {JSON.stringify(moveInfo.pp)}
+                    </Row>
+                    {moveInfo.power !== null ? 
+                    <Row>
+                        <Col xs={{ span: 6, offset: 3 }}>
+                            <Row className="justify-content-start">
+                                <Col xs="auto">
+                                    <p className="text5">Power: {JSON.stringify(moveInfo.power)}</p>
+                                </Col>
+                            </Row>
                         </Col>
-                        <Col xs={12} sm={12} md={6}>
-                            {JSON.stringify(moveInfo.type.name)}
+                    </Row> 
+                    : 
+                    <Row>
+                        <Col xs={{ span: 6, offset: 3 }}>
+                            <Row className="justify-content-start">
+                                <Col xs="auto">
+                                    <p className="text5">No Power</p>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row> 
+                    }
+                    {moveInfo.accuracy !== null ? 
+                    <Row>
+                        <Col xs={{ span: 6, offset: 3 }}>
+                            <Row className="justify-content-start">
+                                <Col xs="auto">
+                                    <p className="text5">Accuracy: {JSON.stringify(moveInfo.accuracy) + "%"}</p>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                    :
+                    <Row>
+                        <Col xs={{ span: 6, offset: 3 }}>
+                            <Row className="justify-content-start">
+                                <Col xs="auto">
+                                    <p className="text5">Accuracy: -</p>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                    }
+                    <Row>
+                        <Col xs={{ span: 6, offset: 3 }}>
+                            <Row className="justify-content-start">
+                                <Col xs="auto">
+                                    <p className={`text5`}>Type: {moveInfo.type.name[0].toUpperCase() + moveInfo.type.name.slice(1)}</p>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col xs={{ span: 6, offset: 3 }}>
+                            <Row className="justify-content-start">
+                                <Col xs="auto">
+                                    <p className="text5">PP: {moveInfo.pp}</p>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col xs={{ span: 6, offset: 3 }}>
+                            <Row className="justify-content-start">
+                                <Col xs="auto">
+                                    <p className="text5">{effect}</p>
+                                </Col>
+                            </Row>
                         </Col>
                     </Row>
                 </Col>

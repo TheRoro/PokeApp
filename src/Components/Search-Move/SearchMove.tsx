@@ -98,7 +98,7 @@ const SearchAttack: React.FC<Props> = () =>{
         <div className="search">
             <Switch>
             <Route path={`${match.path}/info`}>
-                <MoveInfo moveInfo={moveInfo}/>
+                <MoveInfo moveInfo={moveInfo} moveName={moveName}/>
             </Route>
             <Route path={`${match.path}/`}>
                 <Container className="full-height">
