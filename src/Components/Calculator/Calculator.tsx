@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import TypeChart from '../../Assets/typeChart';
 import TypeMap from '../../Assets/typeMap';
 import TypeList from '../../Assets/typeList';
@@ -75,7 +75,7 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
         }
     }
 
-    const computeTypeCoverage = (type1: string, type2: string, index1: IndexType, index2: IndexType) => {
+    const computeTypeCoverage = useCallback((type1: string, type2: string, index1: IndexType, index2: IndexType) => {
         if(type1 === "None" && type2 === "None"){
             alert("Select at least one type");
             return undefined;
@@ -122,7 +122,7 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
         else {
             return undefined;
         }
-    }
+    }, []);
 
     useEffect(() => {
         if(typeof getIndex(type1) === "number") {
@@ -133,7 +133,7 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
         }
         if(Array.isArray(computeTypeCoverage(type1, type2, index1, index2)))
             computeTypeCoverage(type1, type2, index1, index2);
-    }, [setIndex1, setIndex2, index1, index2, type1, type2]);
+    }, [setIndex1, setIndex2, index1, index2, type1, type2, computeTypeCoverage]);
 
     let immunities = <div></div>;
     let damage025 = <div></div>;
