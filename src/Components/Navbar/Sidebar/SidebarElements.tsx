@@ -49,11 +49,11 @@ export const SidebarMenu = styled.ul`
     padding: 0;
     margin: 0;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(2, 80px);
+    grid-template-rows: repeat(3, 80px);
     text-align: center;
 
     @media screen and (max-width: 480px) {
-        grid-template-rows: repeat(2, 80px);
+        grid-template-rows: repeat(3, 80px);
     }
 `
 
