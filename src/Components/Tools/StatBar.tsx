@@ -41,7 +41,7 @@ const StatBar: React.FC<Props> = ({
         else{
             setBarColor("BarBlue");
         }
-      }, [setBarColor, setPercentage]);
+      }, [setBarColor, setPercentage, value]);
 
     return(
         <Col>

@@ -4,7 +4,7 @@ import Col from 'react-bootstrap/Col';
 
 type Props = {}
 
-const NoTypesAlert: React.FC<Props> = ({}) =>{
+const NoTypesAlert: React.FC<Props> = () =>{
 
     return (
         <div>

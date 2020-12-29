@@ -12,8 +12,7 @@ type Props = {
 const EvolutionChain: React.FC<Props> = ({
     pkmnName
 }) => {
-    const [chainUrl, setChainUrl] = React.useState("https://pokeapi.co/api/v2/evolution-chain/209/");
-    const [speciesUrl, setSpeciesUrl] = React.useState("https://pokeapi.co/api/v2/pokemon-species/");
+    const [speciesUrl] = React.useState("https://pokeapi.co/api/v2/pokemon-species/");
     const [pkName, setpkName] = React.useState('');
     const [stage1, setStage1] = React.useState(<Col><p className="text1">Loading...</p></Col>)
     const [stage2, setStage2] = React.useState(<div></div>)
@@ -23,9 +22,6 @@ const EvolutionChain: React.FC<Props> = ({
             const fetchInfo = async () => {
                 setpkName(pkmnName.toLowerCase());
                 const species = await axios.get(speciesUrl + pkmnName.toLowerCase() +'/');
-                // console.log(species.data);
-                setChainUrl(species.data.evolution_chain.url);
-                // console.log(species.data.evolution_chain.url);
                 const evolution = await axios.get(species.data.evolution_chain.url);
 
                 setStage1(
@@ -106,7 +102,7 @@ const EvolutionChain: React.FC<Props> = ({
             };
             fetchInfo();
         }
-      }, []);
+      }, [pkName, pkmnName, speciesUrl]);
 
     return(
         <Container className="evolution">

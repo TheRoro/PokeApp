@@ -9,26 +9,16 @@ type Props = {
     pkmnInfo: any,
 }
 
-interface levelType {
-    name: string,
-    lvl: number
-}
-
 const Attacks: React.FC<Props> = ({
     pkmnInfo
 }) =>{
     const [levelUp, setLevelUp] = React.useState(<div></div>);
     const [tutor, setTutor] = React.useState(<div></div>);
     const [mt, setMt] = React.useState(<div></div>);
-    const [movesList, setmovesList] = React.useState<string>();
-    
-    let list1 = <div></div>;
-    let list2 = <div></div>;
-    let list3 = <div></div>;
 
     const fetchMoveDetails = async (url: string) => {
         const resp = await axios.get(url);
-        console.log(resp.data.name);
+        // console.log(resp.data.name);
         return resp.data;
     }
 
@@ -43,9 +33,6 @@ const Attacks: React.FC<Props> = ({
             let url = pkmnInfo.moves[i].move.url;
 
             let promise = fetchMoveDetails(url);
-            // promise.then(()=> {
-            //     console.log(promise);
-            // })
             let learn_method = pkmnInfo.moves[i].version_group_details[size - 1].move_learn_method.name;
             
             if(learn_method === "level-up") {
@@ -60,12 +47,12 @@ const Attacks: React.FC<Props> = ({
             }
         }
         levelUp.sort((a, b) => a[1]-b[1]);
-
+        let temp1 = <div></div>;
         for(let i = 0; i < levelUp.length; i++) {
-            list1 = <div className="full-width">
+            temp1 = <div className="full-width">
                 {/* <li key={0} className="poke-list"><p>Lv.  Move</p></li> */}
                 {levelUp.map((attack) =>
-                <Row className="justify-content-center">
+                <Row className="justify-content-center" key={attack[0]}>
                     <Col xs={6}>
                         <Row className="justify-content-center">
                             <Col xs="auto">
@@ -84,11 +71,12 @@ const Attacks: React.FC<Props> = ({
             )}
             </div>
         }
-        setLevelUp(list1);
+        setLevelUp(temp1);
+        let temp2 = <div></div>;
         for(let i = 0; i < tutor.length; i++) {
-            list2 = <div className="full-width">
+            temp2 = <div className="full-width">
                 {tutor.map((attack) =>
-                <Row className="justify-content-center">
+                <Row className="justify-content-center" key={attack[0]}>
                 <Col xs={6}>
                     <Row className="justify-content-center">
                         <Col xs={12}>
@@ -103,11 +91,12 @@ const Attacks: React.FC<Props> = ({
             )}
             </div>
         }
-        setTutor(list2);
+        setTutor(temp2);
+        let temp3 = <div></div>;
         for(let i = 0; i < mt.length; i++) {
-            list3 = <div>
+            temp3 = <div>
                 {mt.map((attack) =>
-                <Row className="justify-content-start">
+                <Row className="justify-content-start" key={attack[0]}>
                     <Col xs={6}>
                         <p className="">{attack[0]}</p>
                     </Col>
@@ -118,8 +107,8 @@ const Attacks: React.FC<Props> = ({
             )}
             </div>
         }
-        setMt(list3);
-    },[setLevelUp, setTutor, setMt]);
+        setMt(temp3);
+    },[setLevelUp, setTutor, setMt, pkmnInfo.moves]);
 
 
 

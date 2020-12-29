@@ -7,9 +7,7 @@ import {
     MobileIcon, 
     NavMenu, 
     NavItem, 
-    NavLinks,
-    NavBtn,
-    NavBtnLink
+    NavLinks
 } from './NavbarElements';
 
 type Props = {
