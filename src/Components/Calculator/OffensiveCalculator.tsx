@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import TypeChart from '../../Assets/typeChart';
 import TypeMap from '../../Assets/typeMap';
 import TypeList from '../../Assets/typeList';
@@ -61,11 +61,7 @@ const Calc: React.FC<CalculatorProps> = ({ type1 }) =>{
         }
     }
 
-    const computeTypeCoverage = (type1: string,  index1: IndexType) => {
-        // if(type1 === "None" && type2 === "None"){
-        //     alert("Pon un tipo ps wbn");
-        //     return undefined;
-        // }
+    const computeTypeCoverage = useCallback((index1: IndexType) => {
         let temp = [];
         var pair: [number, string];
         var value: number;
@@ -82,15 +78,15 @@ const Calc: React.FC<CalculatorProps> = ({ type1 }) =>{
             //alert("La cagaste o wbn");
             return undefined;
         }
-    }
+    }, []);
 
     useEffect(() => {
         if(typeof getIndex(type1) === "number") {
             setIndex1(getIndex(type1));
         }
-        if(Array.isArray(computeTypeCoverage(type1, index1)))
-            computeTypeCoverage(type1, index1);
-    }, [setIndex1, index1, type1]);
+        if(Array.isArray(computeTypeCoverage(index1)))
+            computeTypeCoverage(index1);
+    }, [setIndex1, index1, type1, computeTypeCoverage]);
 
     let immunities = <div></div>;
     let damage050 = <div></div>;
