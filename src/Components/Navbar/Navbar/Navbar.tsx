@@ -27,13 +27,13 @@ const Navbar: React.FC<Props> = ({
                     </MobileIcon>
                     <NavMenu>
                         <NavItem>
+                            <NavLinks to="/move">Search Move</NavLinks>
+                        </NavItem>
+                        <NavItem>
                             <NavLinks to="/search">Search Pokemon</NavLinks>
                         </NavItem>
                         <NavItem>
                             <NavLinks to="/calc">Type Calculator</NavLinks>
-                        </NavItem>
-                        <NavItem>
-                            <NavLinks to="/move">Search Move</NavLinks>
                         </NavItem>
                     </NavMenu>
                 </NavbarContainer>
