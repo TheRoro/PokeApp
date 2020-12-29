@@ -24,14 +24,14 @@ const SideBar: React.FC<Props> = ({
             </Icon>
             <SidebarWrapper>
                 <SidebarMenu>
+                    <SidebarLink to="/move" onClick={toggle}>
+                        Search Move
+                    </SidebarLink>
                     <SidebarLink to="/search" onClick={toggle}>
                         Search Pokemon
                     </SidebarLink>
                     <SidebarLink to="/calc" onClick={toggle}>
                         Type Calculator
-                    </SidebarLink>
-                    <SidebarLink to="/move" onClick={toggle}>
-                        Search Move
                     </SidebarLink>
                 </SidebarMenu>
             </SidebarWrapper>
