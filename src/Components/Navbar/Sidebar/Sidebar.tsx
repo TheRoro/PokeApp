@@ -5,9 +5,7 @@ import {
     CloseIcon,
     SidebarWrapper,
     SidebarMenu,
-    SidebarLink,
-    SideBtnWrap,
-    SidebarRoute
+    SidebarLink
 } from './SidebarElements';
 
 type Props = {

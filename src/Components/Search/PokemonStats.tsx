@@ -37,7 +37,7 @@ const PokemonStats: React.FC<Props> = ({
         if(pkmnInfo.types.length > 1) {
             setType2(capitalize(pkmnInfo.types[1].type.name));
         }
-    },);
+    },[setType1, pkmnInfo.types, type1]);
 
     return(
         <Container className="stats">

@@ -17,7 +17,6 @@ import {
 
 type Props = {}
 
-type pokemonName = string[];
 type pokemonInfo = {};
 
 const SearchAttack: React.FC<Props> = () =>{

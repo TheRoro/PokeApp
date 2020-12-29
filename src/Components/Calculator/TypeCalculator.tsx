@@ -12,7 +12,6 @@ import {
     Switch,
     Route,
     useRouteMatch,
-    useHistory,
     Link,
     Redirect
 } from 'react-router-dom';
@@ -25,7 +24,6 @@ type typeName = string;
 
 const TypeCal: React.FC<Props> = () =>{
     let match = useRouteMatch();
-    const history = useHistory();
     const [type1, setType1] = React.useState<typeName>('Water');
     const [type2, setType2] = React.useState<typeName>('Poison');
 

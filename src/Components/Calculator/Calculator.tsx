@@ -138,7 +138,7 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
     let immunities = <div></div>;
     let damage025 = <div></div>;
     let damage050 = <div></div>;
-    let normalDamage = <div></div>;
+    // let normalDamage = <div></div>;
     let damage2 = <div></div>;
     let damage4 = <div></div>;
 
@@ -206,27 +206,27 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
                 </Col>
             </Row>
         }
-        if(Array.isArray(effects[3]) && effects[3].length !== 0) {
-            normalDamage = 
-            <Row className="mb-5">
-                <Col xs={12}>
-                    <Row className="justify-content-md-start justify-content-center">
-                        <h1 className="text4 centered-text">Normal Damage:</h1>
-                    </Row>
-                    <Row className="justify-content-start types">
-                        {effects[3].map((type, index) => (
-                            <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
-                                <Row className="justify-content-md-start justify-content-center">
-                                    <Col xs="auto">
-                                        <p className={`${type} typetext`} key={index}> {type}</p>
-                                    </Col>
-                                </Row>
-                            </Col>
-                        ))} 
-                    </Row>
-                </Col>
-            </Row>
-        }
+        // if(Array.isArray(effects[3]) && effects[3].length !== 0) {
+        //     normalDamage = 
+        //     <Row className="mb-5">
+        //         <Col xs={12}>
+        //             <Row className="justify-content-md-start justify-content-center">
+        //                 <h1 className="text4 centered-text">Normal Damage:</h1>
+        //             </Row>
+        //             <Row className="justify-content-start types">
+        //                 {effects[3].map((type, index) => (
+        //                     <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
+        //                         <Row className="justify-content-md-start justify-content-center">
+        //                             <Col xs="auto">
+        //                                 <p className={`${type} typetext`} key={index}> {type}</p>
+        //                             </Col>
+        //                         </Row>
+        //                     </Col>
+        //                 ))} 
+        //             </Row>
+        //         </Col>
+        //     </Row>
+        // }
         if(Array.isArray(effects[4]) && effects[4].length !== 0) {
             damage2 = 
             <Row className="mb-5">
