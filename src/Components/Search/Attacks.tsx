@@ -125,7 +125,7 @@ const Attacks: React.FC<Props> = ({
 
     return (
         <Container className="evolution">
-            <Navigation left="/search/evolution" right="/search/stats"/>
+            <Navigation left="/search/evolution" right=""/>
             <Row className="align-items-center full-height">
                 <Col xs={12} className="mb-5">
                     <Row className="justify-content-center">
