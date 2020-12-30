@@ -100,6 +100,15 @@ a:hover {
   max-height: 65px;
 }
 
+.search-teambuilder {
+  min-width: 50px;
+  max-width: 200px;
+  height: 5vh;
+  width: 10vw;
+  min-height: 10px;
+  max-height: 65px;
+}
+
 .bidoof-404 {
   height: auto;
   width: auto;
