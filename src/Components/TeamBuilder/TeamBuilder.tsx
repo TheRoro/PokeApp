@@ -13,9 +13,7 @@ import {
 
 type Props = {}
 
-type pokemonInfo = {};
-
-const TeamBuilder: React.FC<Props> = () =>{
+const TeamBuilder: React.FC<Props> = () => {
     let match = useRouteMatch();
 
     const calculateTeam = async () => {
