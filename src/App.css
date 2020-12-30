@@ -112,7 +112,7 @@ a:hover {
 }
 
 .search-teambuilder {
-  min-width: 50px;
+  min-width: 100px;
   max-width: 200px;
   height: 5vh;
   width: 10vw;
@@ -178,7 +178,7 @@ a:hover {
 }
 
 .builder-textdiv {
-  min-height: 80px;
+  min-height: calc(30px + 1vw);
   width: 100%;
 }
 
