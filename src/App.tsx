@@ -4,7 +4,7 @@ import Home from './Components/Home/HomeComponent';
 import TypeCalculator from './Components/Calculator/TypeCalculator';
 import SearchPokemon from './Components/Search/SearchPokemon';
 import SearchMove from './Components/Search-Move/SearchMove';
-
+import TeamBuilder from './Components/TeamBuilder/TeamBuilder';
 import './App.css';
 
 import {
@@ -27,6 +27,9 @@ function App() {
         </Route>
         <Route path="/move">
           <SearchMove/>
+        </Route>
+        <Route path="/teambuilder">
+          <TeamBuilder/>
         </Route>
         <Route path="/">
           <Home/>
