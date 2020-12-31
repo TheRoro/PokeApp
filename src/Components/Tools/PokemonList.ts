@@ -1,4 +1,4 @@
-const options = [
+const PokemonList = [
 	"Bulbasaur",
 	"Ivysaur",
 	"Venusaur",
@@ -1024,4 +1024,4 @@ const options = [
 	"diancie-mega",
 ];
 
-export default options;
+export default PokemonList;
