@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import './autocomplete.css';
 
 export class Autocomplete extends Component {
+  constructor(props) {
+    super(props);
+    this.state.userInput = this.props.val;
+  }
   static propTypes = {
     options: PropTypes.instanceOf(Array).isRequired,
   };
@@ -10,7 +14,7 @@ export class Autocomplete extends Component {
     activeOption: 0,
     filteredOptions: [],
     showOptions: false,
-    userInput: 'luxray'
+    userInput: ''
   };
 
   onChange = (e) => {
