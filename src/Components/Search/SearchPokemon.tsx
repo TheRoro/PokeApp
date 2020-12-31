@@ -27,7 +27,7 @@ type pokemonInfo = {};
 const SearchPokemon: React.FC<Props> = () =>{
     let match = useRouteMatch();
     const history = useHistory();
-    const [pkmnName, setpkmnName] = React.useState<pokemonName>(['Luxray', 'luxray']);
+    const [pkmnName, setpkmnName] = React.useState<pokemonName>(['', '']);
     const [pkmnInfo, setpkmnInfo] = React.useState<pokemonInfo>(pkmnInfoInit);
     const [pkmnId, setpkmnId] = React.useState<number>(405);
     const [pkmnImg, setpkmnImg] = React.useState(<img className="poke-image" src={`https://pokeres.bastionbot.org/images/pokemon/405.png`} alt={'luxray'}/>);
@@ -116,7 +116,9 @@ const SearchPokemon: React.FC<Props> = () =>{
                             </Row>
                             <Row className="justify-content-center align-self-center mt-5">
                                 <Col xs="auto" className="search-text">
+                                    {pkmnName[0] !== '' ? 
                                     <h1 className="title2 centered-text">{pkmnName[0]}</h1>
+                                    :<h1 className="title4 centered-text">Name will apear here...</h1>}
                                 </Col>
                             </Row>
                             <Row className="justify-content-center mt-4">
