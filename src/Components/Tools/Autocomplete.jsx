@@ -1,23 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import './autocomplete.css';
 
 export class Autocomplete extends Component {
   static propTypes = {
-    options: PropTypes.instanceOf(Array).isRequired
+    options: PropTypes.instanceOf(Array).isRequired,
   };
   state = {
     activeOption: 0,
     filteredOptions: [],
     showOptions: false,
-    userInput: ''
+    userInput: 'luxray'
   };
 
   onChange = (e) => {
-    console.log('onChanges');
-
     const { options } = this.props;
     const userInput = e.currentTarget.value;
-
+    this.props.onChangeValue(userInput);
     const filteredOptions = options.filter(
       (optionName) =>
         optionName.toLowerCase().indexOf(userInput.toLowerCase()) > -1
@@ -38,6 +37,8 @@ export class Autocomplete extends Component {
       showOptions: false,
       userInput: e.currentTarget.innerText
     });
+    // alert(e.currentTarget.innerText.toLowerCase());
+    this.props.onChangeValue(e.currentTarget.innerText.toLowerCase());
   };
   onKeyDown = (e) => {
     const { activeOption, filteredOptions } = this.state;
@@ -48,6 +49,7 @@ export class Autocomplete extends Component {
         showOptions: false,
         userInput: filteredOptions[activeOption]
       });
+      this.props.onChangeValue(filteredOptions[activeOption]);
     } else if (e.keyCode === 38) {
       if (activeOption === 0) {
         return;
@@ -91,14 +93,14 @@ export class Autocomplete extends Component {
       } else {
         optionList = (
           <div className="no-options">
-            <em>No Option!</em>
+            <p>No pokemon was found</p>
           </div>
         );
       }
     }
     return (
       <React.Fragment>
-        <div className="search">
+        <div className="search-div">
           <input
             type="text"
             className="search-box"
@@ -106,7 +108,6 @@ export class Autocomplete extends Component {
             onKeyDown={onKeyDown}
             value={userInput}
           />
-          <input type="submit" value="" className="search-btn" />
         </div>
         {optionList}
       </React.Fragment>

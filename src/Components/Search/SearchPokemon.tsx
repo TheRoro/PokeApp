@@ -9,6 +9,8 @@ import EvolutionChain from './EvolutionChain';
 import PokemonStats from './PokemonStats';
 import Attacks from './Attacks';
 import pkmnInfoInit from '../../Assets/pkmnInfoInit.json';
+import options from '../Tools/options';
+import Autocomplete from '../Tools/Autocomplete';
 
 import {
     Switch,
@@ -50,6 +52,19 @@ const SearchPokemon: React.FC<Props> = () =>{
             searchByName();
         }
     };
+
+    const onValueChange = async (val: string) => {
+        let temp = [];
+        let formatName = '';
+        let value = '';
+        value = val.toLowerCase();
+        if(value.length > 0) {
+            formatName = value[0].toUpperCase() + value.slice(1, value.length);
+        }
+        temp.push(formatName);
+        temp.push(value);
+        setpkmnName(temp);
+    }
 
     const searchByName = async () => {
         try {
@@ -115,8 +130,9 @@ const SearchPokemon: React.FC<Props> = () =>{
                             </Row>
                             <Row className="justify-content-center mt-4">
                                 <Col xs="auto">
-                                    <input className="search-engine" value={pkmnName[0]} onChange={handleChangeName} onKeyPress={handleKeypress}>
-                                    </input>
+                                    {/* <input className="search-engine" value={pkmnName[0]} onChange={handleChangeName} onKeyPress={handleKeypress}>
+                                    </input> */}
+                                    <Autocomplete options={options} onChangeValue={onValueChange} val={pkmnName[1]} search={searchByName}/>
                                 </Col>
                                 <div>{''}</div>
                             </Row>
