@@ -18,7 +18,7 @@ const Pokemon: React.FC<Props> = () => {
             setTypes(['', '']);
             var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + name + '/';
             const resp = await axios.get(apiUrl);
-            setpkmnImg(<img className="poke-builder" src={`https://pokeres.bastionbot.org/images/pokemon/${resp.data.id}.png`} alt={resp.data.name}/>);
+            setpkmnImg(<img className="poke-builder" src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/>);
             
             let temp = [];
             for(let i = 0; i < 2; i++) {
