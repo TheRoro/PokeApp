@@ -1,8 +1,6 @@
 import React , {useEffect} from 'react';
-import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
 import Pokeffective from './Images/Pokeffective.jpg'
 import PokeffectiveRetro from './Images/Pokeffective-Retro.jpg'
 
@@ -17,9 +15,6 @@ type Props = {}
 const PreviousVersions: React.FC<Props> = () => {
     let match = useRouteMatch();
 
-    const calculateTeam = async () => {
-        alert("Muchas gracias por calcular amigo :)");
-    }
     useEffect(() => {
 
     },);
@@ -46,7 +41,7 @@ const PreviousVersions: React.FC<Props> = () => {
                                     <Row className="justify-content-center">
                                         <Col xs="auto">
                                             {/* <h1 className="title5 centered-text">Retro</h1> */}
-                                            <a className="link-old" href="https://8rb.github.io/Pokeffective-Old/" target="_blank">
+                                            <a className="link-old" href="https://8rb.github.io/Pokeffective-Old/" target="_blank" rel="noreferrer">
                                                 <img className="older-image" src={PokeffectiveRetro} alt={'Pokeffective-Retro'}/>
                                             </a>
                                         </Col>
@@ -56,7 +51,7 @@ const PreviousVersions: React.FC<Props> = () => {
                                     <Row className="justify-content-center">
                                         <Col xs="auto">
                                             {/* <h1 className="title5 centered-text">Pokeffective</h1> */}
-                                            <a className="link-old" href="https://pokeffective.onrender.com/" target="_blank">
+                                            <a className="link-old" href="https://pokeffective.onrender.com/" target="_blank" rel="noreferrer">
                                                 <img className="older-image" src={Pokeffective} alt={'Pokeffective'}/>
                                             </a>
                                         </Col>

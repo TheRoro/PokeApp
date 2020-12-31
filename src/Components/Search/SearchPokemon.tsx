@@ -33,25 +33,12 @@ const SearchPokemon: React.FC<Props> = () =>{
     const [pkmnImg, setpkmnImg] = React.useState(<img className="poke-image" src={`https://pokeres.bastionbot.org/images/pokemon/405.png`} alt={'luxray'}/>);
     const [loading, setLoading] = React.useState(<div></div>);
 
-    const handleChangeName = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        let temp = [];
-        let formatName = '';
-        let value = '';
-        value = e.target.value.toString().toLowerCase();
-        if(value.length > 0) {
-            formatName = value[0].toUpperCase() + value.slice(1, value.length);
-        }
-        temp.push(formatName);
-        temp.push(value);
-        setpkmnName(temp);
-    }
-
-    const handleKeypress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        var key  = e.key || e.keyCode;
-        if (key === 'Enter' || key === 13) {
-            searchByName();
-        }
-    };
+    // const handleKeypress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    //     var key  = e.key || e.keyCode;
+    //     if (key === 'Enter' || key === 13) {
+    //         searchByName();
+    //     }
+    // };
 
     const onValueChange = async (val: string) => {
         let temp = [];
