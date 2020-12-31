@@ -72,19 +72,10 @@ const SearchPokemon: React.FC<Props> = () =>{
                 Loading...
             </div>);
             var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + pkmnName[1] + '/';
-            if(pkmnName[0] === "Deoxys"){
-                apiUrl = 'https://pokeapi.co/api/v2/pokemon/deoxys-normal/';
-            }
-            else if(pkmnName[0] === "Giratina"){
-                setpkmnImg(<img className="poke-image" src={`https://pokeres.bastionbot.org/images/pokemon/487-altered.png`} alt="Giratina"/>);
-                apiUrl = 'https://pokeapi.co/api/v2/pokemon/giratina-altered/';
-            }
             const resp = await axios.get(apiUrl);
             setpkmnInfo(resp.data);
             setpkmnId(resp.data.id);
-            if(pkmnName[1] !== "giratina"){
-                setpkmnImg(<img className="poke-image" src={`https://pokeres.bastionbot.org/images/pokemon/${resp.data.id}.png`} alt={resp.data.name}/>);
-            }
+            setpkmnImg(<img className="poke-image" src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/>);
             setLoading(<div></div>);
             history.push(`${match.url}/stats`);
         }
