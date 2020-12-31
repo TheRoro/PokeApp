@@ -12,6 +12,7 @@ import {
   Switch,
   Route
 } from 'react-router-dom';
+import PreviousVersions from './Components/PrevVersions/PreviousVersions';
 
 function App() {
   return (
@@ -30,6 +31,9 @@ function App() {
         </Route>
         <Route path="/teambuilder">
           <TeamBuilder/>
+        </Route>
+        <Route path="/older-versions">
+          <PreviousVersions/>
         </Route>
         <Route path="/">
           <Home/>
