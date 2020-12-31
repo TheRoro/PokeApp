@@ -6,6 +6,14 @@
   height: 100%;
 }
 
+.container-fluid {
+  width: 100%;
+  padding-right: 35px;
+  padding-left: 35px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
 a {
   color: #FFFFFF;
 }
@@ -261,6 +269,24 @@ a:hover {
 
 .types {
   margin: 0px 2% 0px 2%;
+}
+
+.older-image {
+  height: 25vw;
+  width: 40vw;
+  min-width: 210px;
+  min-height: 150px;
+  max-width: 400px;
+  max-height: 250px;
+  border-radius: 10px;
+}
+
+.link-old {
+  text-decoration: none;
+}
+
+.link-old:hover {
+  opacity: 0.8;
 }
 
 /* Types */
