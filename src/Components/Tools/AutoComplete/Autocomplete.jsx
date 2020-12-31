@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import './autocomplete.css';
+import './Autocomplete.css';
 
 export class Autocomplete extends Component {
   constructor(props) {
