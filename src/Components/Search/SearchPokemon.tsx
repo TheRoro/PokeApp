@@ -9,7 +9,7 @@ import EvolutionChain from './EvolutionChain';
 import PokemonStats from './PokemonStats';
 import Attacks from './Attacks';
 import pkmnInfoInit from '../../Assets/pkmnInfoInit.json';
-import options from '../Tools/options';
+import pokemonList from '../Tools/PokemonList';
 import Autocomplete from '../Tools/Autocomplete';
 
 import {
@@ -125,7 +125,7 @@ const SearchPokemon: React.FC<Props> = () =>{
                                 <Col xs="auto">
                                     {/* <input className="search-engine" value={pkmnName[0]} onChange={handleChangeName} onKeyPress={handleKeypress}>
                                     </input> */}
-                                    <Autocomplete options={options} onChangeValue={onValueChange} val={pkmnName[1]} search={searchByName}/>
+                                    <Autocomplete options={pokemonList} onChangeValue={onValueChange} val={pkmnName[1]} search={searchByName}/>
                                 </Col>
                                 <div>{''}</div>
                             </Row>
