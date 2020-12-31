@@ -974,6 +974,7 @@ const options = [
 	"yamask-galar",
 	"stunfisk-galar",
 	//mega-evolutions:
+	//X and Y
 	"venusaur-mega",
 	"charizard-mega-x",
 	"charizard-mega-y",
@@ -1003,6 +1004,25 @@ const options = [
 	"garchomp-mega",
 	"lucario-mega",
 	"abomasnow-mega",
+	//Omega Ruby and Alpha Sapphire
+	"beedrill-mega",
+	"pidgeot-mega",
+	"slowbro-mega",
+	"steelix-mega",
+	"sceptile-mega",
+	"swampert-mega",
+	"sableye-mega",
+	"sharpedo-mega",
+	"camerupt-mega",
+	"altaria-mega",
+	"glalie-mega",
+	"salamence-mega",
+	"metagross-mega",
+	"rayquaza-mega",
+	"lopunny-mega",
+	"gallade-mega",
+	"audino-mega",
+	"diancie-mega",
 ];
 
 export default options;
