@@ -490,7 +490,6 @@ const options = [
 	"Rotom-frost",
 	"Rotom-fan",
 	"Rotom-mow",
-	"Rotom",
 	"Uxie",
 	"Mesprit",
 	"Azelf",
