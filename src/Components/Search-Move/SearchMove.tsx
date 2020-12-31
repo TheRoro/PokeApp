@@ -7,6 +7,8 @@ import axios from 'axios';
 import Bidoof404 from '../../Assets/404-bidoof.png';
 import moveInfoInit from '../../Assets/moveInfo.json';
 import MoveInfo from './MoveInfo';
+import Autocomplete from '../Tools/AutoComplete/Autocomplete';
+import moveList from '../Tools/MoveList';
 
 import {
     Switch,
@@ -56,22 +58,6 @@ const SearchAttack: React.FC<Props> = () =>{
         setMoveName(temp);
     }
 
-    const handleChangeName = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = '';
-        value = e.target.value.toString().toLowerCase();
-        if(value[value.length - 1] === " " && value[value.length - 2] === " ") {
-            value = value.slice(0, value.length - 1);
-        }
-        formatName(value);
-        formatPretty(value);
-    }
-
-    const handleKeypress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        var key  = e.key || e.keyCode;
-        if (key === 'Enter' || key === 13) {
-            searchByName();
-        }
-    };
 
     const searchByName = async () => {
         try {
@@ -91,6 +77,11 @@ const SearchAttack: React.FC<Props> = () =>{
             </div>);
             console.error(err);
         }
+    }
+
+    const onValueChange = async (val: string) => {
+        formatPretty(val);
+        formatName(val);
     }
 
     return (
@@ -120,8 +111,9 @@ const SearchAttack: React.FC<Props> = () =>{
                             </Row>
                             <Row className="justify-content-center mt-4">
                                 <Col xs="auto">
-                                    <input className="search-engine" value={moveName} onChange={handleChangeName} onKeyPress={handleKeypress}>
-                                    </input>
+                                    {/* <input className="search-engine" value={formatedMoveName} onChange={handleChangeName} onKeyPress={handleKeypress}>
+                                    </input> */}
+                                    <Autocomplete options={moveList} onChangeValue={onValueChange} val={moveName} search={searchByName}/>
                                 </Col>
                                 <div>{''}</div>
                             </Row>
