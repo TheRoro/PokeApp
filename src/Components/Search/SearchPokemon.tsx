@@ -10,7 +10,7 @@ import PokemonStats from './PokemonStats';
 import Attacks from './Attacks';
 import pkmnInfoInit from '../../Assets/pkmnInfoInit.json';
 import pokemonList from '../Tools/PokemonList';
-import Autocomplete from '../Tools/Autocomplete';
+import Autocomplete from '../Tools/AutoComplete/Autocomplete';
 
 import {
     Switch,
@@ -27,7 +27,7 @@ type pokemonInfo = {};
 const SearchPokemon: React.FC<Props> = () =>{
     let match = useRouteMatch();
     const history = useHistory();
-    const [pkmnName, setpkmnName] = React.useState<pokemonName>(['', '']);
+    const [pkmnName, setpkmnName] = React.useState<pokemonName>(['Luxray', 'luxray']);
     const [pkmnInfo, setpkmnInfo] = React.useState<pokemonInfo>(pkmnInfoInit);
     const [pkmnId, setpkmnId] = React.useState<number>(405);
     const [pkmnImg, setpkmnImg] = React.useState(<img className="poke-image" src={`https://pokeres.bastionbot.org/images/pokemon/405.png`} alt={'luxray'}/>);
@@ -101,10 +101,10 @@ const SearchPokemon: React.FC<Props> = () =>{
                 <Attacks pkmnInfo={pkmnInfo}/>
             </Route>
             <Route path={`${match.path}/`}>
-                <Container className="full-height">
-                    <Row className="align-items-center full-height">
+                <Container className="full-height mt-5">
+                    <Row className="full-height mt-4">
                         <Col xs={12}>
-                            <Row className="justify-content-center">
+                            <Row className="justify-content-center mt-5">
                                 <Col xs="auto">
                                     <h1 className="title2 centered-text">Search in the Pokedex:</h1>
                                 </Col>
@@ -118,7 +118,7 @@ const SearchPokemon: React.FC<Props> = () =>{
                                 <Col xs="auto" className="search-text">
                                     {pkmnName[0] !== '' ? 
                                     <h1 className="title2 centered-text">{pkmnName[0]}</h1>
-                                    :<h1 className="title4 centered-text">Name will apear here...</h1>}
+                                    :<h1 className="title2 centered-text">...</h1>}
                                 </Col>
                             </Row>
                             <Row className="justify-content-center mt-4">
