@@ -17,8 +17,9 @@ const PokemonStats: React.FC<Props> = ({
     const setGoodEffect = () => {
         let temp = moveInfo.effect_entries[0].short_effect;
         let index = temp.search("effect_chance");
-        if(index !== -1) {
+        while (index !== -1) {
             temp = temp.replace("$effect_chance", moveInfo.effect_chance.toString());
+            index = temp.search("effect_chance");
         }
         setEffect(temp);
     }
