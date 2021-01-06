@@ -23,9 +23,14 @@ export class Autocomplete extends Component {
     this.props.onChangeValue(userInput);
     const filteredOptions = options.filter(
       (optionName) =>
-        optionName.toLowerCase().indexOf(userInput.toLowerCase()) > -1
+        optionName.toLowerCase().indexOf(userInput.toLowerCase()) === 0
     );
-
+    options.forEach((optionName) => {
+      if(optionName.toLowerCase().indexOf(userInput.toLowerCase()) !== 0 &&
+        optionName.toLowerCase().indexOf(userInput.toLowerCase()) > -1) {
+          filteredOptions.push(optionName);
+        }
+    });
     this.setState({
       activeOption: 0,
       filteredOptions,
@@ -41,7 +46,6 @@ export class Autocomplete extends Component {
       showOptions: false,
       userInput: e.currentTarget.innerText
     });
-    // alert(e.currentTarget.innerText.toLowerCase());
     this.props.onChangeValue(e.currentTarget.innerText.toLowerCase());
   };
   onKeyDown = (e) => {
@@ -61,7 +65,6 @@ export class Autocomplete extends Component {
       this.setState({ activeOption: activeOption - 1 });
     } else if (e.keyCode === 40) {
       if (activeOption === filteredOptions.length - 1) {
-        console.log(activeOption);
         return;
       }
       this.setState({ activeOption: activeOption + 1 });
