@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import './Autocomplete.css';
+import './SearchEngine.css';
 
-export class Autocomplete extends Component {
+export class SearchEngine extends Component {
   constructor(props) {
     super(props);
     this.state.userInput = this.props.val;
@@ -14,7 +14,8 @@ export class Autocomplete extends Component {
     activeOption: 0,
     filteredOptions: [],
     showOptions: false,
-    userInput: ''
+    userInput: '',
+    searching: false,
   };
 
   onChange = (e) => {
@@ -29,7 +30,6 @@ export class Autocomplete extends Component {
     while(cont < size && i < options.length) {
       if(options[i].toLowerCase().indexOf(userInput.toLowerCase()) === 0){
         filteredOptions.push(options[i]);
-        console.log(options[i]);
         cont++;
       }
       i++;
@@ -40,7 +40,6 @@ export class Autocomplete extends Component {
       if(options[i].toLowerCase().indexOf(userInput.toLowerCase()) !== 0 && 
         options[i].toLowerCase().indexOf(userInput.toLowerCase()) > -1){
         filteredOptions.push(options[i]);
-        console.log(options[i]);
         cont++;
       }
       i++;
@@ -59,7 +58,8 @@ export class Autocomplete extends Component {
       activeOption: 0,
       filteredOptions: [],
       showOptions: false,
-      userInput: e.currentTarget.innerText
+      userInput: e.currentTarget.innerText,
+      searching: true,
     });
     if(e.currentTarget.innerText.toLowerCase())
       this.props.onChangeValue(e.currentTarget.innerText.toLowerCase(), 13);
@@ -73,7 +73,8 @@ export class Autocomplete extends Component {
       this.setState({
         activeOption: 0,
         showOptions: false,
-        userInput: filteredOptions[activeOption]
+        userInput: filteredOptions[activeOption],
+        searching: true,
       });
       if(filteredOptions[activeOption])
         this.props.onChangeValue(filteredOptions[activeOption], e.keyCode);
@@ -85,15 +86,16 @@ export class Autocomplete extends Component {
       }
       this.setState({ 
         activeOption: activeOption - 1,
-        userInput: filteredOptions[activeOption]
+        userInput: filteredOptions[activeOption - 1]
       });
     } else if (e.keyCode === 40) {
       if (activeOption === filteredOptions.length - 1) {
         return;
       }
+      
       this.setState({
         activeOption: activeOption + 1,
-        userInput: filteredOptions[activeOption]
+        userInput: filteredOptions[activeOption + 1]
       });
     }
   };
@@ -113,10 +115,13 @@ export class Autocomplete extends Component {
           <ul className="options">
             {filteredOptions.map((optionName, index) => {
               let className;
-              if (index === activeOption) {
+              if (index === filteredOptions.length - 1 && index === activeOption) {
+                className = 'last-option option-active'
+              }
+              else if (index === activeOption) {
                 className = 'option-active';
               }
-              if (index === filteredOptions.length -1) {
+              else if (index === filteredOptions.length - 1){
                 className = 'last-option'
               }
               return (
@@ -140,7 +145,8 @@ export class Autocomplete extends Component {
         <div className="search-div">
           { this.state.userInput === '' || 
           this.state.userInput === undefined ||
-          this.state.filteredOptions.length === 0 ? 
+          this.state.filteredOptions.length === 0 ||
+          this.state.searching === true ? 
           <input
             type="text"
             className="search-box-curved"
@@ -163,4 +169,4 @@ export class Autocomplete extends Component {
   }
 }
 
-export default Autocomplete;
+export default SearchEngine;

@@ -3,12 +3,12 @@
     width: 42vw;
     max-width: 450px;
     height: 6vh;
-    min-height: 10px;
+    min-height: 45px;
     max-height: 65px;
     border-radius: 20px 20px 20px 20px;
     font-size: 1rem;
     font-family: 'Montserrat', sans-serif;
-    padding: 0.5rem 0.5rem 0.5rem 1rem;
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     transition: width 0.3s;
     border: none;
   }
@@ -20,11 +20,11 @@
     width: 42vw;
     max-width: 450px;
     height: 6vh;
-    min-height: 10px;
+    min-height: 45px;
     max-height: 65px;
     border-radius: 20px 20px 0px 0px;
     font-size: 1rem;
-    padding: 0.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     transition: width 0.3s;
     border: none;
   }
@@ -34,6 +34,7 @@
   
   .search-div{
     max-height: 50px;
+    min-height: 45px;
     text-align: right;
     position: relative;
     display: block;
@@ -57,6 +58,7 @@
     min-width: 237px;
     width: 42vw;
     max-width: 450px;
+    min-height: 34px;
     height: 4.5vh;
     color: #000;
     display: block;
@@ -69,7 +71,7 @@
   ul.options li:hover {
     cursor: pointer;
     transition: 0.3s all;
-    background: #ededed;
+    background: #cfcfcf;
   }
   
   ul.options li.option-active {
@@ -77,7 +79,8 @@
     width: 42vw;
     max-width: 450px;
     height: 4.5vh;
-    /* background: whitesmoke; */
+    min-height: 34px;
+    background: #ededed;
     font-size: 0.9rem;
     /* font-weight: 500; */
     /* color: #03dac5; */
@@ -87,6 +90,7 @@
     width: 42vw;
     max-width: 450px;
     height: 4.5vh;
+    min-height: 34px;
     border-radius: 0px 0px 20px 20px;
   }
   .no-options {
