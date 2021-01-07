@@ -2,17 +2,12 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-type State = {
+import Quotes from './Quotes';
+import './Home.css';
 
-}
-
-type Props = {
-
-}
-
-class Home extends React.Component<Props,State> {
-
-  render() {
+const Home: React.FC<{}> = () => {
+    var max = Quotes.length;
+    var rand =  Math.floor(Math.random() * Math.floor(max));
     return (
       <div className="home">
           <Container className="full-height">
@@ -20,10 +15,11 @@ class Home extends React.Component<Props,State> {
               <Col>
                 <Row className="justify-content-center">
                   <Col xs={12}>
-                      <h1 className="title1 centered-text">PokeApp</h1>
+                      <h1 className="homeTitle centered-text">PokeApp</h1>
                   </Col>
                   <Col xs={12}>
-                      <p className="text1 centered-text">The Pokemon Web App, you've been waiting for...</p>
+                      <p className="homeText centered-text">{Quotes[rand]}</p>
+                      {/* {rand} */}
                   </Col>
                 </Row>
               </Col>
@@ -31,7 +27,6 @@ class Home extends React.Component<Props,State> {
           </Container>
       </div>
     );
-  }
 }
 
 export default Home;
