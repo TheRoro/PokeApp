@@ -9,7 +9,7 @@ import PokemonStats from './PokemonStats';
 import Attacks from './Attacks';
 import pkmnInfoInit from '../../Assets/pkmnInfoInit.json';
 import pokemonList from '../Tools/PokemonList';
-import Autocomplete from '../Tools/AutoComplete/Autocomplete';
+import Autocomplete from '../Tools/SearchEngine/SearchEngine';
 
 import {
     Switch,
@@ -53,7 +53,7 @@ const SearchPokemon: React.FC<Props> = () =>{
             console.error(err);
         }
     }
-    const searchwithParam = async (name: string) => {
+    const searchWithParam = async (name: string) => {
         try {
             setLoading(
             <Row className="justify-content-center mt-5">
@@ -94,7 +94,7 @@ const SearchPokemon: React.FC<Props> = () =>{
         temp.push(value);
         setpkmnName(temp);
         if(code === 13) {
-            searchwithParam(value);
+            searchWithParam(value);
         }
     }
     return (
@@ -115,7 +115,7 @@ const SearchPokemon: React.FC<Props> = () =>{
                         <Col xs={12}>
                             <Row className="justify-content-center mt-0 mt-lg-5">
                                 <Col xs="auto">
-                                    <h1 className="title2 centered-text">Search in the Pokedex:</h1>
+                                    <h1 className="titletitle centered-text">Search in the Pokedex:</h1>
                                 </Col>
                             </Row>
                             <Row className="justify-content-center">
@@ -130,7 +130,7 @@ const SearchPokemon: React.FC<Props> = () =>{
                                     :<h1 className="pkmnNameTitle centered-text">...</h1>}
                                 </Col>
                             </Row> */}
-                            <Row className="justify-content-center align-items-center mt-3">
+                            <Row className="justify-content-center align-items-center mt-4">
                                 <Col xs="auto">
                                     <Autocomplete options={pokemonList} onChangeValue={onValueChange} val={pkmnName[1]} search={searchByName}/>
                                 </Col>

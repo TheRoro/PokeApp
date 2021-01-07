@@ -1,7 +1,6 @@
 .App {
   text-align: center;
   color: #FFFFFF;
-  background-color: #1B1B1B;
   height: 100%;
 }
 
@@ -55,15 +54,9 @@ a:hover {
   min-height: 50px;
 }
 
-.main {
+/* .main {
   background-color:#121212;
-}
-
-.home {
-  color: #FFFFFF;
-  height: 75%;
-  width: 100%;
-}
+} */
 
 .search {
   min-width: 268px;
@@ -172,6 +165,11 @@ a:hover {
 .pkmnNameTitle {
   font-size:calc(25px + 2.3vw);
   font-weight: 900;
+}
+
+.titletitle {
+  font-size:calc(25px + 2.5vw);
+  font-weight: 800;
 }
 
 .typetitle {
