@@ -1,0 +1,17 @@
+.home {
+    color: #FFFFFF;
+    height: 75%;
+    width: 100%;
+}
+
+.homeTitle {
+    font-size:calc(28px + 4vw);
+    font-weight: 900;
+    color: #e6e6e6;
+}
+
+.homeText {
+    font-size:calc(12px + 1.3vw);
+    font-weight: 200;
+    color: #88868B;
+}
