@@ -7,7 +7,7 @@ import axios from 'axios';
 import Bidoof404 from '../../Assets/404-bidoof.png';
 import moveInfoInit from '../../Assets/moveInfo.json';
 import MoveInfo from './MoveInfo';
-import Autocomplete from '../Tools/AutoComplete/Autocomplete';
+import Autocomplete from '../Tools/SearchEngine/SearchEngine';
 import moveList from '../Tools/MoveList';
 
 import {
@@ -58,12 +58,14 @@ const SearchAttack: React.FC<Props> = () =>{
         setMoveName(temp);
     }
 
-
     const searchByName = async () => {
         try {
-            setLoading(<div>
-                Loading...
-            </div>);
+            setLoading(
+                <Row className="justify-content-center mt-5">
+                    <Col xs="auto">
+                        <p>Loading...</p>
+                    </Col>
+                </Row>);
             var apiUrl = 'https://pokeapi.co/api/v2/move/' + formatedMoveName + '/';
             const resp = await axios.get(apiUrl);
             setmoveInfo(resp.data);
@@ -72,16 +74,49 @@ const SearchAttack: React.FC<Props> = () =>{
         }
         catch(err) {
             alert("Move Not Found");
-            setLoading(<div>
-                <img className="bidoof-404" src={Bidoof404} alt={'404'}/>
-            </div>);
+            setLoading(
+                <Row className="justify-content-center mt-5">
+                    <Col xs="auto">
+                        <img className="bidoof-404" src={Bidoof404} alt={'404'}/>
+                    </Col>
+                </Row>
+                );
             console.error(err);
         }
     }
 
-    const onValueChange = async (val: string) => {
+    const searchWithParam = async (name: string) => {
+        try {
+            setLoading(
+                <Row className="justify-content-center mt-5">
+                    <Col xs="auto">
+                        <p>Loading...</p>
+                    </Col>
+                </Row>);
+            var apiUrl = 'https://pokeapi.co/api/v2/move/' + name + '/';
+            const resp = await axios.get(apiUrl);
+            setmoveInfo(resp.data);
+            setLoading(<div></div>);
+            history.push(`${match.url}/info`);
+        }
+        catch(err) {
+            alert("Move Not Found");
+            setLoading(
+                <Row className="justify-content-center mt-5">
+                    <Col xs="auto">
+                        <img className="bidoof-404" src={Bidoof404} alt={'404'}/>
+                    </Col>
+                </Row>
+                );
+            console.error(err);
+        }
+    }
+    const onValueChange = async (val: string, code: number) => {
         formatPretty(val);
         formatName(val);
+        if(code === 13) {
+            searchWithParam(val);
+        }
     }
 
     return (
@@ -92,11 +127,11 @@ const SearchAttack: React.FC<Props> = () =>{
             </Route>
             <Route path={`${match.path}/`}>
                 <Container className="full-height">
-                    <Row className="align-items-center full-height">
+                    <Row className="full-height mt-5 mt-sm-4 mt-lg-5">
                         <Col xs={12}>
-                            <Row className="justify-content-center">
+                            <Row className="justify-content-center mt-0 mt-lg-5">
                                 <Col xs="auto">
-                                    <h1 className="title2 centered-text">Search for a Move:</h1>
+                                    <h1 className="titletitle centered-text">Search for a Move:</h1>
                                 </Col>
                             </Row>
                             <Row className="justify-content-center">
@@ -104,29 +139,17 @@ const SearchAttack: React.FC<Props> = () =>{
                                     <p className="texthint centered-text">(Eg: Tackle, Thunder Shock)</p>
                                 </Col>
                             </Row>
-                            <Row className="justify-content-center align-self-center mt-5">
-                                <Col xs="auto" className="search-text">
-                                    <h1 className="title2 centered-text">{moveName}</h1>
-                                </Col>
-                            </Row>
                             <Row className="justify-content-center mt-4">
                                 <Col xs="auto">
-                                    {/* <input className="search-engine" value={formatedMoveName} onChange={handleChangeName} onKeyPress={handleKeypress}>
-                                    </input> */}
                                     <Autocomplete options={moveList} onChangeValue={onValueChange} val={moveName} search={searchByName}/>
                                 </Col>
-                                <div>{''}</div>
                             </Row>
                             <Row className="justify-content-center align-self-end mt-5">
                                 <Col xs="auto">
                                     <Button variant="outline-light" size="lg" onClick={searchByName}>Search</Button>
                                 </Col>
                             </Row>
-                            <Row className="justify-content-center mt-5">
-                                <Col xs="auto">
-                                    {loading}
-                                </Col>
-                            </Row>
+                            {loading}
                         </Col>
                     </Row>
                 </Container>
