@@ -17,11 +17,9 @@ import {
     useHistory
 } from "react-router-dom";
 
-type Props = {}
-
 type pokemonInfo = {};
 
-const SearchAttack: React.FC<Props> = () =>{
+const SearchAttack: React.FC<{}> = () =>{
     let match = useRouteMatch();
     const history = useHistory();
     const [formatedMoveName, setFormatedMoveName] = React.useState<string>('pound');

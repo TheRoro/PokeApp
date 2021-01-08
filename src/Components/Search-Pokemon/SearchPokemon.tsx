@@ -18,12 +18,10 @@ import {
     useHistory
 } from "react-router-dom";
 
-type Props = {}
-
 type pokemonName = string[];
 type pokemonInfo = {};
 
-const SearchPokemon: React.FC<Props> = () =>{
+const SearchPokemon: React.FC<{}> = () =>{
     let match = useRouteMatch();
     const history = useHistory();
     const [pkmnName, setpkmnName] = React.useState<pokemonName>(['Luxray', 'luxray']);

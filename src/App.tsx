@@ -2,9 +2,10 @@ import React from 'react';
 import RNavBar from './Components/Navbar/ResponsiveNavbar';
 import Home from './Components/Home/HomeComponent';
 import TypeCalculator from './Components/Calculator/TypeCalculator';
-import SearchPokemon from './Components/Search/SearchPokemon';
+import SearchPokemon from './Components/Search-Pokemon/SearchPokemon';
 import SearchMove from './Components/Search-Move/SearchMove';
 import TeamBuilder from './Components/TeamBuilder/TeamBuilder';
+import OlderVersions from './Components/Older-Versions/OlderVersions';
 import './App.css';
 
 import {
@@ -12,7 +13,7 @@ import {
   Switch,
   Route
 } from 'react-router-dom';
-import PreviousVersions from './Components/PrevVersions/PreviousVersions';
+
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
           <TeamBuilder/>
         </Route>
         <Route path="/older-versions">
-          <PreviousVersions/>
+          <OlderVersions/>
         </Route>
         <Route path="/">
           <Home/>
