@@ -4,8 +4,8 @@ import NoTypesAlert from './NoTypesAlert';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import DefensiveCoverage from '../Search/DefensiveCoverage';
-import OffensiveCoverage from '../Search/OffensiveCoverage';
+import DefensiveCoverage from '../Search-Pokemon/DefensiveCoverage';
+import OffensiveCoverage from '../Search-Pokemon/OffensiveCoverage';
 import Navigation from '../Tools/Navigation';
 
 import {
@@ -16,13 +16,9 @@ import {
     Redirect
 } from 'react-router-dom';
 
-type Props = {
-
-}
-
 type typeName = string;
 
-const TypeCal: React.FC<Props> = () =>{
+const TypeCal: React.FC<{}> = () =>{
     let match = useRouteMatch();
     const [type1, setType1] = React.useState<typeName>('Water');
     const [type2, setType2] = React.useState<typeName>('Poison');

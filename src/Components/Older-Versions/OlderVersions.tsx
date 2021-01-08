@@ -10,9 +10,7 @@ import {
     useRouteMatch
 } from "react-router-dom";
 
-type Props = {}
-
-const PreviousVersions: React.FC<Props> = () => {
+const OlderVersions: React.FC<{}> = () => {
     let match = useRouteMatch();
 
     useEffect(() => {
@@ -67,4 +65,4 @@ const PreviousVersions: React.FC<Props> = () => {
     );
 }
 
-export default PreviousVersions;
+export default OlderVersions;
