@@ -2,7 +2,7 @@ import React from 'react';
 import RNavBar from './Components/Navbar/ResponsiveNavbar';
 import Home from './Components/Home/HomeComponent';
 import TypeCalculator from './Components/Calculator/TypeCalculator';
-import SearchPokemon from './Components/Search-Pokemon/SearchPokemon';
+import SearchPokemon from './Components/Search-Pokemon/Search/Search';
 import SearchMove from './Components/Search-Move/SearchMove';
 import TeamBuilder from './Components/TeamBuilder/TeamBuilder';
 import OlderVersions from './Components/Older-Versions/OlderVersions';

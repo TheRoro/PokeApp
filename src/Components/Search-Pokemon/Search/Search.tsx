@@ -3,13 +3,13 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import axios from 'axios';
-import Bidoof404 from '../../Assets/404-bidoof.png';
-import EvolutionChain from './EvolutionChain';
-import PokemonStats from './PokemonStats';
-import Attacks from './Attacks';
-import pkmnInfoInit from '../../Assets/pkmnInfoInit.json';
-import pokemonList from '../Tools/PokemonList';
-import Autocomplete from '../Tools/SearchEngine/SearchEngine';
+import Bidoof404 from '../../../Assets/404-bidoof.png';
+import Evolutions from '../Evolutions/Evolutions';
+import PokemonStats from '../Stats/PokemonStats';
+import Moves from '../Moves/Moves';
+import pkmnInfoInit from '../../../Assets/pkmnInfoInit.json';
+import pokemonList from '../../Tools/PokemonList';
+import Autocomplete from '../../Tools/SearchEngine/SearchEngine';
 
 import {
     Switch,
@@ -17,6 +17,13 @@ import {
     useRouteMatch,
     useHistory
 } from "react-router-dom";
+
+import {
+    Image,
+    Bidoof404Img,
+    Title,
+    Text
+} from './Styles';
 
 type pokemonName = string[];
 type pokemonInfo = {};
@@ -27,7 +34,7 @@ const SearchPokemon: React.FC<{}> = () =>{
     const [pkmnName, setpkmnName] = React.useState<pokemonName>(['Luxray', 'luxray']);
     const [pkmnInfo, setpkmnInfo] = React.useState<pokemonInfo>(pkmnInfoInit);
     const [pkmnId, setpkmnId] = React.useState<number>(405);
-    const [pkmnImg, setpkmnImg] = React.useState(<img className="poke-image" src={`https://pokeres.bastionbot.org/images/pokemon/405.png`} alt={'luxray'}/>);
+    const [pkmnImg, setpkmnImg] = React.useState(<Image src={`https://pokeres.bastionbot.org/images/pokemon/405.png`} alt={'luxray'}/>);
     const [loading, setLoading] = React.useState(<div></div>);
 
     const searchByName = async () => {
@@ -39,14 +46,14 @@ const SearchPokemon: React.FC<{}> = () =>{
             const resp = await axios.get(apiUrl);
             setpkmnInfo(resp.data);
             setpkmnId(resp.data.id);
-            setpkmnImg(<img className="poke-image" src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/>);
+            setpkmnImg(<Image src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/>);
             setLoading(<div></div>);
             history.push(`${match.url}/stats`);
         }
         catch(err) {
             alert("Pokemon Not Found");
             setLoading(<div>
-                <img className="bidoof-404" src={Bidoof404} alt={'404'}/>
+                <Bidoof404Img src={Bidoof404} alt={'404'}/>
             </div>);
             console.error(err);
         }
@@ -63,7 +70,7 @@ const SearchPokemon: React.FC<{}> = () =>{
             const resp = await axios.get(apiUrl);
             setpkmnInfo(resp.data);
             setpkmnId(resp.data.id);
-            setpkmnImg(<img className="poke-image" src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/>);
+            setpkmnImg(<Image src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/>);
             setLoading(<div></div>);
             history.push(`${match.url}/stats`);
         }
@@ -72,7 +79,7 @@ const SearchPokemon: React.FC<{}> = () =>{
             setLoading(
             <Row className="justify-content-center mt-5">
                 <Col xs="auto">
-                    <img className="bidoof-404" src={Bidoof404} alt={'404'}/>
+                    <Bidoof404Img src={Bidoof404} alt={'404'}/>
                 </Col>
             </Row>
             );
@@ -102,10 +109,10 @@ const SearchPokemon: React.FC<{}> = () =>{
                 <PokemonStats pkmnId={pkmnId} pkmnName={pkmnName} pkmnInfo={pkmnInfo} pkmnImg={pkmnImg}/>
             </Route>
             <Route path={`${match.path}/evolution`}>
-                <EvolutionChain pkmnName={pkmnName[0]}/>
+                <Evolutions pkmnName={pkmnName[0]}/>
             </Route>
-            <Route path={`${match.path}/attacks`}>
-                <Attacks pkmnInfo={pkmnInfo}/>
+            <Route path={`${match.path}/moves`}>
+                <Moves pkmnInfo={pkmnInfo}/>
             </Route>
             <Route path={`${match.path}/`}>
                 <Container className="full-height">
@@ -113,21 +120,14 @@ const SearchPokemon: React.FC<{}> = () =>{
                         <Col xs={12}>
                             <Row className="justify-content-center mt-0 mt-lg-5">
                                 <Col xs="auto">
-                                    <h1 className="titletitle centered-text">Search in the Pokedex:</h1>
+                                    <Title>Search in the Pokedex:</Title>
                                 </Col>
                             </Row>
                             <Row className="justify-content-center">
                                 <Col xs="auto">
-                                    <p className="texthint centered-text">(Eg: Pikachu, Snorlax)</p>
+                                    <Text>(Eg: Pikachu, Snorlax)</Text>
                                 </Col>
                             </Row>
-                            {/* <Row className="justify-content-center align-self-center mt-4">
-                                <Col xs="auto" className="search-text">
-                                    {pkmnName[0] !== '' ? 
-                                    <h1 className="pkmnNameTitle centered-text">{pkmnName[0]}</h1>
-                                    :<h1 className="pkmnNameTitle centered-text">...</h1>}
-                                </Col>
-                            </Row> */}
                             <Row className="justify-content-center align-items-center mt-4">
                                 <Col xs="auto">
                                     <Autocomplete options={pokemonList} onChangeValue={onValueChange} val={pkmnName[1]} search={searchByName}/>

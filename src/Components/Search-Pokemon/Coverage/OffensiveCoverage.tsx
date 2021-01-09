@@ -1,7 +1,11 @@
 import React from 'react';
-import OffensiveCalculator from '../Calculator/OffensiveCalculator';
+import OffensiveCalculator from '../../Calculator/OffensiveCalculator';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+
+import {
+    Title
+} from './CoverageStyles';
 
 type Props = {
     type1: string,
@@ -17,7 +21,7 @@ const OffensiveCoverage: React.FC<Props> = ({
         <div className="offensive">
             <Row className="justify-content-center">
                 <Col xs="auto">
-                    <h1 className="title4 centered-text">Offensive Coverage:</h1>
+                    <Title>Offensive Coverage:</Title>
                 </Col>
             </Row>
             <OffensiveCalculator type1={type1}/>

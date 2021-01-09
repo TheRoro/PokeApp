@@ -4,8 +4,8 @@ import NoTypesAlert from './NoTypesAlert';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import DefensiveCoverage from '../Search-Pokemon/DefensiveCoverage';
-import OffensiveCoverage from '../Search-Pokemon/OffensiveCoverage';
+import DefensiveCoverage from '../Search-Pokemon/Coverage/DefensiveCoverage';
+import OffensiveCoverage from '../Search-Pokemon/Coverage/OffensiveCoverage';
 import Navigation from '../Tools/Navigation';
 
 import {
