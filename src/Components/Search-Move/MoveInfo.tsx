@@ -1,8 +1,12 @@
 import React, { useEffect }  from 'react';
-import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Navigation from '../Tools/Navigation';
+import {
+    Title,
+    Text,
+    MoveInfoContainer
+} from './MoveInfoStyles';
 
 type Props = {
     moveInfo: any,
@@ -29,20 +33,20 @@ const PokemonStats: React.FC<Props> = ({
     },);
 
     return(
-        <Container className="stats">
+        <MoveInfoContainer>
             <Navigation left="/move" right=""/>
             <Row className="align-items-center full-height">
                 <Col xs={12} className="">
                     <Row className="justify-content-center mb-5">
                         <Col xs="auto">
-                            <h1 className={`title2 centered-text ${moveInfo.type.name[0].toUpperCase() + moveInfo.type.name.slice(1)}`}>{moveName}</h1>
+                            <Title className={` ${moveInfo.type.name[0].toUpperCase() + moveInfo.type.name.slice(1)}`}>{moveName}</Title>
                         </Col>
                     </Row>
                     <Row>
                         <Col xs={{ span: 6, offset: 3 }} sm={{ span: 6, offset: 3 }}>
                             <Row className="justify-content-start">
                                 <Col xs="auto">
-                                    <p className="text5">Category: {moveInfo.damage_class.name[0].toUpperCase() + moveInfo.damage_class.name.slice(1)}</p>
+                                    <Text>Category: {moveInfo.damage_class.name[0].toUpperCase() + moveInfo.damage_class.name.slice(1)}</Text>
                                 </Col>
                             </Row>
                         </Col>
@@ -52,7 +56,7 @@ const PokemonStats: React.FC<Props> = ({
                         <Col xs={{ span: 6, offset: 3 }}>
                             <Row className="justify-content-start">
                                 <Col xs="auto">
-                                    <p className="text5">Power: {JSON.stringify(moveInfo.power)}</p>
+                                    <Text>Power: {JSON.stringify(moveInfo.power)}</Text>
                                 </Col>
                             </Row>
                         </Col>
@@ -62,7 +66,7 @@ const PokemonStats: React.FC<Props> = ({
                         <Col xs={{ span: 6, offset: 3 }}>
                             <Row className="justify-content-start">
                                 <Col xs="auto">
-                                    <p className="text5">No Power</p>
+                                    <Text>No Power</Text>
                                 </Col>
                             </Row>
                         </Col>
@@ -73,7 +77,7 @@ const PokemonStats: React.FC<Props> = ({
                         <Col xs={{ span: 6, offset: 3 }}>
                             <Row className="justify-content-start">
                                 <Col xs="auto">
-                                    <p className="text5">Accuracy: {JSON.stringify(moveInfo.accuracy) + "%"}</p>
+                                    <Text>Accuracy: {JSON.stringify(moveInfo.accuracy) + "%"}</Text>
                                 </Col>
                             </Row>
                         </Col>
@@ -83,7 +87,7 @@ const PokemonStats: React.FC<Props> = ({
                         <Col xs={{ span: 6, offset: 3 }}>
                             <Row className="justify-content-start">
                                 <Col xs="auto">
-                                    <p className="text5">Accuracy: -</p>
+                                    <Text>Accuracy: -</Text>
                                 </Col>
                             </Row>
                         </Col>
@@ -93,7 +97,7 @@ const PokemonStats: React.FC<Props> = ({
                         <Col xs={{ span: 6, offset: 3 }}>
                             <Row className="justify-content-start">
                                 <Col xs="auto">
-                                    <p className={`text5`}>Type: {moveInfo.type.name[0].toUpperCase() + moveInfo.type.name.slice(1)}</p>
+                                    <Text>Type: {moveInfo.type.name[0].toUpperCase() + moveInfo.type.name.slice(1)}</Text>
                                 </Col>
                             </Row>
                         </Col>
@@ -102,7 +106,7 @@ const PokemonStats: React.FC<Props> = ({
                         <Col xs={{ span: 6, offset: 3 }}>
                             <Row className="justify-content-start">
                                 <Col xs="auto">
-                                    <p className="text5">PP: {moveInfo.pp}</p>
+                                    <Text>PP: {moveInfo.pp}</Text>
                                 </Col>
                             </Row>
                         </Col>
@@ -111,14 +115,14 @@ const PokemonStats: React.FC<Props> = ({
                         <Col xs={{ span: 6, offset: 3 }}>
                             <Row className="justify-content-start">
                                 <Col xs="auto">
-                                    <p className="text5">{effect}</p>
+                                    <Text>{effect}</Text>
                                 </Col>
                             </Row>
                         </Col>
                     </Row>
                 </Col>
             </Row>
-        </Container>
+        </MoveInfoContainer>
     );
 
 }

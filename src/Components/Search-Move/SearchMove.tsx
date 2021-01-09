@@ -17,6 +17,13 @@ import {
     useHistory
 } from "react-router-dom";
 
+import {
+    Text,
+    Title,
+    SearchContainer,
+    Bidoof404Img
+} from './SearchMoveStyles'
+
 type pokemonInfo = {};
 
 const SearchAttack: React.FC<{}> = () =>{
@@ -75,7 +82,7 @@ const SearchAttack: React.FC<{}> = () =>{
             setLoading(
                 <Row className="justify-content-center mt-5">
                     <Col xs="auto">
-                        <img className="bidoof-404" src={Bidoof404} alt={'404'}/>
+                        <Bidoof404Img src={Bidoof404} alt={'404'}/>
                     </Col>
                 </Row>
                 );
@@ -118,7 +125,7 @@ const SearchAttack: React.FC<{}> = () =>{
     }
 
     return (
-        <div className="search">
+        <SearchContainer>
             <Switch>
             <Route path={`${match.path}/info`}>
                 <MoveInfo moveInfo={moveInfo} moveName={moveName}/>
@@ -129,12 +136,12 @@ const SearchAttack: React.FC<{}> = () =>{
                         <Col xs={12}>
                             <Row className="justify-content-center mt-0 mt-lg-5">
                                 <Col xs="auto">
-                                    <h1 className="titletitle centered-text">Search for a Move:</h1>
+                                    <Title>Search for a Move:</Title>
                                 </Col>
                             </Row>
                             <Row className="justify-content-center">
                                 <Col xs="auto">
-                                    <p className="texthint centered-text">(Eg: Tackle, Thunder Shock)</p>
+                                    <Text>(Eg: Tackle, Thunder Shock)</Text>
                                 </Col>
                             </Row>
                             <Row className="justify-content-center mt-4">
@@ -153,7 +160,7 @@ const SearchAttack: React.FC<{}> = () =>{
                 </Container>
             </Route>
             </Switch>
-        </div>
+        </SearchContainer>
     );
 }
 

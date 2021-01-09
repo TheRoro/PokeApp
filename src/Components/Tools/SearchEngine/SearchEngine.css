@@ -68,6 +68,7 @@
     padding: 0.5rem;
     transition: width 0.3s;
   }
+  
   ul.options li:hover {
     cursor: pointer;
     transition: 0.3s all;
@@ -82,9 +83,8 @@
     min-height: 34px;
     background: #ededed;
     font-size: 0.9rem;
-    /* font-weight: 500; */
-    /* color: #03dac5; */
   }
+
   ul.options li.last-option {
     min-width: 237px;
     width: 42vw;

@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
+import {Bar} from './Styles';
+
 type Props = {
     value: number,
     name: string
@@ -54,9 +56,8 @@ const StatBar: React.FC<Props> = ({
                     </Row>
                 </Col>
                 <Col xs={6} lg={7}>
-                    <div className={`statBar ${barColor}`} style={ { width: `${percentage}%` } }>
-                    </div>
-                </Col> 
+                    <Bar color={barColor} width={`${percentage}%`} />
+                </Col>
             </Row>
         </Col>
     );

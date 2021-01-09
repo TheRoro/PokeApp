@@ -1,11 +1,16 @@
 import React, { useEffect }  from 'react';
-import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import StatBar from '../Tools/StatBar';
-import Navigation from '../Tools/Navigation';
-import DefensiveCoverage from './DefensiveCoverage';
-import OffensiveCoverage from './OffensiveCoverage';
+import StatBar from '../../Tools/StatBar/StatBar';
+import Navigation from '../../Tools/Navigation';
+import DefensiveCoverage from '../Coverage/DefensiveCoverage';
+import OffensiveCoverage from '../Coverage/OffensiveCoverage';
+
+import {
+    StatsContainer,
+    Title,
+    SubTitle
+} from './StatsStyles';
 
 type pokemonName = string[];
 
@@ -40,23 +45,27 @@ const PokemonStats: React.FC<Props> = ({
     },[setType1, pkmnInfo.types, type1]);
 
     return(
-        <Container className="stats">
+        <StatsContainer>
             <Navigation left="/search" right="/search/evolution"/>
             <Row className="align-items-center">
                 <Col xs={12} className="mb-5">
                     <Row className="justify-content-center">
                         <Col xs="auto">
-                            <h1 className="title2 centered-text">{pkmnName[0]}</h1>
+                            <Title>{pkmnName[0]}</Title>
                         </Col>
                     </Row>
                     <Row className="justify-content-center align-items-center mt-4">
                         <Col xs={12} sm={12} md={6}>
                             <Row className="justify-content-center">
-                                <Col xs="auto"><h1 className={`centered-text title4 ${type1}`}>Type 1: {type1}</h1></Col>
+                                <Col xs="auto">
+                                    <SubTitle className={`${type1}`}>Type 1: {type1}</SubTitle>
+                                </Col>
                             </Row>
                             {type2 !== '' &&
                             <Row className="justify-content-center">
-                                <Col xs="auto"><h1 className={`centered-text title4 ${type2}`}>Type 2: {type2}</h1></Col>
+                                <Col xs="auto">
+                                    <SubTitle className={`${type2}`}>Type 2: {type2}</SubTitle>
+                                </Col>
                             </Row>}
                             <Row className="justify-content-center mt-4">
                                 <StatBar name={"HP"} value={parseInt(JSON.stringify(pkmnInfo.stats[0].base_stat))}/>
@@ -89,7 +98,7 @@ const PokemonStats: React.FC<Props> = ({
             </Row>
             <DefensiveCoverage type1={type1} type2={type2}/>
             <OffensiveCoverage type1={type1} type2={type2}/>
-        </Container>
+        </StatsContainer>
     );
 
 }

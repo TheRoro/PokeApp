@@ -1,20 +1,26 @@
 import React, { useEffect } from 'react';
-import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import axios from 'axios';
-import Navigation from '../Tools/Navigation';
+import Navigation from '../../Tools/Navigation';
+
+import {
+    SubTitle,
+    Title,
+    Image,
+    EvolutionsContainer
+} from './Styles';
 
 type Props = {
     pkmnName: string,
 }
 
-const EvolutionChain: React.FC<Props> = ({
+const Evolutions: React.FC<Props> = ({
     pkmnName
 }) => {
     const [speciesUrl] = React.useState("https://pokeapi.co/api/v2/pokemon-species/");
     const [pkName, setpkName] = React.useState('');
-    const [stage1, setStage1] = React.useState(<Col><p className="text1">Loading...</p></Col>)
+    const [stage1, setStage1] = React.useState(<Col><SubTitle>Loading...</SubTitle></Col>)
     const [stage2, setStage2] = React.useState(<div></div>)
     const [stage3, setStage3] = React.useState(<div></div>)
     useEffect(() => {
@@ -29,10 +35,10 @@ const EvolutionChain: React.FC<Props> = ({
                     <Row className="align-items-center">
                         <Col xs={12} className="mb-4">
                             <Row className="justify-content-center">
-                                <h1 className="text1">{evolution.data.chain.species.name}</h1>
+                                <SubTitle>{evolution.data.chain.species.name}</SubTitle>
                             </Row>
                             <Row className="justify-content-center">
-                                <img className="poke-chain" src={`https://pokeres.bastionbot.org/images/pokemon/${evolution.data.chain.species.url.slice(42, -1)}.png`} alt={evolution.data.chain.species.name}/>
+                                <Image src={`https://pokeres.bastionbot.org/images/pokemon/${evolution.data.chain.species.url.slice(42, -1)}.png`} alt={evolution.data.chain.species.name}/>
                             </Row>
                         </Col>
                     </Row>
@@ -51,10 +57,10 @@ const EvolutionChain: React.FC<Props> = ({
                     const listSpecies = stage2.map((species) =>
                         <Col key={species[1]} xs={12} className="mb-4">
                             <Row className="justify-content-center">
-                                <h1 className="text1">{species[0]}</h1>
+                                <SubTitle>{species[0]}</SubTitle>
                             </Row>
                             <Row className="justify-content-center">
-                                <img className="poke-chain" src={`https://pokeres.bastionbot.org/images/pokemon/${species[1]}.png`} alt={species[0]}/>
+                                <Image src={`https://pokeres.bastionbot.org/images/pokemon/${species[1]}.png`} alt={species[0]}/>
                             </Row>
                             <Row className="justify-content-center">
                                 {/* <p className="text1">{species[2]}</p> */}
@@ -80,10 +86,10 @@ const EvolutionChain: React.FC<Props> = ({
                         const listSpecies3 = stage3.map((species) =>
                             <Col key={species[1]} xs={12} className="mb-4">
                                 <Row className="justify-content-center">
-                                    <h1 className="text1">{species[0]}</h1>
+                                    <SubTitle>{species[0]}</SubTitle>
                                 </Row>
                                 <Row className="justify-content-center">
-                                    <img className="poke-chain" src={`https://pokeres.bastionbot.org/images/pokemon/${species[1]}.png`} alt={species[0]}/>
+                                    <Image src={`https://pokeres.bastionbot.org/images/pokemon/${species[1]}.png`} alt={species[0]}/>
                                 </Row>
                                 <Row className="justify-content-center">
                                     {/* <p className="text1">{species[2]}</p> */}
@@ -105,13 +111,13 @@ const EvolutionChain: React.FC<Props> = ({
       }, [pkName, pkmnName, speciesUrl]);
 
     return(
-        <Container className="evolution">
-            <Navigation left="/search/stats" right="/search/attacks"/>
+        <EvolutionsContainer>
+            <Navigation left="/search/stats" right="/search/moves"/>
             <Row className="align-items-center full-height">
                 <Col xs={12} className="mb-5">
                     <Row className="justify-content-center">
                         <Col xs="auto">
-                            <h1 className="title2 centered-text">Evolution Line:</h1>
+                            <Title>Evolution Line:</Title>
                         </Col>
                     </Row>
                     <Row className="mt-5 align-items-center justify-content-center">
@@ -121,7 +127,7 @@ const EvolutionChain: React.FC<Props> = ({
                     </Row>
                 </Col>
             </Row>
-        </Container>
+        </EvolutionsContainer>
     );
 }
-export default EvolutionChain;
+export default Evolutions;

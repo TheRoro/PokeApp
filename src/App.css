@@ -54,10 +54,6 @@ a:hover {
   min-height: 50px;
 }
 
-/* .main {
-  background-color:#121212;
-} */
-
 .search {
   min-width: 268px;
   /* width: calc(100% - 10px); */
@@ -347,35 +343,4 @@ input {
   width: 30vw;
   height: 7vh;
   border-radius: 10px;
-}
-
-/* Stats Bars */
-
-.statBar {
-  height: 30px;
-  border-radius: 5px;
-}
-
-.BarRed {
-  background-color: #B42400;
-}
-
-.BarDarkOrange {
-  background-color: #FF4D00;
-}
-
-.BarOrange {
-  background-color: #FFBB00;
-}
-
-.BarYellow {
-  background-color:#DDFF00;
-}
-
-.BarGreen {
-  background-color: #00D12F;
-}
-
-.BarBlue {
-  background-color: #18FFFF;
 }

@@ -22,7 +22,7 @@ const Navigation: React.FC<Props> = ({
             <Col xs={6}>
                 <Row className="justify-content-start">
                     <Col xs="auto">
-                        <Link to={left} className="text-light">
+                        <Link to={left}>
                             <i className="fas fa-angle-left fa-2x"></i>
                         </Link>
                     </Col>
@@ -31,7 +31,7 @@ const Navigation: React.FC<Props> = ({
             <Col xs={6}>
                 <Row className="justify-content-end">
                     <Col xs="auto">
-                        <Link to={right} className="text-light">
+                        <Link to={right}>
                             <i className="fas fa-angle-right fa-2x"></i>
                         </Link>
                     </Col>
@@ -43,7 +43,7 @@ const Navigation: React.FC<Props> = ({
             <Col xs={6}>
                 <Row className="justify-content-start">
                     <Col xs="auto">
-                        <Link to={left} className="text-light">
+                        <Link to={left}>
                             <i className="fas fa-angle-left fa-2x"></i>
                         </Link>
                     </Col>

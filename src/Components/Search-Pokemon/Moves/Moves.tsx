@@ -1,15 +1,20 @@
 import React,{useEffect} from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Container from 'react-bootstrap/Container';
-import Navigation from '../Tools/Navigation';
+import Navigation from '../../Tools/Navigation';
 import axios from 'axios';
+
+import {
+    MovesContainer,
+    Title,
+    Text
+} from './MovesStyles';
 
 type Props = {
     pkmnInfo: any,
 }
 
-const Attacks: React.FC<Props> = ({
+const Moves: React.FC<Props> = ({
     pkmnInfo
 }) =>{
     const [levelUp, setLevelUp] = React.useState(<div></div>);
@@ -51,19 +56,19 @@ const Attacks: React.FC<Props> = ({
         for(let i = 0; i < levelUp.length; i++) {
             temp1 = <div className="full-width">
                 {/* <li key={0} className="poke-list"><p>Lv.  Move</p></li> */}
-                {levelUp.map((attack) =>
-                <Row className="justify-content-center" key={attack[0]}>
+                {levelUp.map((move) =>
+                <Row className="justify-content-center" key={move[0]}>
                     <Col xs={6}>
                         <Row className="justify-content-center">
                             <Col xs="auto">
-                                <p className="">{attack[1]}</p>
+                                <p>{move[1]}</p>
                             </Col>
                         </Row>
                     </Col>
                     <Col xs={6}>
                         <Row className="justify-content-center">
                             <Col xs="auto">
-                                <p className="">{attack[0]}</p>
+                                <p>{move[0]}</p>
                             </Col>
                         </Row>
                     </Col>
@@ -75,17 +80,17 @@ const Attacks: React.FC<Props> = ({
         let temp2 = <div></div>;
         for(let i = 0; i < tutor.length; i++) {
             temp2 = <div className="full-width">
-                {tutor.map((attack) =>
-                <Row className="justify-content-center" key={attack[0]}>
+                {tutor.map((move) =>
+                <Row className="justify-content-center" key={move[0]}>
                 <Col xs={6}>
                     <Row className="justify-content-center">
                         <Col xs={12}>
-                            <p className="">{attack[0]}</p>
+                            <p>{move[0]}</p>
                         </Col>
                     </Row>
                 </Col>
                 <Col xs={6}>
-                    <p className="">{attack[1]}</p>
+                    <p>{move[1]}</p>
                 </Col>
             </Row>
             )}
@@ -95,13 +100,13 @@ const Attacks: React.FC<Props> = ({
         let temp3 = <div></div>;
         for(let i = 0; i < mt.length; i++) {
             temp3 = <div>
-                {mt.map((attack) =>
-                <Row className="justify-content-start" key={attack[0]}>
+                {mt.map((move) =>
+                <Row className="justify-content-start" key={move[0]}>
                     <Col xs={6}>
-                        <p className="">{attack[0]}</p>
+                        <p>{move[0]}</p>
                     </Col>
                     <Col xs={6}>
-                        <p className="">{attack[1]}</p>
+                        <p>{move[1]}</p>
                     </Col>
                 </Row>
             )}
@@ -110,21 +115,19 @@ const Attacks: React.FC<Props> = ({
         setMt(temp3);
     },[setLevelUp, setTutor, setMt, pkmnInfo.moves]);
 
-
-
     return (
-        <Container className="evolution">
+        <MovesContainer>
             <Navigation left="/search/evolution" right=""/>
             <Row className="align-items-center full-height">
                 <Col xs={12} className="mb-5">
                     <Row className="justify-content-center">
                         <Col xs="auto">
-                            <h1 className="title2 centered-text">Attacks:</h1>
+                            <Title>Moves:</Title>
                         </Col>
                     </Row>
                     <Row className="justify-content-center">
                         <Col xs="auto">
-                            <p className="texthint centered-text">(Updated to: Ultra-Sun and Ultra-Moon 7th Gen)</p>
+                            <Text>(Updated to: Ultra-Sun and Ultra-Moon 7th Gen)</Text>
                         </Col>
                     </Row>
                     <Row className="mt-5 align-items-center justify-content-center">
@@ -147,8 +150,8 @@ const Attacks: React.FC<Props> = ({
                     </Row>
                 </Col>
             </Row>
-        </Container>
+        </MovesContainer>
     );
 }
 
-export default Attacks;
+export default Moves;
