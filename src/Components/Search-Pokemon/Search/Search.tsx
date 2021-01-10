@@ -7,7 +7,7 @@ import Bidoof404 from '../../../Assets/404-bidoof.png';
 import Evolutions from '../Evolutions/Evolutions';
 import PokemonStats from '../Stats/PokemonStats';
 import Moves from '../Moves/Moves';
-import pkmnInfoInit from '../../../Assets/pkmnInfoInit.json';
+import pkmnInfoInit from '../../../Assets/json/pkmnInfoInit.json';
 import pokemonList from '../../Tools/PokemonList';
 import Autocomplete from '../../Tools/SearchEngine/SearchEngine';
 
@@ -22,7 +22,8 @@ import {
     Image,
     Bidoof404Img,
     Title,
-    Text
+    Text,
+    SearchContainer
 } from './Styles';
 
 type pokemonName = string[];
@@ -103,7 +104,7 @@ const SearchPokemon: React.FC<{}> = () =>{
         }
     }
     return (
-        <div className="search">
+        <SearchContainer>
             <Switch>
             <Route path={`${match.path}/stats`}>
                 <PokemonStats pkmnId={pkmnId} pkmnName={pkmnName} pkmnInfo={pkmnInfo} pkmnImg={pkmnImg}/>
@@ -139,7 +140,7 @@ const SearchPokemon: React.FC<{}> = () =>{
                 </Container>
             </Route>
             </Switch>
-        </div>
+        </SearchContainer>
     );
 }
 

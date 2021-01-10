@@ -1,6 +1,6 @@
 import React from 'react';
 import Type from './Type';
-import Calc from '../Calculator/Calculator';
+import Calc from '../Type-Calculator/Calc/DefensiveCalculator';
 
 type State = {
   type1: string,

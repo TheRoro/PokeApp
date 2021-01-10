@@ -2,7 +2,7 @@ import React, { useEffect }  from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import StatBar from '../../Tools/StatBar/StatBar';
-import Navigation from '../../Tools/Navigation';
+import Navigation from '../../Tools/Navigation/Navigation';
 import DefensiveCoverage from '../Coverage/DefensiveCoverage';
 import OffensiveCoverage from '../Coverage/OffensiveCoverage';
 

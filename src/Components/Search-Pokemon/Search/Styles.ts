@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 
-export const EvolutionsContainer = styled(Container)`
-    height: 95%;
+export const SearchContainer = styled(Container)`
+    min-width: 268px;
 `
 
 export const Title = styled.h1`

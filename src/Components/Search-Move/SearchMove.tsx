@@ -2,10 +2,9 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import Bidoof404 from '../../Assets/404-bidoof.png';
-import moveInfoInit from '../../Assets/moveInfo.json';
+import moveInfoInit from '../../Assets/json/moveInfo.json';
 import MoveInfo from './MoveInfo';
 import Autocomplete from '../Tools/SearchEngine/SearchEngine';
 import moveList from '../Tools/MoveList';
@@ -109,7 +108,7 @@ const SearchAttack: React.FC<{}> = () =>{
             setLoading(
                 <Row className="justify-content-center mt-5">
                     <Col xs="auto">
-                        <img className="bidoof-404" src={Bidoof404} alt={'404'}/>
+                        <Bidoof404Img src={Bidoof404} alt={'404'}/>
                     </Col>
                 </Row>
                 );
@@ -147,11 +146,6 @@ const SearchAttack: React.FC<{}> = () =>{
                             <Row className="justify-content-center mt-4">
                                 <Col xs="auto">
                                     <Autocomplete options={moveList} onChangeValue={onValueChange} val={moveName} search={searchByName}/>
-                                </Col>
-                            </Row>
-                            <Row className="justify-content-center align-self-end mt-5">
-                                <Col xs="auto">
-                                    <Button variant="outline-light" size="lg" onClick={searchByName}>Search</Button>
                                 </Col>
                             </Row>
                             {loading}
