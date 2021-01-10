@@ -41,10 +41,11 @@ const Quotes = [
     "I see now that one’s birth is irrelevant. It’s what you do that determines who you are.",
     "You see, sometimes friends have to go away, but a part of them stays behind with you.",
     "Me give up? No way!",
-    "ZZZZZZZZZZ -Snorlax",
+    "ZZZZZZZZZZZZZZZZZZ",
     "Developed by Rodrigo Ramirez",
     "I ran out of cool phrases",
-    "Marry me Cynthia"
+    "Marry me, Cynthia",
+    "Did you know..."
 ];
 
 export default Quotes;

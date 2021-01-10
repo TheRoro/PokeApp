@@ -1,9 +1,15 @@
 import React, { useEffect, useCallback } from 'react';
-import TypeChart from '../../Assets/typeChart';
-import TypeMap from '../../Assets/typeMap';
-import TypeList from '../../Assets/typeList';
+import TypeChart from '../../../Assets/typeChart';
+import TypeMap from '../../../Assets/typeMap';
+import TypeList from '../../../Assets/typeList';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+
+import {
+    TypeRow,
+    Title,
+    Text
+} from './Styles';
 
 const TOTAL_TYPES = 18;
 
@@ -148,19 +154,19 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
             <Row className="mb-5">
                 <Col xs={12}>
                     <Row className="justify-content-md-start justify-content-center">
-                        <h1 className="text4 centered-text">Immune to:</h1>
+                        <Title>Immune to:</Title>
                     </Row>
-                    <Row className="justify-content-start types">
+                    <TypeRow className="justify-content-start">
                         {effects[0].map((type, index) => (
                             <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
                                 <Row className="justify-content-md-start justify-content-center">
                                     <Col xs="auto">
-                                        <p className={`${type} typetext`} key={index}> {type}</p>
+                                        <Text className={`${type}`} key={index}> {type}</Text>
                                     </Col>
                                 </Row>
                             </Col>
                         ))} 
-                    </Row>
+                    </TypeRow>
                 </Col>
             </Row>
         }
@@ -169,19 +175,19 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
             <Row className="mb-5">
                 <Col xs={12}>
                     <Row className="justify-content-md-start justify-content-center">
-                        <h1 className="text4 centered-text">Resistant x0.25 to:</h1>
+                        <Title>Resistant x0.25 to:</Title>
                     </Row>
-                    <Row className="justify-content-start types">
+                    <TypeRow className="justify-content-start">
                         {effects[1].map((type, index) => (
                             <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
                                 <Row className="justify-content-md-start justify-content-center">
                                     <Col xs="auto">
-                                        <p className={`${type} typetext`} key={index}> {type}</p>
+                                        <Text className={`${type}`} key={index}> {type}</Text>
                                     </Col>
                                 </Row>
                             </Col>
                         ))} 
-                    </Row>
+                    </TypeRow>
                 </Col>
             </Row>
         }
@@ -190,19 +196,19 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
             <Row className="mb-5">
                 <Col xs={12}>
                     <Row className="justify-content-md-start justify-content-center">
-                        <h1 className="text4 centered-text">Resistant x0.50 to:</h1>
+                        <Title>Resistant x0.50 to:</Title>
                     </Row>
-                    <Row className="justify-content-start types">
+                    <TypeRow className="justify-content-start">
                         {effects[2].map((type, index) => (
                             <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
                                 <Row className="justify-content-md-start justify-content-center">
                                     <Col xs="auto">
-                                        <p className={`${type} typetext`} key={index}> {type}</p>
+                                        <Text className={`${type}`} key={index}> {type}</Text>
                                     </Col>
                                 </Row>
                             </Col>
                         ))} 
-                    </Row>
+                    </TypeRow>
                 </Col>
             </Row>
         }
@@ -211,14 +217,14 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
         //     <Row className="mb-5">
         //         <Col xs={12}>
         //             <Row className="justify-content-md-start justify-content-center">
-        //                 <h1 className="text4 centered-text">Normal Damage:</h1>
+        //                 <Title>Normal Damage:</Title>
         //             </Row>
-        //             <Row className="justify-content-start types">
+        //             <Row className="justify-content-start">
         //                 {effects[3].map((type, index) => (
         //                     <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
         //                         <Row className="justify-content-md-start justify-content-center">
         //                             <Col xs="auto">
-        //                                 <p className={`${type} typetext`} key={index}> {type}</p>
+        //                                 <Text className={`${type}`} key={index}> {type}</Text>
         //                             </Col>
         //                         </Row>
         //                     </Col>
@@ -232,19 +238,19 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
             <Row className="mb-5">
                 <Col xs={12}>
                     <Row className="justify-content-md-start justify-content-center">
-                        <h1 className="text4 centered-text">Weak x2 to:</h1>
+                        <Title>Weak x2 to:</Title>
                     </Row>
-                    <Row className="justify-content-start types">
+                    <TypeRow className="justify-content-start">
                         {effects[4].map((type, index) => (
                             <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
                                 <Row className="justify-content-md-start justify-content-center">
                                     <Col xs="auto">
-                                        <p className={`${type} typetext`} key={index}> {type}</p>
+                                        <Text className={`${type}`} key={index}> {type}</Text>
                                     </Col>
                                 </Row>
                             </Col>
                         ))} 
-                    </Row>
+                    </TypeRow>
                 </Col>
             </Row>
         }
@@ -253,25 +259,25 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
             <Row className="mb-5">
                 <Col xs={12}>
                     <Row className="justify-content-md-start justify-content-center">
-                        <h1 className="text4 centered-text">Weak x4 to:</h1>
+                        <Title>Weak x4 to:</Title>
                     </Row>
-                    <Row className="justify-content-start types">
+                    <TypeRow className="justify-content-start">
                         {effects[5].map((type, index) => (
                             <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
                                 <Row className="justify-content-md-start justify-content-center">
                                     <Col xs="auto">
-                                        <p className={`${type} typetext`} key={index}> {type}</p>
+                                        <Text className={`${type}`} key={index}> {type}</Text>
                                     </Col>
                                 </Row>
                             </Col>
                         ))} 
-                    </Row>
+                    </TypeRow>
                 </Col>
             </Row>
         }
     }
     return(
-    <Row className="">
+    <Row>
         <Col xs={12}>
             {damage4}
             {damage2}

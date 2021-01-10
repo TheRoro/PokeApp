@@ -2,9 +2,7 @@ import React from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-import {
-    Link
-} from "react-router-dom";
+import {NavButton} from './Styles';
 
 type Props = {
     left: string,
@@ -22,18 +20,18 @@ const Navigation: React.FC<Props> = ({
             <Col xs={6}>
                 <Row className="justify-content-start">
                     <Col xs="auto">
-                        <Link to={left}>
+                        <NavButton to={left}>
                             <i className="fas fa-angle-left fa-2x"></i>
-                        </Link>
+                        </NavButton>
                     </Col>
                 </Row>
             </Col>
             <Col xs={6}>
                 <Row className="justify-content-end">
                     <Col xs="auto">
-                        <Link to={right}>
+                        <NavButton to={right}>
                             <i className="fas fa-angle-right fa-2x"></i>
-                        </Link>
+                        </NavButton>
                     </Col>
                 </Row>
             </Col>
@@ -43,9 +41,9 @@ const Navigation: React.FC<Props> = ({
             <Col xs={6}>
                 <Row className="justify-content-start">
                     <Col xs="auto">
-                        <Link to={left}>
+                        <NavButton to={left}>
                             <i className="fas fa-angle-left fa-2x"></i>
-                        </Link>
+                        </NavButton>
                     </Col>
                 </Row>
             </Col>

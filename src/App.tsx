@@ -1,12 +1,12 @@
 import React from 'react';
 import RNavBar from './Components/Navbar/ResponsiveNavbar';
 import Home from './Components/Home/HomeComponent';
-import TypeCalculator from './Components/Calculator/TypeCalculator';
+import TypeCalculator from './Components/Type-Calculator/TypeCalculator';
 import SearchPokemon from './Components/Search-Pokemon/Search/Search';
 import SearchMove from './Components/Search-Move/SearchMove';
 import TeamBuilder from './Components/TeamBuilder/TeamBuilder';
 import OlderVersions from './Components/Older-Versions/OlderVersions';
-import './App.css';
+import './Assets/TypeColors.css';
 
 import {
   BrowserRouter as Router,
@@ -18,7 +18,6 @@ import {
 function App() {
   return (
     <Router>
-    <div className="pokeapp">
       <RNavBar/>
       <Switch>
         <Route path="/calc">
@@ -40,8 +39,7 @@ function App() {
           <Home/>
         </Route>
       </Switch>
-    </div>
-  </Router>
+    </Router>
   );
 }
 

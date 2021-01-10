@@ -1,5 +1,5 @@
 import React from 'react';
-import Calculator from '../../Calculator/Calculator';
+import Calculator from '../../Type-Calculator/Calc/DefensiveCalculator';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
