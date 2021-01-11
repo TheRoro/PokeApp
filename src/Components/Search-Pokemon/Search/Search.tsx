@@ -3,13 +3,14 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import axios from 'axios';
+import PokeBall from '../../../Assets/pokeapp.png';
 import Bidoof404 from '../../../Assets/404-bidoof.png';
 import Evolutions from '../Evolutions/Evolutions';
 import PokemonStats from '../Stats/PokemonStats';
 import Moves from '../Moves/Moves';
 import pkmnInfoInit from '../../../Assets/json/pkmnInfoInit.json';
 import pokemonList from '../../Tools/PokemonList';
-import Autocomplete from '../../Tools/SearchEngine/SearchEngine';
+import SearchBar from '../../Tools/SearchEngine/SearchEngine';
 
 import {
     Switch,
@@ -24,22 +25,24 @@ import {
     Text,
     SearchContainer,
     Icon,
-    ImgIcon
+    ImgIcon,
+    Loading,
+    Image
 } from './Styles';
 
 type pokemonInfo = {};
 
-type listType = unknown[];
+type listType = any[];
 
 const totalPkmn = 898;
 
 const SearchPokemon: React.FC<{}> = () =>{
-    var max = totalPkmn;
-    var rand =  Math.floor(Math.random() * Math.floor(max));
+    // var max = totalPkmn;
+    // var rand =  Math.floor(Math.random() * Math.floor(max));
     let match = useRouteMatch();
     const history = useHistory();
-    const [formatedName, setFormatedName] = React.useState<string>(pokemonList[rand]);
-    const [prettyName, setPrettyName] = React.useState<string>(pokemonList[rand]);
+    const [formatedName, setFormatedName] = React.useState<string>('');
+    const [prettyName, setPrettyName] = React.useState<string>('');
     const [pkmnInfo, setpkmnInfo] = React.useState<pokemonInfo>(pkmnInfoInit);
     const [pkmnId, setpkmnId] = React.useState<number>(405);
     const [loading, setLoading] = React.useState(<div></div>);
@@ -88,9 +91,14 @@ const SearchPokemon: React.FC<{}> = () =>{
 
     const searchByName = async () => {
         try {
-            setLoading(<div>
-                Loading...
-            </div>);
+            setLoading(
+            <Loading>
+                <Row className="justify-content-center mt-5">
+                    <Col xs="auto">
+                        <Image src={PokeBall} alt="pokeball"></Image>
+                    </Col>
+                </Row>
+            </Loading>);
             var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + formatedName + '/';
             const resp = await axios.get(apiUrl);
             setpkmnInfo(resp.data);
@@ -109,11 +117,13 @@ const SearchPokemon: React.FC<{}> = () =>{
     const searchWithParam = async (name: string) => {
         try {
             setLoading(
-            <Row className="justify-content-center mt-5">
-                <Col xs="auto">
-                    <p>Loading...</p>
-                </Col>
-            </Row>);
+            <Loading>
+                <Row className="justify-content-center mt-5">
+                    <Col xs="auto">
+                        <Image src={PokeBall} alt="pokeball"></Image>
+                    </Col>
+                </Row>
+            </Loading>);
             var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + name.toLowerCase() + '/';
             const resp = await axios.get(apiUrl);
             setpkmnInfo(resp.data);
@@ -135,7 +145,7 @@ const SearchPokemon: React.FC<{}> = () =>{
     }
 
     const onClickName = (id: number) => {
-        console.log(id);
+        // console.log(id);
         // alert(e.currentTarget.innerText.toLowerCase());
         searchWithParam(id.toString());
     }
@@ -180,17 +190,17 @@ const SearchPokemon: React.FC<{}> = () =>{
                             </Row>
                             <Row className="justify-content-center align-items-center mt-4">
                                 <Col xs="auto">
-                                    <Autocomplete options={pokemonList} onChangeValue={onValueChange} val={formatedName} search={searchByName}/>
+                                    <SearchBar options={pokemonList} onChangeValue={onValueChange} val={formatedName} search={searchByName}/>
                                 </Col>
                             </Row>
                             <Row className="justify-content-center align-items-center h-50 mt-4 mt-sm-0">
                                 <Col xs="auto">
                                     <Row className="justify-content-center align-items-center">
                                     {Array.isArray(list) && list.length !== 0 && list.map((name, index) => (
-                                        <Col key={index} xs={12} sm={6} md={4} lg={4} xl={4} className="w-50 h-100">
+                                        <Col key={index} xs={6} sm={6} md={4} lg={4} xl={4} className="h-100">
                                             <Row className="justify-content-center align-items-center mt-5">
                                                 <Col xs="auto">
-                                                    <Icon value={name[0] as number} onClick={() => onClickName(name[0] as number)}>
+                                                    <Icon value={name[0]} onClick={() => onClickName(name[0] as number)}>
                                                         <ImgIcon src={`${name[2]}`} alt=""/>
                                                     </Icon>
                                                 </Col>

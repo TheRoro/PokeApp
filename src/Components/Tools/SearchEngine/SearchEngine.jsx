@@ -148,6 +148,7 @@ export class SearchEngine extends Component {
           this.state.filteredOptions.length === 0 ||
           this.state.searching === true ? 
           <input
+            placeholder="Search"
             type="text"
             className="search-box-curved"
             onChange={onChange}
@@ -156,6 +157,7 @@ export class SearchEngine extends Component {
           />
           :
           <input
+            placeholder="Search"
             type="text"
             className="search-box"
             onChange={onChange}

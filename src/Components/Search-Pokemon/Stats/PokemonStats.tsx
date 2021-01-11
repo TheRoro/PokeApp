@@ -5,9 +5,12 @@ import StatBar from '../../Tools/StatBar/StatBar';
 import Navigation from '../../Tools/Navigation/Navigation';
 import DefensiveCoverage from '../Coverage/DefensiveCoverage';
 import OffensiveCoverage from '../Coverage/OffensiveCoverage';
+import PokeBall from '../../../Assets/pokeapp.png';
 import Bidoof404 from '../../../Assets/404-bidoof.png';
 import axios from 'axios';
 import { useParams } from "react-router-dom";
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 import {
     StatsContainer,
@@ -17,7 +20,10 @@ import {
     Bidoof404Img,
     ErrorContainer,
     ErrorCol,
-    Id
+    Id,
+    Loading,
+    LoadingImg,
+    LazyImage
 } from './StatsStyles';
 
 type Props = {
@@ -42,9 +48,22 @@ const PokemonStats: React.FC<Props> = ({
 }) =>{
     const [type1, setType1] = React.useState<string>('Electric');
     const [type2, setType2] = React.useState<string>('None');
-    const [img, setImg] = React.useState(<div>Loading...</div>);
+    const [img, setImg] = React.useState(
+        <Loading>
+            <Row className="justify-content-center mt-5">
+                <Col xs="auto">
+                    <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
+                </Col>
+            </Row>
+        </Loading>);
     const [info, setInfo] = React.useState<infoType>();
-    const [loading, setLoading] = React.useState(<div>Loading...</div>);
+    const [loading, setLoading] = React.useState(<Loading>
+        <Row className="justify-content-center mt-5">
+            <Col xs="auto">
+                <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
+            </Col>
+        </Row>
+    </Loading>);
     const [stop, setStop] = React.useState<Boolean>(false);
     const [id, setId] = React.useState();
     let {name} = useParams<ParamTypes>();
@@ -80,7 +99,7 @@ const PokemonStats: React.FC<Props> = ({
             const resp = await axios.get(apiUrl);
             setInfo(resp.data);
             setId(resp.data.species.url.substring(42, resp.data.species.url.length - 1));
-            setImg(<div><Image src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/></div>);
+            setImg(<div><LazyImage effect="blur" src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/></div>);
             if(type1 !== capitalize(resp.data.types[0].type.name)){
                 setType1(capitalize(resp.data.types[0].type.name));
             }
