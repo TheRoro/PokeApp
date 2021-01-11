@@ -5,53 +5,109 @@ import StatBar from '../../Tools/StatBar/StatBar';
 import Navigation from '../../Tools/Navigation/Navigation';
 import DefensiveCoverage from '../Coverage/DefensiveCoverage';
 import OffensiveCoverage from '../Coverage/OffensiveCoverage';
+import Bidoof404 from '../../../Assets/404-bidoof.png';
+import axios from 'axios';
+import { useParams } from "react-router-dom";
 
 import {
     StatsContainer,
     Title,
-    SubTitle
+    SubTitle,
+    Image,
+    Bidoof404Img,
+    ErrorContainer,
+    ErrorCol,
+    Id
 } from './StatsStyles';
 
-type pokemonName = string[];
-
 type Props = {
-    pkmnName: pokemonName,
+    pkmnName: string,
     pkmnInfo: any,
     pkmnId: number,
-    pkmnImg: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
 }
+
+interface ParamTypes {
+    name: string
+}
+
+type infoType = {
+    stats: any[],
+    types: any[]
+};
 
 const PokemonStats: React.FC<Props> = ({
     pkmnName,
     pkmnInfo,
-    pkmnId,
-    pkmnImg,
+    pkmnId
 }) =>{
     const [type1, setType1] = React.useState<string>('Electric');
     const [type2, setType2] = React.useState<string>('None');
+    const [img, setImg] = React.useState(<div>Loading...</div>);
+    const [info, setInfo] = React.useState<infoType>();
+    const [loading, setLoading] = React.useState(<div>Loading...</div>);
+    const [stop, setStop] = React.useState<Boolean>(false);
+    const [id, setId] = React.useState();
+    let {name} = useParams<ParamTypes>();
+    const [prettyName, setPrettyName] = React.useState(name);
 
     const capitalize = ((s: string) => {
         let temp = s[0].toUpperCase() + s.slice(1);
         return temp
     })
 
+    const search = async () => {
+        try {
+            var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + name + '/';
+            const resp = await axios.get(apiUrl);
+            setInfo(resp.data);
+            setId(resp.data.species.url.substring(42, resp.data.species.url.length - 1));
+            setImg(<div><Image src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/></div>);
+            if(type1 !== capitalize(resp.data.types[0].type.name)){
+                setType1(capitalize(resp.data.types[0].type.name));
+            }
+            if(resp.data.types.length > 1) {
+                setType2(capitalize(resp.data.types[1].type.name));
+            }
+            if(/^\d+$/.test(name)) {
+                setPrettyName(resp.data.name);
+            }
+        }
+        catch(err) {
+            setStop(true);
+            console.error(err);
+            setLoading(
+                <ErrorContainer>
+                    <Row className="h-100 align-items-center justify-content-center">
+                        <ErrorCol xs="auto">
+                            <Bidoof404Img src={Bidoof404} alt={'404'}/>
+                        </ErrorCol>
+                    </Row>
+                </ErrorContainer>);
+        }
+    }
+
     useEffect(() => {
-        if(type1 !== capitalize(pkmnInfo.types[0].type.name)){
-            setType1(capitalize(pkmnInfo.types[0].type.name));
+        console.log(pkmnInfo);
+        if(!info && !stop){
+            search();
         }
-        if(pkmnInfo.types.length > 1) {
-            setType2(capitalize(pkmnInfo.types[1].type.name));
-        }
-    },[setType1, pkmnInfo.types, type1]);
+            
+    });
 
     return(
+        <>{info ?
         <StatsContainer>
-            <Navigation left="/search" right="/search/evolution"/>
+            <Navigation left="/search" right="/search/evolution/:name"/>
             <Row className="align-items-center">
                 <Col xs={12} className="mb-5">
                     <Row className="justify-content-center">
                         <Col xs="auto">
-                            <Title>{pkmnName[0]}</Title>
+                            <Title>{prettyName}</Title>
+                        </Col>
+                    </Row>
+                    <Row className="justify-content-center">
+                        <Col xs="auto">
+                            <Id>{id}</Id>
                         </Col>
                     </Row>
                     <Row className="justify-content-center align-items-center mt-4">
@@ -68,37 +124,40 @@ const PokemonStats: React.FC<Props> = ({
                                 </Col>
                             </Row>}
                             <Row className="justify-content-center mt-4">
-                                <StatBar name={"HP"} value={parseInt(JSON.stringify(pkmnInfo.stats[0].base_stat))}/>
+                                <StatBar name={"HP"} value={parseInt(JSON.stringify(info.stats[0].base_stat!))}/>
                             </Row>
                             <Row className="justify-content-center mt-3">
-                                <StatBar name={"Attack"} value={parseInt(JSON.stringify(pkmnInfo.stats[1].base_stat))}/>
+                                <StatBar name={"Attack"} value={parseInt(JSON.stringify(info.stats[1].base_stat))}/>
                             </Row>
                             <Row className="justify-content-center mt-3">
-                                <StatBar name={"Defense"} value={parseInt(JSON.stringify(pkmnInfo.stats[2].base_stat))}/>
+                                <StatBar name={"Defense"} value={parseInt(JSON.stringify(info.stats[2].base_stat))}/>
                             </Row>
                             <Row className="justify-content-center mt-3">
-                                <StatBar name={"Sp. Attack"} value={parseInt(JSON.stringify(pkmnInfo.stats[3].base_stat))}/>
+                                <StatBar name={"Sp. Attack"} value={parseInt(JSON.stringify(info.stats[3].base_stat))}/>
                             </Row>
                             <Row className="justify-content-center mt-3">
-                                <StatBar name={"Sp. Defense"} value={parseInt(JSON.stringify(pkmnInfo.stats[4].base_stat))}/>
+                                <StatBar name={"Sp. Defense"} value={parseInt(JSON.stringify(info.stats[4].base_stat))}/>
                             </Row>
                             <Row className="justify-content-center mt-3">
-                                <StatBar name={"Speed"}  value={parseInt(JSON.stringify(pkmnInfo.stats[5].base_stat))}/>
+                                <StatBar name={"Speed"}  value={parseInt(JSON.stringify(info.stats[5].base_stat))}/>
                             </Row>
                         </Col>
-                        <Col xs="auto" sm={12} md={6}>
+                        <Col xs="auto" sm={12} md={6} className="mt-5 mt-md-0">
                             <Row className="justify-content-center">
                                 <Col xs="auto">
-                                    {pkmnImg}
+                                    {img}
                                 </Col>
                             </Row>
                         </Col>
                     </Row>
                 </Col>
+                
             </Row>
             <DefensiveCoverage type1={type1} type2={type2}/>
             <OffensiveCoverage type1={type1} type2={type2}/>
         </StatsContainer>
+        : loading }
+        </>
     );
 
 }

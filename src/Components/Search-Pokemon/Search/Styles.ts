@@ -2,7 +2,8 @@ import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 
 export const SearchContainer = styled(Container)`
-    min-width: 268px;
+    height: 75%;
+    min-width: 343px;
 `
 
 export const Title = styled.h1`
