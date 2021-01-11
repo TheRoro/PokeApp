@@ -41,7 +41,7 @@ const SearchMove: React.FC<{}> = () =>{
             if(value[i] === " " && i !== value.length - 1){
                 temp+="-";
             }
-            else if(value[i] !== " " && i !== value.length - 1){
+            else if(value[i] !== " "){
                 temp+=value[i];
             }
         }
@@ -126,7 +126,6 @@ const SearchMove: React.FC<{}> = () =>{
         formatPretty(val);
         formatName(val);
         if(code === 13) {
-            alert(formatName(val));
             searchWithParam(formatName(val));
         }
     }
