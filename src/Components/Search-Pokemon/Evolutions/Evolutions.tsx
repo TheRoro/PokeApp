@@ -4,6 +4,7 @@ import Col from 'react-bootstrap/Col';
 import axios from 'axios';
 import Navigation from '../../Tools/Navigation/Navigation';
 import Bidoof404 from '../../../Assets/404-bidoof.png';
+import { useParams } from "react-router-dom";
 import {
     SubTitle,
     Title,
@@ -15,9 +16,14 @@ type Props = {
     pkmnName: string,
 }
 
+interface ParamTypes {
+    name: string
+}
+
 const Evolutions: React.FC<Props> = ({
     pkmnName
 }) => {
+    let {name} = useParams<ParamTypes>();
     const [speciesUrl] = React.useState("https://pokeapi.co/api/v2/pokemon-species/");
     const [pkName, setpkName] = React.useState('');
     const [stage1, setStage1] = React.useState(<Col><SubTitle>Loading...</SubTitle></Col>)
@@ -152,7 +158,7 @@ const Evolutions: React.FC<Props> = ({
 
     return(
         <EvolutionsContainer>
-            <Navigation left="/search/stats" right="/search/moves"/>
+            <Navigation left={`/search/${name}`} right={`/search/${name}/moves`}/>
             <Row className="align-items-center full-height">
                 <Col xs={12} className="mb-5">
                     <Row className="justify-content-center">

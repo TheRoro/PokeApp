@@ -31,3 +31,17 @@ export const Bidoof404Img = styled.img`
     max-width: 60px;
     max-height: 60px;
 `
+
+export const Icon = styled.button`
+    width: 80px;
+    height: 80px;
+    border-radius: 50px;
+    &:hover {
+        opacity: 0.8;
+    }
+`
+
+export const ImgIcon = styled.img`
+    width: 70px;
+    height: 70px;
+`
