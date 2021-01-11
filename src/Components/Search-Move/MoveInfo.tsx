@@ -17,13 +17,16 @@ const PokemonStats: React.FC<Props> = ({
     moveInfo,
     moveName
 }) =>{
-    const [effect, setEffect] = React.useState<string>(moveInfo.effect_entries[0].short_effect);
+    const [effect, setEffect] = React.useState<string>('');
     const setGoodEffect = () => {
-        let temp = moveInfo.effect_entries[0].short_effect;
-        let index = temp.search("effect_chance");
-        while (index !== -1) {
-            temp = temp.replace("$effect_chance", moveInfo.effect_chance.toString());
-            index = temp.search("effect_chance");
+        let temp;
+        if(moveInfo.effect_entries.length > 0){
+            temp =  moveInfo.effect_entries[0].short_effect;
+            let index = temp.search("effect_chance");
+            while (index !== -1) {
+                temp = temp.replace("$effect_chance", moveInfo.effect_chance.toString());
+                index = temp.search("effect_chance");
+            }
         }
         setEffect(temp);
     }
@@ -42,6 +45,7 @@ const PokemonStats: React.FC<Props> = ({
                             <Title className={` ${moveInfo.type.name[0].toUpperCase() + moveInfo.type.name.slice(1)}`}>{moveName}</Title>
                         </Col>
                     </Row>
+                    {moveInfo.damage_class ? 
                     <Row>
                         <Col xs={{ span: 6, offset: 3 }} sm={{ span: 6, offset: 3 }}>
                             <Row className="justify-content-start">
@@ -51,6 +55,16 @@ const PokemonStats: React.FC<Props> = ({
                             </Row>
                         </Col>
                     </Row>
+                    :
+                    <Row>
+                        <Col xs={{ span: 6, offset: 3 }} sm={{ span: 6, offset: 3 }}>
+                            <Row className="justify-content-start">
+                                <Col xs="auto">
+                                    <Text>We Don't have info about the category yet.</Text>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>}
                     {moveInfo.power !== null ? 
                     <Row>
                         <Col xs={{ span: 6, offset: 3 }}>

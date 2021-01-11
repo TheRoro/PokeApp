@@ -50,6 +50,25 @@ const PokemonStats: React.FC<Props> = ({
     let {name} = useParams<ParamTypes>();
     const [prettyName, setPrettyName] = React.useState(name);
 
+    const pretty = (value: string) => {
+        let temp = "";
+        for(let i = 0; i < value.length; i++) {
+            if(i === 0){
+                temp+=value[0].toUpperCase();
+            }
+            else if(value[i] === "-"){
+                temp+=" ";
+            }
+            else if(i !== 0 && value[i - 1] === "-"){
+                temp+=value[i].toUpperCase();
+            }
+            else {
+                temp+=value[i];
+            }
+        }
+        return temp;
+    }
+
     const capitalize = ((s: string) => {
         let temp = s[0].toUpperCase() + s.slice(1);
         return temp
@@ -68,9 +87,7 @@ const PokemonStats: React.FC<Props> = ({
             if(resp.data.types.length > 1) {
                 setType2(capitalize(resp.data.types[1].type.name));
             }
-            if(/^\d+$/.test(name)) {
-                setPrettyName(resp.data.name);
-            }
+            setPrettyName(pretty(resp.data.name));
         }
         catch(err) {
             setStop(true);
@@ -87,7 +104,6 @@ const PokemonStats: React.FC<Props> = ({
     }
 
     useEffect(() => {
-        console.log(pkmnInfo);
         if(!info && !stop){
             search();
         }

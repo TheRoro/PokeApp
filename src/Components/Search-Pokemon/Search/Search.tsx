@@ -19,7 +19,6 @@ import {
 } from "react-router-dom";
 
 import {
-    Image,
     Bidoof404Img,
     Title,
     Text,
@@ -37,7 +36,6 @@ const SearchPokemon: React.FC<{}> = () =>{
     const [prettyName, setPrettyName] = React.useState<string>(pokemonList[rand]);
     const [pkmnInfo, setpkmnInfo] = React.useState<pokemonInfo>(pkmnInfoInit);
     const [pkmnId, setpkmnId] = React.useState<number>(405);
-    const [pkmnImg, setpkmnImg] = React.useState(<Image src={`https://pokeres.bastionbot.org/images/pokemon/405.png`} alt={'luxray'}/>);
     const [loading, setLoading] = React.useState(<div></div>);
 
     const formated = (value: string) => {
@@ -74,7 +72,6 @@ const SearchPokemon: React.FC<{}> = () =>{
             const resp = await axios.get(apiUrl);
             setpkmnInfo(resp.data);
             setpkmnId(resp.data.id);
-            setpkmnImg(<Image src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/>);
             setLoading(<div></div>);
             history.push(`${match.url}/stats/${formatedName}`);
         }
@@ -98,7 +95,6 @@ const SearchPokemon: React.FC<{}> = () =>{
             const resp = await axios.get(apiUrl);
             setpkmnInfo(resp.data);
             setpkmnId(resp.data.species.url.substring(42, resp.data.species.url.length - 1));
-            setpkmnImg(<Image src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/>);
             setLoading(<div></div>);
             history.push(`${match.url}/stats/${name.toLowerCase()}`);
         }
