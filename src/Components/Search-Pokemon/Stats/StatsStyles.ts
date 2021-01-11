@@ -1,6 +1,7 @@
-import styled from 'styled-components';
+import styled, {keyframes} from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 export const StatsContainer = styled(Container)`
     height: 95%;
@@ -22,11 +23,51 @@ export const Id = styled.h1`
     font-weight: 900;
 `
 
+export const LazyImage = styled(LazyLoadImage)`
+    height: 100%;
+    width: 100%;
+    max-width: 400px;
+    max-height: 400px;
+`
+
+
 export const Image = styled.img`
     height: 100%;
     width: 100%;
     max-width: 400px;
     max-height: 400px;
+`
+
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+export const LoadingImg = styled.img`
+    transition: 0.3s ease-in-out;
+    animation: ${rotate} 1s linear infinite;
+    height: 100%;
+    width: 100%;
+    max-width: 400px;
+    max-height: 400px;
+`
+
+export const Loading = styled.aside`
+    position: fixed;
+    z-index: 999;
+    width: 100%;
+    height: 100%;
+    background-color: #121212;
+    display: grid;
+    align-items: center;
+    top: 0;
+    left: 0;
+    transition: 0.3s ease-in-out;
 `
 
 export const ErrorContainer = styled.div`
