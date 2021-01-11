@@ -26,30 +26,57 @@ import {
     SearchContainer
 } from './Styles';
 
-type pokemonName = string[];
 type pokemonInfo = {};
 
 const SearchPokemon: React.FC<{}> = () =>{
+    var max = pokemonList.length;
+    var rand =  Math.floor(Math.random() * Math.floor(max));
     let match = useRouteMatch();
     const history = useHistory();
-    const [pkmnName, setpkmnName] = React.useState<pokemonName>(['Luxray', 'luxray']);
+    const [formatedName, setFormatedName] = React.useState<string>(pokemonList[rand]);
+    const [prettyName, setPrettyName] = React.useState<string>(pokemonList[rand]);
     const [pkmnInfo, setpkmnInfo] = React.useState<pokemonInfo>(pkmnInfoInit);
     const [pkmnId, setpkmnId] = React.useState<number>(405);
     const [pkmnImg, setpkmnImg] = React.useState(<Image src={`https://pokeres.bastionbot.org/images/pokemon/405.png`} alt={'luxray'}/>);
     const [loading, setLoading] = React.useState(<div></div>);
+
+    const formated = (value: string) => {
+        let temp = "";
+        temp = value;
+        return temp;
+    }
+
+    const pretty = (value: string) => {
+        let temp = "";
+        for(let i = 0; i < value.length; i++) {
+            if(i === 0){
+                temp+=value[0].toUpperCase();
+            }
+            else if(value[i] === "-"){
+                temp+=" ";
+            }
+            else if(i !== 0 && value[i - 1] === "-"){
+                temp+=value[i].toUpperCase();
+            }
+            else {
+                temp+=value[i];
+            }
+        }
+        return temp;
+    }
 
     const searchByName = async () => {
         try {
             setLoading(<div>
                 Loading...
             </div>);
-            var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + pkmnName[1] + '/';
+            var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + formatedName + '/';
             const resp = await axios.get(apiUrl);
             setpkmnInfo(resp.data);
             setpkmnId(resp.data.id);
             setpkmnImg(<Image src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/>);
             setLoading(<div></div>);
-            history.push(`${match.url}/stats`);
+            history.push(`${match.url}/stats/${formatedName}`);
         }
         catch(err) {
             alert("Pokemon Not Found");
@@ -70,10 +97,10 @@ const SearchPokemon: React.FC<{}> = () =>{
             var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + name.toLowerCase() + '/';
             const resp = await axios.get(apiUrl);
             setpkmnInfo(resp.data);
-            setpkmnId(resp.data.id);
+            setpkmnId(resp.data.species.url.substring(42, resp.data.species.url.length - 1));
             setpkmnImg(<Image src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/>);
             setLoading(<div></div>);
-            history.push(`${match.url}/stats`);
+            history.push(`${match.url}/stats/${name.toLowerCase()}`);
         }
         catch(err) {
             alert("Pokemon Not Found");
@@ -88,29 +115,20 @@ const SearchPokemon: React.FC<{}> = () =>{
         }
     }
     const onValueChange = async (val: string, code: number) => {
-        let temp = [];
-        let formatName = '';
-        let value = '';
-        value = val.toLowerCase();
-        value = value.replace(/\s/g, ''); //remove spaces
-        if(value.length > 0) {
-            formatName = value[0].toUpperCase() + value.slice(1, value.length);
-        }
-        temp.push(formatName);
-        temp.push(value);
-        setpkmnName(temp);
+        setFormatedName(formated(val));
+        setPrettyName(pretty(val));
         if(code === 13) {
-            searchWithParam(value);
+            searchWithParam(formated(val));
         }
     }
     return (
         <SearchContainer>
             <Switch>
-            <Route path={`${match.path}/stats`}>
-                <PokemonStats pkmnId={pkmnId} pkmnName={pkmnName} pkmnInfo={pkmnInfo} pkmnImg={pkmnImg}/>
+            <Route path={`${match.path}/stats/:name`}>
+                <PokemonStats pkmnId={pkmnId} pkmnName={prettyName} pkmnInfo={pkmnInfo}/>
             </Route>
             <Route path={`${match.path}/evolution`}>
-                <Evolutions pkmnName={pkmnName[0]}/>
+                <Evolutions pkmnName={formatedName}/>
             </Route>
             <Route path={`${match.path}/moves`}>
                 <Moves pkmnInfo={pkmnInfo}/>
@@ -131,7 +149,7 @@ const SearchPokemon: React.FC<{}> = () =>{
                             </Row>
                             <Row className="justify-content-center align-items-center mt-4">
                                 <Col xs="auto">
-                                    <Autocomplete options={pokemonList} onChangeValue={onValueChange} val={pkmnName[1]} search={searchByName}/>
+                                    <Autocomplete options={pokemonList} onChangeValue={onValueChange} val={formatedName} search={searchByName}/>
                                 </Col>
                             </Row>
                             {loading}

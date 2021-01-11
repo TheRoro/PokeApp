@@ -25,11 +25,13 @@ import {
 
 type pokemonInfo = {};
 
-const SearchAttack: React.FC<{}> = () =>{
+const SearchMove: React.FC<{}> = () =>{
+    var max = moveList.length;
+    var rand =  Math.floor(Math.random() * Math.floor(max));
     let match = useRouteMatch();
     const history = useHistory();
-    const [formatedMoveName, setFormatedMoveName] = React.useState<string>('pound');
-    const [moveName, setMoveName] = React.useState<string>('Pound');
+    const [formatedName, setFormatedName] = React.useState<string>(moveList[rand]);
+    const [prettyName, setPrettyName] = React.useState<string>(moveList[rand]);
     const [moveInfo, setmoveInfo] = React.useState<pokemonInfo>(moveInfoInit);
     const [loading, setLoading] = React.useState(<div></div>);
 
@@ -39,11 +41,13 @@ const SearchAttack: React.FC<{}> = () =>{
             if(value[i] === " " && i !== value.length - 1){
                 temp+="-";
             }
-            else if(value[i] !== " "){
+            else if(value[i] !== " " && i !== value.length - 1){
                 temp+=value[i];
             }
         }
-        setFormatedMoveName(temp);
+        temp = temp.toLowerCase();
+        setFormatedName(temp);
+        return temp;
     }
 
     const formatPretty = (value: string) => {
@@ -52,14 +56,17 @@ const SearchAttack: React.FC<{}> = () =>{
             if(i === 0){
                 temp+=value[0].toUpperCase();
             }
-            else if(i !== 0 && value[i - 1] === " "){
+            else if(value[i] === "-"){
+                temp+=" ";
+            }
+            else if(i !== 0 && value[i - 1] === "-"){
                 temp+=value[i].toUpperCase();
             }
             else {
                 temp+=value[i];
             }
         }
-        setMoveName(temp);
+        setPrettyName(temp);
     }
 
     const searchByName = async () => {
@@ -70,7 +77,7 @@ const SearchAttack: React.FC<{}> = () =>{
                         <p>Loading...</p>
                     </Col>
                 </Row>);
-            var apiUrl = 'https://pokeapi.co/api/v2/move/' + formatedMoveName + '/';
+            var apiUrl = 'https://pokeapi.co/api/v2/move/' + formatedName + '/';
             const resp = await axios.get(apiUrl);
             setmoveInfo(resp.data);
             setLoading(<div></div>);
@@ -119,7 +126,8 @@ const SearchAttack: React.FC<{}> = () =>{
         formatPretty(val);
         formatName(val);
         if(code === 13) {
-            searchWithParam(val);
+            alert(formatName(val));
+            searchWithParam(formatName(val));
         }
     }
 
@@ -127,7 +135,7 @@ const SearchAttack: React.FC<{}> = () =>{
         <SearchContainer>
             <Switch>
             <Route path={`${match.path}/info`}>
-                <MoveInfo moveInfo={moveInfo} moveName={moveName}/>
+                <MoveInfo moveInfo={moveInfo} moveName={prettyName}/>
             </Route>
             <Route path={`${match.path}/`}>
                 <Container className="full-height">
@@ -145,7 +153,7 @@ const SearchAttack: React.FC<{}> = () =>{
                             </Row>
                             <Row className="justify-content-center mt-4">
                                 <Col xs="auto">
-                                    <Autocomplete options={moveList} onChangeValue={onValueChange} val={moveName} search={searchByName}/>
+                                    <Autocomplete options={moveList} onChangeValue={onValueChange} val={formatedName} search={searchByName}/>
                                 </Col>
                             </Row>
                             {loading}
@@ -158,4 +166,4 @@ const SearchAttack: React.FC<{}> = () =>{
     );
 }
 
-export default SearchAttack;
+export default SearchMove;
