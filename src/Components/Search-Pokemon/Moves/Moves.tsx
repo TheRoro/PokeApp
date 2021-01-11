@@ -3,7 +3,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Navigation from '../../Tools/Navigation/Navigation';
 import axios from 'axios';
-
+import { useParams } from "react-router-dom";
 import {
     MovesContainer,
     Title,
@@ -14,9 +14,14 @@ type Props = {
     pkmnInfo: any,
 }
 
+interface ParamTypes {
+    name: string
+}
+
 const Moves: React.FC<Props> = ({
     pkmnInfo
 }) =>{
+    let {name} = useParams<ParamTypes>();
     const [levelUp, setLevelUp] = React.useState(<div></div>);
     const [tutor, setTutor] = React.useState(<div></div>);
     const [mt, setMt] = React.useState(<div></div>);
@@ -117,7 +122,7 @@ const Moves: React.FC<Props> = ({
 
     return (
         <MovesContainer>
-            <Navigation left="/search/evolution" right=""/>
+            <Navigation left={`/search/${name}/evolution`} right=""/>
             <Row className="align-items-center full-height">
                 <Col xs={12} className="mb-5">
                     <Row className="justify-content-center">

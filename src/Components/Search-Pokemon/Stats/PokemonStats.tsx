@@ -113,7 +113,7 @@ const PokemonStats: React.FC<Props> = ({
     return(
         <>{info ?
         <StatsContainer>
-            <Navigation left="/search" right="/search/evolution/:name"/>
+            <Navigation left={`/search`} right={`/search/${name}/evolution`}/>
             <Row className="align-items-center">
                 <Col xs={12} className="mb-5">
                     <Row className="justify-content-center">
