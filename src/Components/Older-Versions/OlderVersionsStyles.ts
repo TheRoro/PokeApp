@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import {
     Row as BRow,
     Col as BCol
@@ -45,7 +46,7 @@ export const Col = styled(BCol)`
 
 `
 
-export const Image = styled.img`
+export const Image = styled(LazyLoadImage)`
     height: 25vw;
     width: 40vw;
     min-width: 210px;

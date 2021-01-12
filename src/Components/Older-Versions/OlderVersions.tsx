@@ -1,6 +1,7 @@
 import React from 'react';
 import Pokeffective from './Images/Pokeffective.jpg'
 import PokeffectiveRetro from './Images/Pokeffective-Retro.jpg'
+import 'react-lazy-load-image-component/src/effects/blur.css';
 import {
     Title,
     Text,
@@ -43,7 +44,7 @@ const OlderVersions: React.FC<{}> = () => {
                                     <Row className="justify-content-center">
                                         <Col xs="auto">
                                             <Link href="https://8rb.github.io/Pokeffective-Old/" target="_blank" rel="noreferrer">
-                                                <Image src={PokeffectiveRetro} alt={'Pokeffective-Retro'}/>
+                                                <Image effect="blur" src={PokeffectiveRetro} alt={'Pokeffective-Retro'}/>
                                             </Link>
                                         </Col>
                                     </Row>
@@ -52,7 +53,7 @@ const OlderVersions: React.FC<{}> = () => {
                                     <Row className="justify-content-center">
                                         <Col xs="auto">
                                             <Link href="https://pokeffective.onrender.com/" target="_blank" rel="noreferrer">
-                                                <Image src={Pokeffective} alt={'Pokeffective'}/>
+                                                <Image effect="blur" src={Pokeffective} alt={'Pokeffective'}/>
                                             </Link>
                                         </Col>
                                     </Row>
