@@ -9,14 +9,12 @@ import PokeBall from '../../../Assets/pokeapp.png';
 import Bidoof404 from '../../../Assets/404-bidoof.png';
 import axios from 'axios';
 import { useParams } from "react-router-dom";
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
 import {
     StatsContainer,
     Title,
     SubTitle,
-    Image,
     Bidoof404Img,
     ErrorContainer,
     ErrorCol,
