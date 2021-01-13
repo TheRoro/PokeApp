@@ -43,7 +43,7 @@ const OlderVersions: React.FC<{}> = () => {
                                 <Col xs={12} sm={12} md={6} className="mt-2 mb-3 mb-md-0">
                                     <Row className="justify-content-center">
                                         <Col xs="auto">
-                                            <Link href="https://8rb.github.io/Pokeffective-Old/" target="_blank" rel="noreferrer">
+                                            <Link href="https://8rb.github.io/Pokeffective-Retro/" target="_blank" rel="noreferrer">
                                                 <Image effect="blur" src={PokeffectiveRetro} alt={'Pokeffective-Retro'}/>
                                             </Link>
                                         </Col>
@@ -52,7 +52,7 @@ const OlderVersions: React.FC<{}> = () => {
                                 <Col xs={12} sm={12} md={6} className="mt-5 mt-md-2">
                                     <Row className="justify-content-center">
                                         <Col xs="auto">
-                                            <Link href="https://pokeffective.onrender.com/" target="_blank" rel="noreferrer">
+                                            <Link href="https://8rb.github.io/Pokeffective/" target="_blank" rel="noreferrer">
                                                 <Image effect="blur" src={Pokeffective} alt={'Pokeffective'}/>
                                             </Link>
                                         </Col>
