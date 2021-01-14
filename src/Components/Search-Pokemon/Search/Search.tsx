@@ -37,8 +37,6 @@ type listType = any[];
 const totalPkmn = 898;
 
 const SearchPokemon: React.FC<{}> = () =>{
-    // var max = totalPkmn;
-    // var rand =  Math.floor(Math.random() * Math.floor(max));
     let match = useRouteMatch();
     const history = useHistory();
     const [formatedName, setFormatedName] = React.useState<string>('');
@@ -50,18 +48,22 @@ const SearchPokemon: React.FC<{}> = () =>{
 
     const generateRandom = useCallback(async() => {
         let total = 6;
-        let mySet = new Set();
-        while(mySet.size < total){
-            let temp = []
+        let indexesSet = new Set();
+        while(indexesSet.size < total){
             var max = totalPkmn;
-            var rand =  Math.floor(Math.random() * Math.floor(max));
-            temp.push(rand);
-            temp.push(pokemonList[rand]);
-            temp.push(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${rand}.png`);
-            mySet.add(temp);
+            var rand =  Math.floor(Math.random() * Math.floor(max) + 1);
+            indexesSet.add(rand);
         }
-        let array = Array.from(mySet);
-        setList(array);
+        let indexes = Array.from(indexesSet);
+        let randomPkmn = []
+        for (let i = 0; i < indexes.length; i++) {
+            let temp = [];
+            temp.push(indexes[i]);
+            temp.push(pokemonList[indexes[i] as number]);
+            temp.push(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${indexes[i]}.png`);
+            randomPkmn.push(temp);
+        }
+        setList(randomPkmn);
     }, []);
 
     const formated = (value: string) => {
@@ -127,6 +129,7 @@ const SearchPokemon: React.FC<{}> = () =>{
             var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + name.toLowerCase() + '/';
             const resp = await axios.get(apiUrl);
             setpkmnInfo(resp.data);
+            setFormatedName(resp.data.name);
             setpkmnId(resp.data.species.url.substring(42, resp.data.species.url.length - 1));
             setLoading(<div></div>);
             history.push(`${match.url}/${name.toLowerCase()}`);
