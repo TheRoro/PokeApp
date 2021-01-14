@@ -4,12 +4,15 @@ import Col from 'react-bootstrap/Col';
 import axios from 'axios';
 import Navigation from '../../Tools/Navigation/Navigation';
 import Bidoof404 from '../../../Assets/404-bidoof.png';
+import PokeBall from '../../../Assets/pokeapp.png';
 import { useParams } from "react-router-dom";
+import 'react-lazy-load-image-component/src/effects/blur.css';
 import {
     SubTitle,
     Title,
-    Image,
-    EvolutionsContainer
+    EvolutionsContainer,
+    LoadingImg,
+    LazyImage
 } from './Styles';
 
 type Props = {
@@ -24,9 +27,11 @@ const Evolutions: React.FC<Props> = ({
     pkmnName
 }) => {
     let {name} = useParams<ParamTypes>();
-    const [speciesUrl] = React.useState("https://pokeapi.co/api/v2/pokemon-species/");
-    const [pkName, setpkName] = React.useState('');
-    const [stage1, setStage1] = React.useState(<Col><SubTitle>Loading...</SubTitle></Col>)
+    const [pkName, setpkName] = React.useState('hola');
+    const [stage1, setStage1] = React.useState(
+    <Col xs="auto">
+        <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
+    </Col>)
     const [stage2, setStage2] = React.useState(<div></div>)
     const [stage3, setStage3] = React.useState(<div></div>)
     useEffect(() => {
@@ -34,7 +39,10 @@ const Evolutions: React.FC<Props> = ({
             const fetchInfo = async () => {
                 setpkName(pkmnName.toLowerCase());
                 try {
-                    const species = await axios.get(speciesUrl + pkmnName.toLowerCase() +'/');
+                    var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + name + '/';
+                    const resp = await axios.get(apiUrl);
+                    const url = resp.data.species.url;
+                    const species = await axios.get(url);
                     const evolution = await axios.get(species.data.evolution_chain.url);
                     
                     const stage1 = <Col xs={12} className="mb-4">
@@ -42,7 +50,7 @@ const Evolutions: React.FC<Props> = ({
                             <SubTitle>{evolution.data.chain.species.name}</SubTitle>
                         </Row>
                         <Row className="justify-content-center">
-                            <Image src={`https://pokeres.bastionbot.org/images/pokemon/${evolution.data.chain.species.url.slice(42, -1)}.png`} alt={evolution.data.chain.species.name}/>
+                            <LazyImage effect="blur" src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${evolution.data.chain.species.url.slice(42, -1)}.png`} alt={evolution.data.chain.species.name}/>
                         </Row>
                     </Col>;
                     setStage1(
@@ -68,7 +76,7 @@ const Evolutions: React.FC<Props> = ({
                                     <SubTitle>{species[0]}</SubTitle>
                                 </Row>
                                 <Row className="justify-content-center">
-                                    <Image src={`https://pokeres.bastionbot.org/images/pokemon/${species[1]}.png`} alt={species[0]}/>
+                                    <LazyImage effect="blur" src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${species[1]}.png`} alt={species[0]}/>
                                 </Row>
                                 <Row className="justify-content-center">
                                     {/* <p className="text1">{species[2]}</p> */}
@@ -104,7 +112,7 @@ const Evolutions: React.FC<Props> = ({
                                         <SubTitle>{species[0]}</SubTitle>
                                     </Row>
                                     <Row className="justify-content-center">
-                                        <Image src={`https://pokeres.bastionbot.org/images/pokemon/${species[1]}.png`} alt={species[0]}/>
+                                        <LazyImage effect="blur" src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${species[1]}.png`} alt={species[0]}/>
                                     </Row>
                                     <Row className="justify-content-center">
                                         {/* <p className="text1">{species[2]}</p> */}
@@ -144,7 +152,7 @@ const Evolutions: React.FC<Props> = ({
                                         <SubTitle>We currently don't have any info about that specie :(</SubTitle>
                                     </Row>
                                     <Row className="justify-content-center">
-                                        <Image src={Bidoof404} alt="Biddof 404"/>
+                                        <LazyImage effect="blur" src={Bidoof404} alt="Biddof 404"/>
                                     </Row>
                                 </Col>
                             </Row>
@@ -154,7 +162,7 @@ const Evolutions: React.FC<Props> = ({
             };
             fetchInfo();
         }
-      }, [pkName, pkmnName, speciesUrl]);
+      }, [pkName, pkmnName, name]);
 
     return(
         <EvolutionsContainer>

@@ -1,5 +1,6 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import Container from 'react-bootstrap/Container';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 export const EvolutionsContainer = styled(Container)`
     height: 95%;
@@ -17,6 +18,13 @@ export const SubTitle = styled.h1`
     text-align: center;
 `
 
+export const LazyImage = styled(LazyLoadImage)`
+    height: 100%;
+    width: 100%;
+    max-width: 400px;
+    max-height: 400px;
+`
+
 export const Image = styled.img`
     height: 100%;
     width: 100%;
@@ -24,3 +32,21 @@ export const Image = styled.img`
     max-height: 200px;
 `
 
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+export const LoadingImg = styled.img`
+    transition: 0.3s ease-in-out;
+    animation: ${rotate} 1s linear infinite;
+    height: 100%;
+    width: 100%;
+    max-width: 400px;
+    max-height: 400px;
+`
