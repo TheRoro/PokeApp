@@ -7,40 +7,75 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Pokemon Encyclopedia and type coverage Web Application"
+      content="Pokemon Search Engine Pokedex and Type Calculator"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/pokeapp.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
     <title>PokeApp</title>
+    <style type="text/css">
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #454545;
+      border-radius: 10px;
+    }
+    #root {
+      height: 100%;
+      width: 100%;
+      margin: 0px; padding: 0px;
+      min-width: 200px;
+    }
+    html, body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color:  #121212;
+      color: #FFFFFF;
+      height: 100%; margin: 0px; padding: 0px;
+    }
+    code {
+      font-family: 'Montserrat', sans-serif;
+    }
+    .container-fluid {
+      width: 100%;
+      padding-right: 35px;
+      padding-left: 35px;
+      margin-right: auto;
+      margin-left: auto;
+    }
+    .full-height {
+      height:100%;
+    }
+    .full-width {
+      width:100%;
+    }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('worker.js').then(function(registration) {
+            console.log('Worker registration successful', registration.scope);
+          }, function(err) {
+            console.log('Worker registration failed', err);
+          }).catch(function(err) {
+            console.log(err);
+          });
+        });
+      } else {
+        console.log('Service Worker is not supported by browser.');
+      }
+    </script>
   </body>
 </html>
