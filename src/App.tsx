@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import RNavBar from './Components/Navbar/ResponsiveNavbar';
 import Home from './Components/Home/HomeComponent';
 import TypeCalculator from './Components/Type-Calculator/TypeCalculator';
@@ -7,7 +7,7 @@ import SearchMove from './Components/Search-Move/SearchMove';
 import TeamBuilder from './Components/TeamBuilder/TeamBuilder';
 import OlderVersions from './Components/Older-Versions/OlderVersions';
 import './Assets/TypeColors.css';
-
+import ReactGa from 'react-ga';
 import {
   BrowserRouter as Router,
   Switch,
@@ -16,6 +16,14 @@ import {
 
 
 function App() {
+
+  useEffect(() => {
+    ReactGa.initialize('G-S0XVNHX873')
+
+    //to report page view
+    ReactGa.pageview(window.location.pathname + window.location.search); 
+  }, [])
+
   return (
     <Router>
       <RNavBar/>

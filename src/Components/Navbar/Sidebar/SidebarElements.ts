@@ -56,7 +56,13 @@ export const SidebarMenu = styled.ul`
     }
 `
 
-export const SidebarLink = styled(LinkR)`
+export const SidebarLink = styled.button`
+    border: none;
+    background: none;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    outline: none!important;
     display: flex;
     align-items: center;
     justify-content: center;
