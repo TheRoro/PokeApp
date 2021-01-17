@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useCallback} from 'react';
 import TypeSelector from './Selector/TypeSelector';
 import NoTypesAlert from './Alert/NoTypesAlert';
 import Row from 'react-bootstrap/Row';
@@ -6,7 +6,7 @@ import Col from 'react-bootstrap/Col';
 import DefensiveCoverage from '../Search-Pokemon/Coverage/DefensiveCoverage';
 import OffensiveCoverage from '../Search-Pokemon/Coverage/OffensiveCoverage';
 import Navigation from '../Tools/Navigation/Navigation';
-
+import typeList from '../../Assets/typeList';
 import {
     Switch,
     Route,
@@ -27,8 +27,26 @@ type typeName = string;
 
 const TypeCal: React.FC<{}> = () =>{
     let match = useRouteMatch();
+    let totalTypes = typeList.length;
     const [type1, setType1] = React.useState<typeName>('Water');
     const [type2, setType2] = React.useState<typeName>('Poison');
+
+    const generateRandom = useCallback(() => {
+      let total = 2;
+      let indexesSet = new Set<number>();
+      while(indexesSet.size < total){
+          var max = totalTypes;
+          var rand =  Math.floor(Math.random() * Math.floor(max));
+          indexesSet.add(rand);
+      }
+      let indexes = Array.from(indexesSet);
+      setType1(typeList[indexes[0]]);
+      setType2(typeList[indexes[1]]);
+    }, [totalTypes]);
+    
+    useEffect(() => {
+      generateRandom();
+    }, [generateRandom])
 
     return (
       <Switch>
