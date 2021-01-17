@@ -1,6 +1,6 @@
 import React from 'react'
 import { useHistory } from "react-router-dom";
-import ReactGa from 'react-ga';
+import ReactGA from 'react-ga';
 import {FaBars} from 'react-icons/fa';
 import { 
     Nav, 
@@ -23,7 +23,7 @@ const Navbar: React.FC<Props> = ({
     const clickHandler = (value: string) => {
         switch(value) { 
             case 'search': { 
-                ReactGa.event({
+                ReactGA.event({
                     category: 'Button',
                     action: 'Search Pokemon'
                   })
@@ -31,7 +31,7 @@ const Navbar: React.FC<Props> = ({
                 break; 
             } 
             case 'move': { 
-                ReactGa.event({
+                ReactGA.event({
                     category: 'Button',
                     action: 'Search Move'
                   })
@@ -39,7 +39,7 @@ const Navbar: React.FC<Props> = ({
                 break; 
             } 
             default: { 
-                ReactGa.event({
+                ReactGA.event({
                     category: 'Button',
                     action: 'Type Calculator'
                   })
