@@ -1,5 +1,7 @@
 import React from 'react';
 import Quotes from './Quotes';
+import { useHistory } from "react-router-dom";
+import ReactGa from 'react-ga';
 import {
   Title,
   Text,
@@ -12,8 +14,16 @@ import {
 } from './HomeStyles';
 
 const Home: React.FC<{}> = () => {
+    const history = useHistory();
     var max = Quotes.length;
     var rand =  Math.floor(Math.random() * Math.floor(max));
+    const clickHandler = () => {
+      ReactGa.event({
+        category: 'Button',
+        action: 'Older Versions'
+      })
+      history.push(`/older-versions`);
+    }
     return (
       <>
       <HomeContainer>
@@ -38,7 +48,7 @@ const Home: React.FC<{}> = () => {
             <Col>
               <Row className="justify-content-center">
                 <Col xs={12}>
-                    <FooterLink to="/older-versions">Older Versions</FooterLink>
+                    <FooterLink onClick={clickHandler}>Older Versions</FooterLink>
                 </Col>
               </Row>
             </Col>

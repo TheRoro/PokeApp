@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import {Link} from 'react-router-dom';
 import {
     Row as BRow,
     Col as BCol,
@@ -30,7 +29,12 @@ export const Text = styled.p`
     text-align: center;
 `
 
-export const FooterLink = styled(Link)`
+export const FooterLink = styled.button`
+    border: none;
+    background: none;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
     font-size:calc(10px + 0.6vw);
     font-weight: 200;
     color: #b8b8b8;

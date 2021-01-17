@@ -1,4 +1,6 @@
 import React from 'react'
+import { useHistory } from "react-router-dom";
+import ReactGa from 'react-ga';
 import {FaBars} from 'react-icons/fa';
 import { 
     Nav, 
@@ -17,6 +19,35 @@ type Props = {
 const Navbar: React.FC<Props> = ({
     toggle
 }) => {
+    const history = useHistory();
+    const clickHandler = (value: string) => {
+        switch(value) { 
+            case 'search': { 
+                ReactGa.event({
+                    category: 'Button',
+                    action: 'Search Pokemon'
+                  })
+                history.push(`/search`);
+                break; 
+            } 
+            case 'move': { 
+                ReactGa.event({
+                    category: 'Button',
+                    action: 'Search Move'
+                  })
+                history.push(`/move`);
+                break; 
+            } 
+            default: { 
+                ReactGa.event({
+                    category: 'Button',
+                    action: 'Type Calculator'
+                  })
+                history.push(`/calc`);
+                break; 
+            } 
+        }
+    }
     return (
         <>
             <Nav>
@@ -27,13 +58,13 @@ const Navbar: React.FC<Props> = ({
                     </MobileIcon>
                     <NavMenu>
                         <NavItem>
-                            <NavLinks to="/move">Search Move</NavLinks>
+                            <NavLinks onClick={() => clickHandler('search')}>Search Pokemon</NavLinks>
                         </NavItem>
                         <NavItem>
-                            <NavLinks to="/search">Search Pokemon</NavLinks>
+                            <NavLinks onClick={() => clickHandler('move')}>Search Move</NavLinks>
                         </NavItem>
                         <NavItem>
-                            <NavLinks to="/calc">Type Calculator</NavLinks>
+                            <NavLinks onClick={() => clickHandler('calc')}>Type Calculator</NavLinks>
                         </NavItem>
                     </NavMenu>
                 </NavbarContainer>
