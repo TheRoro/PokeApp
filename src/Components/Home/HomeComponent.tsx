@@ -1,7 +1,7 @@
 import React from 'react';
 import Quotes from './Quotes';
 import { useHistory } from "react-router-dom";
-import ReactGa from 'react-ga';
+import ReactGA from 'react-ga';
 import {
   Title,
   Text,
@@ -18,7 +18,7 @@ const Home: React.FC<{}> = () => {
     var max = Quotes.length;
     var rand =  Math.floor(Math.random() * Math.floor(max));
     const clickHandler = () => {
-      ReactGa.event({
+      ReactGA.event({
         category: 'Button',
         action: 'Older Versions'
       })

@@ -7,7 +7,7 @@ import SearchMove from './Components/Search-Move/SearchMove';
 import TeamBuilder from './Components/TeamBuilder/TeamBuilder';
 import OlderVersions from './Components/Older-Versions/OlderVersions';
 import './Assets/TypeColors.css';
-import ReactGa from 'react-ga';
+import ReactGA from 'react-ga';
 import {
   BrowserRouter as Router,
   Switch,
@@ -18,10 +18,17 @@ import {
 function App() {
 
   useEffect(() => {
-    ReactGa.initialize('G-S0XVNHX873')
+    ReactGA.initialize('G-S0XVNHX873', {
+      testMode: false,
+      debug: true,
+      titleCase: false,
+      gaOptions: {
+        siteSpeedSampleRate: 100
+      }
+    });
 
     //to report page view
-    ReactGa.pageview(window.location.pathname + window.location.search); 
+    ReactGA.pageview(window.location.pathname + window.location.search); 
   }, [])
 
   return (
