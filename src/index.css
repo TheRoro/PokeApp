@@ -1,5 +1,5 @@
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -23,7 +23,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color:  #121212;
-  color: #FFFFFF;
+  color: #fafafa;
   height: 100%; margin: 0px; padding: 0px;
 }
 

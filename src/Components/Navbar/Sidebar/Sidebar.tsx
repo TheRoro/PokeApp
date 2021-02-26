@@ -1,6 +1,5 @@
 import React from 'react'
 import { useHistory } from "react-router-dom";
-import ReactGA from 'react-ga';
 import { 
     SidebarContainer, 
     Icon, 
@@ -24,26 +23,14 @@ const SideBar: React.FC<Props> = ({
         toggle();
         switch(value) { 
             case 'search': { 
-                ReactGA.event({
-                    category: 'Button',
-                    action: 'Search Pokemon'
-                  })
                 history.push(`/search`);
                 break; 
             } 
             case 'move': { 
-                ReactGA.event({
-                    category: 'Button',
-                    action: 'Search Move'
-                  })
                 history.push(`/move`);
                 break; 
             } 
             default: { 
-                ReactGA.event({
-                    category: 'Button',
-                    action: 'Type Calculator'
-                  })
                 history.push(`/calc`);
                 break; 
             } 
