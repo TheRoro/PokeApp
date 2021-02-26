@@ -11,6 +11,7 @@ import {
     SubTitle,
     Title,
     EvolutionsContainer,
+    LoadingCol,
     LoadingImg,
     LazyImage
 } from './Styles';
@@ -29,9 +30,9 @@ const Evolutions: React.FC<Props> = ({
     let {name} = useParams<ParamTypes>();
     const [pkName, setpkName] = React.useState('hola');
     const [stage1, setStage1] = React.useState(
-    <Col xs="auto">
+    <LoadingCol xs="auto">
         <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
-    </Col>)
+    </LoadingCol>)
     const [stage2, setStage2] = React.useState(<div></div>)
     const [stage3, setStage3] = React.useState(<div></div>)
     useEffect(() => {

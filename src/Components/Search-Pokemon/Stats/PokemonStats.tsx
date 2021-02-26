@@ -20,6 +20,7 @@ import {
     ErrorCol,
     Id,
     Loading,
+    LoadingCol,
     LoadingImg,
     LazyImage
 } from './StatsStyles';
@@ -49,17 +50,17 @@ const PokemonStats: React.FC<Props> = ({
     const [img, setImg] = React.useState(
         <Loading>
             <Row className="justify-content-center mt-5">
-                <Col xs="auto">
+                <LoadingCol xs="auto">
                     <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
-                </Col>
+                </LoadingCol>
             </Row>
         </Loading>);
     const [info, setInfo] = React.useState<infoType>();
     const [loading, setLoading] = React.useState(<Loading>
         <Row className="justify-content-center mt-5">
-            <Col xs="auto">
+            <LoadingCol xs="auto">
                 <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
-            </Col>
+            </LoadingCol>
         </Row>
     </Loading>);
     const [stop, setStop] = React.useState<Boolean>(false);
@@ -184,7 +185,6 @@ const PokemonStats: React.FC<Props> = ({
                         </Col>
                     </Row>
                 </Col>
-                
             </Row>
             <DefensiveCoverage type1={type1} type2={type2}/>
             <OffensiveCoverage type1={type1} type2={type2}/>
@@ -192,7 +192,6 @@ const PokemonStats: React.FC<Props> = ({
         : loading }
         </>
     );
-
 }
 
 export default PokemonStats;

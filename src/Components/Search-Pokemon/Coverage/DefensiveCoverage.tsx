@@ -1,11 +1,7 @@
 import React from 'react';
 import Calculator from '../../Type-Calculator/Calc/DefensiveCalculator';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-
-import {
-    Title
-} from './CoverageStyles';
+import { Title, TitleCol } from './CoverageStyles';
 
 type Props = {
     type1: string,
@@ -19,10 +15,10 @@ const DefensiveCoverage: React.FC<Props> = ({
 
     return (
         <div className="mt-5">
-            <Row className="justify-content-center mt-2">
-                <Col xs="auto">
+            <Row className="justify-content-start mt-2 p-2">
+                <TitleCol xs="auto">
                     <Title>Defensive Coverage:</Title>
-                </Col>
+                </TitleCol>
             </Row>
             <Calculator type1={type1} type2={type2}/>
         </div>

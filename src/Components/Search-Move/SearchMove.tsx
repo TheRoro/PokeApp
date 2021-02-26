@@ -8,6 +8,7 @@ import moveInfoInit from '../../Assets/json/moveInfo.json';
 import MoveInfo from './MoveInfo';
 import Autocomplete from '../Tools/SearchEngine/SearchEngine';
 import moveList from '../Tools/MoveList';
+import PokeBall from '../../Assets/pokeapp.png';
 
 import {
     Switch,
@@ -20,7 +21,9 @@ import {
     Text,
     Title,
     SearchContainer,
-    Bidoof404Img
+    Bidoof404Img,
+    LoadingCol,
+    LoadingImg
 } from './SearchMoveStyles'
 
 type pokemonInfo = {};
@@ -73,9 +76,9 @@ const SearchMove: React.FC<{}> = () =>{
         try {
             setLoading(
                 <Row className="justify-content-center mt-5">
-                    <Col xs="auto">
-                        <p>Loading...</p>
-                    </Col>
+                    <LoadingCol xs="auto">
+                        <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
+                    </LoadingCol>
                 </Row>);
             var apiUrl = 'https://pokeapi.co/api/v2/move/' + formatedName + '/';
             const resp = await axios.get(apiUrl);
@@ -100,9 +103,9 @@ const SearchMove: React.FC<{}> = () =>{
         try {
             setLoading(
                 <Row className="justify-content-center mt-5">
-                    <Col xs="auto">
-                        <p>Loading...</p>
-                    </Col>
+                    <LoadingCol xs="auto">
+                        <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
+                    </LoadingCol>
                 </Row>);
             var apiUrl = 'https://pokeapi.co/api/v2/move/' + name + '/';
             const resp = await axios.get(apiUrl);

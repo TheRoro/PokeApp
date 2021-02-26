@@ -27,6 +27,7 @@ import {
     Icon,
     ImgIcon,
     Loading,
+    LoadingCol,
     Image
 } from './Styles';
 
@@ -96,9 +97,9 @@ const SearchPokemon: React.FC<{}> = () =>{
             setLoading(
             <Loading>
                 <Row className="justify-content-center mt-5">
-                    <Col xs="auto">
+                    <LoadingCol xs="auto">
                         <Image src={PokeBall} alt="pokeball"></Image>
-                    </Col>
+                    </LoadingCol>
                 </Row>
             </Loading>);
             var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + formatedName + '/';
@@ -121,9 +122,9 @@ const SearchPokemon: React.FC<{}> = () =>{
             setLoading(
             <Loading>
                 <Row className="justify-content-center mt-5">
-                    <Col xs="auto">
+                    <LoadingCol xs="auto">
                         <Image src={PokeBall} alt="pokeball"></Image>
-                    </Col>
+                    </LoadingCol>
                 </Row>
             </Loading>);
             var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + name.toLowerCase() + '/';

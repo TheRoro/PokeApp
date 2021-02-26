@@ -30,6 +30,12 @@ export const LazyImage = styled(LazyLoadImage)`
     max-height: 400px;
 `
 
+export const LoadingCol = styled(Col)`
+    max-height: 35%;
+    max-width: 35%;
+    min-width: 100px;
+    min-height: 100px;
+`
 
 export const Image = styled.img`
     height: 100%;

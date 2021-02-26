@@ -1,5 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import Container from 'react-bootstrap/Container';
+import { Col } from 'react-bootstrap';
 
 export const SearchContainer = styled(Container)`
     height: 75%;
@@ -27,6 +28,13 @@ const rotate = keyframes`
     transform: rotate(360deg);
   }
 `;
+
+export const LoadingCol = styled(Col)`
+    max-height: 35%;
+    max-width: 35%;
+    min-width: 100px;
+    min-height: 100px;
+`
 
 export const Image = styled.img`
     transition: 0.3s ease-in-out;

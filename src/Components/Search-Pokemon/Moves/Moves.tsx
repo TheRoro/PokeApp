@@ -13,6 +13,7 @@ import {
     Text3,
     Subtitle,
     Subtitle2,
+    LoadingCol,
     LoadingImg
 } from './MovesStyles';
 
@@ -103,13 +104,13 @@ const Moves: React.FC<Props> = ({
                     </Row>
                     <Row className="justify-content-center">
                         <Col xs="auto">
-                            <Text>(Updated to: Ultra-Sun and Ultra-Moon 7th Gen)</Text>
+                            <Text>(Some recent pokemon might not have moves)</Text>
                         </Col>
                     </Row>
                     {loading && <Row className="justify-content-center">
-                        <Col xs="auto">
+                        <LoadingCol xs="auto">
                             <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
-                        </Col>
+                        </LoadingCol>
                     </Row>}
                     {!loading &&
                     <>

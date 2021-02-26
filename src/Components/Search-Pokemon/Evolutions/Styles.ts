@@ -1,5 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 import Container from 'react-bootstrap/Container';
+import { Col } from 'react-bootstrap';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 export const EvolutionsContainer = styled(Container)`
@@ -41,6 +42,13 @@ const rotate = keyframes`
     transform: rotate(360deg);
   }
 `;
+
+export const LoadingCol = styled(Col)`
+    height: 12%;
+    width: 12%;
+    min-width: 100px;
+    min-height: 100px;
+`
 
 export const LoadingImg = styled.img`
     transition: 0.3s ease-in-out;

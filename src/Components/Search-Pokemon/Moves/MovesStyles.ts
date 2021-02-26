@@ -1,4 +1,5 @@
 import styled, { keyframes } from 'styled-components';
+import { Col } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 
 export const MovesContainer = styled(Container)`
@@ -49,6 +50,13 @@ const rotate = keyframes`
     transform: rotate(360deg);
   }
 `;
+
+export const LoadingCol = styled(Col)`
+    height: 12%;
+    width: 12%;
+    min-width: 100px;
+    min-height: 100px;
+`
 
 export const LoadingImg = styled.img`
     transition: 0.3s ease-in-out;
