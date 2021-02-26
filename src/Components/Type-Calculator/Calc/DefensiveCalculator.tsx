@@ -144,7 +144,6 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
     let immunities = <div></div>;
     let damage025 = <div></div>;
     let damage050 = <div></div>;
-    // let normalDamage = <div></div>;
     let damage2 = <div></div>;
     let damage4 = <div></div>;
 
@@ -153,13 +152,13 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
             immunities = 
             <Row className="mb-5">
                 <Col xs={12}>
-                    <Row className="justify-content-md-start justify-content-center">
+                    <Row className="justify-content-start">
                         <Title>Immune to:</Title>
                     </Row>
                     <TypeRow className="justify-content-start">
                         {effects[0].map((type, index) => (
                             <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
-                                <Row className="justify-content-md-start justify-content-center">
+                                <Row className="justify-content-start">
                                     <Col xs="auto">
                                         <Text className={`${type}`} key={index}> {type}</Text>
                                     </Col>
@@ -174,13 +173,13 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
             damage025 = 
             <Row className="mb-5">
                 <Col xs={12}>
-                    <Row className="justify-content-md-start justify-content-center">
+                    <Row className="justify-content-start">
                         <Title>Resistant x0.25 to:</Title>
                     </Row>
                     <TypeRow className="justify-content-start">
                         {effects[1].map((type, index) => (
                             <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
-                                <Row className="justify-content-md-start justify-content-center">
+                                <Row className="justify-content-start">
                                     <Col xs="auto">
                                         <Text className={`${type}`} key={index}> {type}</Text>
                                     </Col>
@@ -195,13 +194,13 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
             damage050 = 
             <Row className="mb-5">
                 <Col xs={12}>
-                    <Row className="justify-content-md-start justify-content-center">
+                    <Row className="justify-content-start">
                         <Title>Resistant x0.50 to:</Title>
                     </Row>
                     <TypeRow className="justify-content-start">
                         {effects[2].map((type, index) => (
                             <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
-                                <Row className="justify-content-md-start justify-content-center">
+                                <Row className="justify-content-start">
                                     <Col xs="auto">
                                         <Text className={`${type}`} key={index}> {type}</Text>
                                     </Col>
@@ -212,38 +211,17 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
                 </Col>
             </Row>
         }
-        // if(Array.isArray(effects[3]) && effects[3].length !== 0) {
-        //     normalDamage = 
-        //     <Row className="mb-5">
-        //         <Col xs={12}>
-        //             <Row className="justify-content-md-start justify-content-center">
-        //                 <Title>Normal Damage:</Title>
-        //             </Row>
-        //             <Row className="justify-content-start">
-        //                 {effects[3].map((type, index) => (
-        //                     <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
-        //                         <Row className="justify-content-md-start justify-content-center">
-        //                             <Col xs="auto">
-        //                                 <Text className={`${type}`} key={index}> {type}</Text>
-        //                             </Col>
-        //                         </Row>
-        //                     </Col>
-        //                 ))} 
-        //             </Row>
-        //         </Col>
-        //     </Row>
-        // }
         if(Array.isArray(effects[4]) && effects[4].length !== 0) {
             damage2 = 
             <Row className="mb-5">
                 <Col xs={12}>
-                    <Row className="justify-content-md-start justify-content-center">
+                    <Row className="justify-content-start">
                         <Title>Weak x2 to:</Title>
                     </Row>
                     <TypeRow className="justify-content-start">
                         {effects[4].map((type, index) => (
                             <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
-                                <Row className="justify-content-md-start justify-content-center">
+                                <Row className="justify-content-start">
                                     <Col xs="auto">
                                         <Text className={`${type}`} key={index}> {type}</Text>
                                     </Col>
@@ -258,13 +236,13 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
             damage4 = 
             <Row className="mb-5">
                 <Col xs={12}>
-                    <Row className="justify-content-md-start justify-content-center">
+                    <Row className="justify-content-start">
                         <Title>Weak x4 to:</Title>
                     </Row>
                     <TypeRow className="justify-content-start">
                         {effects[5].map((type, index) => (
                             <Col key={index} xs={12} sm={4} md={3} lg={3} xl={2}>
-                                <Row className="justify-content-md-start justify-content-center">
+                                <Row className="justify-content-start">
                                     <Col xs="auto">
                                         <Text className={`${type}`} key={index}> {type}</Text>
                                     </Col>
@@ -277,14 +255,13 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) =>{
         }
     }
     return(
-    <Row>
+    <Row className="p-2">
         <Col xs={12}>
             {damage4}
             {damage2}
             {damage050}
             {damage025}
             {immunities}
-            {/* {normalDamage} */}
         </Col>
     </Row>
     )
