@@ -32,9 +32,9 @@ export const Link = styled.a`
     font-weight: 200;
     color: #b8b8b8;
     text-decoration: none;
+    transition: all .3s ease-in-out;
     &:hover{
-        text-decoration: none;
-        opacity: 0.8;
+        opacity: .6;
     }
 `
 
@@ -49,9 +49,11 @@ export const Col = styled(BCol)`
 export const Image = styled(LazyLoadImage)`
     height: 25vw;
     width: 40vw;
-    min-width: 210px;
+    min-width: 250px;
     min-height: 150px;
     max-width: 400px;
     max-height: 250px;
-    border-radius: 10px;
+    border-radius: 5px;
+    object-fit: cover;
+    transition: all .3s ease-in-out;
 `
