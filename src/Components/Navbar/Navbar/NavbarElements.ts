@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import {Link as LinkR} from 'react-router-dom';
+import styled, {css} from 'styled-components';
+import {NavLink as LinkR} from 'react-router-dom';
 
 export const Nav = styled.nav`
     height: 10%;
@@ -27,8 +27,15 @@ export const NavbarContainer = styled.div`
     padding: 0 24px;
 `
 
+const glowColor = '#FFF';
+
+const glow = css`
+    color: #fafafa;
+    text-shadow: 0 0 1px ${glowColor}, 0 0 1px ${glowColor}, 0 0 1px ${glowColor}, 0 0 1px ${glowColor}, 0 0 1px ${glowColor}, 0 0 1px ${glowColor}, 0 0 4px ${glowColor};
+`;
+
 export const NavLogo = styled(LinkR)`
-    color: #d1d1d1;
+    color: #fafafa;
     justify-self: flex-start;
     cursor: pointer;
     font-size: 1.5rem;
@@ -37,31 +44,32 @@ export const NavLogo = styled(LinkR)`
     margin-left: 0;
     font-weight: bold;
     text-decoration: none;
-
-    &:hover {
-        color: #F4D849;
-        text-decoration: none;
-        /* opacity: 0.8; */
+    border-bottom: 1px solid #121212;
+    transition: all .2s ease-in-out;
+    &.active {
+        opacity: 1;
+        ${glow};
+        &:hover {
+            opacity: .9;
+        }
     }
 
-    &.active {
-        border-bottom: 3px solid #F4D849;
+    &:hover {
+        ${glow};
+        text-decoration: none;
+        opacity: 1;
     }
 `
 
 export const MobileIcon = styled.div`
     display: none;
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 990px) {
         display: block;
         height: 50px;
-        /* position: absolute; */
-        /* top: 0;
-        right: 0; */
-        /* transform: translate(-100%, 60%); */
         font-size: 1.8rem;
         cursor: pointer;
-        color: #d1d1d1;
+        color: #fafafa;
     }
 `
 
@@ -73,40 +81,47 @@ export const NavMenu = styled.ul`
     list-style: none;
     text-align: center;
     margin: 0;
+    padding: 0;
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 990px) {
         display: none;
     } 
 `
 
 export const NavItem = styled.li`
-    height: 80px;
+    /* height: 80px; */
 `
 
-export const NavLinks = styled.button`
+export const NavLinks = styled(LinkR)`
     border: none;
     background: none;
     cursor: pointer;
-    margin: 0;
     padding: 0;
     outline: none!important;
     display: flex;
     align-items: center;
     text-decoration: none;
-    padding: 0 1rem;
+    padding-bottom: .1rem;
+    margin: 0 1.5rem;
     height: 100%;
     font-size: 1.2rem;
     cursor: pointer;
-    color: #bababa;
-
+    border-bottom: 1px solid #121212;
+    color: #fafafa;
+    opacity: .9;
+    transition: all .2s ease-in-out;
     &.active {
-        color: #F4D849;
+        opacity: 1;
+        ${glow};
+        &:hover {
+            opacity: .9;
+        }
     }
 
     &:hover {
-        color: #F4D849;
+        ${glow};
         text-decoration: none;
-        /* opacity: 0.8; */
+        opacity: 1;
     }
 `
 
@@ -114,27 +129,7 @@ export const NavBtn = styled.nav`
     display: flex;
     align-items: center;
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 990px) {
         display: none;
-    }
-`
-
-export const NavBtnLink = styled(LinkR)`
-    border-radius: 50px;
-    background: #F4D849;
-    white-space: nowrap;
-    padding: 10px 22px;
-    color: #010606;
-    font-size: 16px;
-    outline: none;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    text-decoration: none;
-
-    &:hover {
-        transition: all 0.2s ease-in-out;
-        background: #fff;
-        color: #010606;
     }
 `

@@ -1,76 +1,43 @@
 import React from 'react'
-import { useHistory } from "react-router-dom";
-import ReactGA from 'react-ga';
-import {FaBars} from 'react-icons/fa';
+import { FaBars } from 'react-icons/fa';
 import { 
     Nav, 
     NavbarContainer, 
     NavLogo, 
     MobileIcon, 
     NavMenu, 
-    NavItem, 
-    NavLinks
+    NavItem,
+    NavLinks as NavLink
 } from './NavbarElements';
 
 type Props = {
     toggle: any
 }
 
-const Navbar: React.FC<Props> = ({
-    toggle
-}) => {
-    const history = useHistory();
-    const clickHandler = (value: string) => {
-        switch(value) { 
-            case 'search': { 
-                ReactGA.event({
-                    category: 'Button',
-                    action: 'Search Pokemon'
-                  })
-                history.push(`/search`);
-                break; 
-            } 
-            case 'move': { 
-                ReactGA.event({
-                    category: 'Button',
-                    action: 'Search Move'
-                  })
-                history.push(`/move`);
-                break; 
-            } 
-            default: { 
-                ReactGA.event({
-                    category: 'Button',
-                    action: 'Type Calculator'
-                  })
-                history.push(`/calc`);
-                break; 
-            } 
-        }
-    }
+const Navbar: React.FC<Props> = ({ toggle }) => {
     return (
         <>
             <Nav>
                 <NavbarContainer>
-                    <NavLogo to="/">PokeApp</NavLogo>
+                    <NavLogo exact to="/">PokeApp</NavLogo>
                     <MobileIcon onClick={toggle}>
                         <FaBars/>
                     </MobileIcon>
                     <NavMenu>
                         <NavItem>
-                            <NavLinks onClick={() => clickHandler('search')}>Search Pokemon</NavLinks>
+                            <NavLink exact to="/search">Search Pokemon</NavLink>
                         </NavItem>
                         <NavItem>
-                            <NavLinks onClick={() => clickHandler('move')}>Search Move</NavLinks>
+                            <NavLink exact to="/move">Search Move</NavLink>
                         </NavItem>
                         <NavItem>
-                            <NavLinks onClick={() => clickHandler('calc')}>Type Calculator</NavLinks>
+                            <NavLink exact to="/calc">Type Calculator</NavLink>
                         </NavItem>
                     </NavMenu>
                 </NavbarContainer>
             </Nav>
         </>
-    )
+    );
 }
 
 export default Navbar;

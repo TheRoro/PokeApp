@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {
     Row as BRow,
     Col as BCol,
@@ -29,6 +29,13 @@ export const Text = styled.p`
     text-align: center;
 `
 
+const glowColor = '#FFF';
+
+const glow = css`
+    color: #fafafa;
+    text-shadow: 0 0 1px ${glowColor}, 0 0 1px ${glowColor}, 0 0 1px ${glowColor}, 0 0 1px ${glowColor}, 0 0 1px ${glowColor}, 0 0 1px ${glowColor}, 0 0 4px ${glowColor};
+`;
+
 export const FooterLink = styled.button`
     border: none;
     background: none;
@@ -38,9 +45,19 @@ export const FooterLink = styled.button`
     font-size:calc(10px + 0.6vw);
     font-weight: 200;
     color: #b8b8b8;
-    &:hover{
+    transition: all .2s ease-in-out;
+    &.active {
+        opacity: 1;
+        ${glow};
+        &:hover {
+            opacity: .9;
+        }
+    }
+
+    &:hover {
+        ${glow};
         text-decoration: none;
-        color: #F4D849;
+        opacity: 1;
     }
 `
 
