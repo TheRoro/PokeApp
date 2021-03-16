@@ -36,6 +36,7 @@ const glow = css`
 
 export const NavLogo = styled(LinkR)`
     color: #fafafa;
+    opacity: .6;
     justify-self: flex-start;
     cursor: pointer;
     font-size: 1.5rem;
@@ -47,15 +48,15 @@ export const NavLogo = styled(LinkR)`
     border-bottom: 1px solid #121212;
     transition: all .2s ease-in-out;
     &.active {
+        color: #fafafa;
         opacity: 1;
-        ${glow};
         &:hover {
-            opacity: .9;
+            opacity: .8;
         }
     }
 
     &:hover {
-        ${glow};
+        color: #fafafa;
         text-decoration: none;
         opacity: 1;
     }
@@ -108,18 +109,18 @@ export const NavLinks = styled(LinkR)`
     cursor: pointer;
     border-bottom: 1px solid #121212;
     color: #fafafa;
-    opacity: .9;
+    opacity: .6;
     transition: all .2s ease-in-out;
     &.active {
         opacity: 1;
-        ${glow};
+        color: #fafafa;
         &:hover {
-            opacity: .9;
+            opacity: .8;
         }
     }
 
     &:hover {
-        ${glow};
+        color: #fafafa;
         text-decoration: none;
         opacity: 1;
     }
