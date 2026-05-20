@@ -1,7 +1,10 @@
 {
   "name": "pokeapp",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",

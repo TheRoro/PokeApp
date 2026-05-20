@@ -1,56 +1,47 @@
-# PokeApp - Pokemon Search Engine and Type Calculator
+# PokeApp — Pokédex Search Engine & Type Calculator
 
-PokeApp is a Pokemon Search Engine and type calculator developed in React + TypeScript. It fetches data from an external API (PokeAPI) using Axios and filters the most accurate results based on the user input. It also takes advantage of React Hooks, Function Components, Use Effect, etc. The prototyping was made using Adobe XD, and the views were made using Bootstrap and Styled Components.
+A Pokédex-inspired web app built with React + TypeScript. Search Pokémon, explore moves, calculate type matchups, and discover team-building insights — all powered by [PokeAPI](https://pokeapi.co/).
 
-This Web Application was possible using PokeAPI: [PokeAPI Documentation](https://pokeapi.co/)
+## Features
 
-## Functionalities
+- **Search Pokémon** — View stats, types, evolution chains, and movesets. Clickable evolutions for quick navigation.
+- **Search Move** — Detailed move info including type, category, power, accuracy, and effect descriptions.
+- **Type Calculator** — Select a type combo to see defensive/offensive coverage using updated terminology (Extremely Effective, Mostly Ineffective). Displays Pokémon that share your selected type combination.
+- **Full Pokédex (Gen 1–9)** — All 1025 Pokémon from Kanto through Paldea, including regional forms and Paradox Pokémon.
+- **Shiny Easter Egg** — 1/100 chance of encountering a shiny sprite when searching a Pokémon ✨
+- **Pokémon Quotes** — 135 iconic quotes from games and anime on the home page.
 
-- **Search Pokemon:** View detailed stats, weaknesses, evolution chain, and attacks for your favorite Pokemon.
+## Tech Stack
 
-- **Search Move:** Get information about various Pokemon moves and their details.
+- React 18 + TypeScript 5
+- React Router v6
+- Bootstrap 5 / react-bootstrap 2
+- styled-components v5
+- Axios
+- PokeAPI
 
-- **Type Calculator:** Determine the type effectiveness of different Pokemon types, making it a valuable tool for strategic battles.
+## Design
 
-- **Latest Data:** PokeApp includes all the latest information directly from the PokeAPI.
+Pokédex device-inspired dark theme featuring:
+- Charcoal background with red accent borders and indicator lights
+- Type-colored pills, coverage cards, and ghost-style buttons
+- Responsive layout optimized for desktop and mobile
 
-## Example
+## Access
 
-Here's an example of what you can find on PokeApp:
-
-![Bulbasaur Example](https://rodrigoramirez.dev/projects/pokeapp.png)
-
-You can also view more details about Bulbasaur on the PokeApp website: [Bulbasaur on PokeApp](https://pokeapp.onrender.com/search/bulbasaur)
-
-## Home Page
-
-The home page of PokeApp features a random quote from the Pokemon series/games, adding a touch of nostalgia for Pokemon fans.
-
-## Direct Access to Pokemon
-
-You can access Pokemon directly through the URL in two ways:
-
-- By **Name**: Append the Pokemon's name to the URL (e.g., https://pokeapp.onrender.com/search/bulbasaur).
-
-- By **ID**: Use the Pokemon's Pokedex number to access it (e.g., https://pokeapp.onrender.com/search/1 for Bulbasaur).
-
-## Responsive Design
-
-PokeApp is designed to be responsive, ensuring an optimal user experience across different devices and screen sizes.
-
-## Access the Web App
-
-You can access the PokeApp web application using the following links:
-
-- [PokeApp Home](https://pokeapp.onrender.com/)
-- [Search Pokemon](https://pokeapp.onrender.com/search/)
+- [Home](https://pokeapp.onrender.com/)
+- [Search Pokémon](https://pokeapp.onrender.com/search/)
 - [Search Move](https://pokeapp.onrender.com/move)
 - [Type Calculator](https://pokeapp.onrender.com/calc)
 
+You can access any Pokémon directly by name or ID:
+- `https://pokeapp.onrender.com/search/pikachu`
+- `https://pokeapp.onrender.com/search/25`
+
 ## Deployment
 
-PokeApp is deployed using CI/CD (Continuous Integration/Continuous Deployment) on [Render](https://render.com/).
+Deployed with CI/CD on [Render](https://render.com/).
 
-Enjoy using PokeApp for all your Pokemon-related needs!
+---
 
 Made with 🦔 by [@TheRoro](https://github.com/TheRoro)
