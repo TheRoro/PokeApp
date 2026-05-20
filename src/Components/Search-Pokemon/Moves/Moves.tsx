@@ -1,4 +1,4 @@
-import React, {useEffect, useCallback} from 'react';
+import React, {useEffect} from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Navigation from '../../Tools/Navigation/Navigation';
@@ -38,40 +38,45 @@ const Moves: React.FC<Props> = ({
         return value.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
     }
 
-    const everything = useCallback(() => {
-        const promises = [];
-        for(let i = 0; i < pkmnInfo.moves.length; i++){
-            const url = pkmnInfo.moves[i].move.url;
-            promises.push(axios.get(url));
-        }
-        Promise.all(promises).then((responses) => {
-            const levelUp: LvlType[] = [];
-            for (let i = 0; i < responses.length; i++) {
-                const size = pkmnInfo.moves[i].version_group_details.length;
-                const learn_method = pkmnInfo.moves[i].version_group_details[size - 1].move_learn_method.name;
-                const lvl = pkmnInfo.moves[i].version_group_details[size - 1].level_learned_at;
-                const moveName = pretty(responses[i].data.name);
-                const power = responses[i].data.power;
-                const type = pretty(responses[i].data.type.name);
-                if(learn_method === "level-up") {
-                    const temp: LvlType = {
-                        lvl: lvl,
-                        name: moveName,
-                        power: power,
-                        type: type
-                    };
-                    levelUp.push(temp);
-                }
-            }
-            levelUp.sort((a: LvlType, b: LvlType) => a.lvl - b.lvl);
-            setMaLevel(levelUp);
-            setLoading(false);
-        });
-    },[pkmnInfo.moves]);
-
     useEffect(() => {
-        everything();
-    },[everything]);
+        let cancelled = false;
+
+        const fetchAndProcess = async () => {
+            setLoading(true);
+            try {
+                // Always fetch fresh data from URL param
+                const resp = await axios.get(`https://pokeapi.co/api/v2/pokemon/${name}/`);
+                const data = resp.data;
+
+                const promises = data.moves.map((m: any) => axios.get(m.move.url));
+                const responses = await Promise.all(promises);
+
+                if (cancelled) return;
+
+                const levelUp: LvlType[] = [];
+                for (let i = 0; i < responses.length; i++) {
+                    const size = data.moves[i].version_group_details.length;
+                    const learn_method = data.moves[i].version_group_details[size - 1].move_learn_method.name;
+                    const lvl = data.moves[i].version_group_details[size - 1].level_learned_at;
+                    const moveName = pretty(responses[i].data.name);
+                    const power = responses[i].data.power;
+                    const type = pretty(responses[i].data.type.name);
+                    if(learn_method === "level-up") {
+                        levelUp.push({ lvl, name: moveName, power, type });
+                    }
+                }
+                levelUp.sort((a: LvlType, b: LvlType) => a.lvl - b.lvl);
+                setMaLevel(levelUp);
+                setLoading(false);
+            } catch (err) {
+                console.error(err);
+                if (!cancelled) setLoading(false);
+            }
+        };
+
+        fetchAndProcess();
+        return () => { cancelled = true; };
+    }, [name]);
 
     return (
         <MovesContainer>
