@@ -2,67 +2,105 @@ import styled, { keyframes } from 'styled-components';
 import { Col } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 
+const fadeInUp = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
 export const MovesContainer = styled(Container)`
-    height: 95%;
+    min-height: 80vh;
+    padding: 1rem 1rem 2rem;
+    animation: ${fadeInUp} 0.6s ease forwards;
 `
 
 export const Title = styled.h1`
-    font-size:calc(30px + 3vw);
+    font-size: calc(20px + 1.8vw);
     font-weight: 900;
     text-align: center;
+    letter-spacing: 0.05em;
+    color: #fff;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(220, 10, 45, 0.3);
 `
+
 export const Subtitle = styled.p`
-    font-size:calc(10px + 1vw);
-    color: #666666;
-    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-secondary, #b0b0c0);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.5rem;
 `
 
 export const Subtitle2 = styled.p`
-    font-size:calc(10px + 1vw);
-    color: #666666;
-    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-secondary, #b0b0c0);
+    font-weight: 700;
     text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.5rem;
 `
 
 export const Text = styled.p`
-    font-size:calc(10px + 1vw);
-    color: #666666;
+    font-size: 0.9rem;
+    color: var(--text-secondary, #b0b0c0);
     text-align: center;
 `
 
 export const Text2 = styled.p`
-    font-size:calc(10px + 0.6vw);
+    font-size: 0.9rem;
     font-weight: 500;
+    color: var(--text-primary, #f5f5f5);
+    margin-bottom: 0;
 `
 
 export const Text3 = styled.p`
-    font-size:calc(10px + 0.6vw);
-    font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 600;
     text-align: center;
+    color: var(--text-primary, #f5f5f5);
+    margin-bottom: 0;
+`
+
+export const MoveRow = styled.div`
+    display: grid;
+    grid-template-columns: 50px 1fr 1fr 60px;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid currentColor;
+    margin-bottom: 0.35rem;
+    transition: background 0.15s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+`
+
+export const MoveHeader = styled.div`
+    display: grid;
+    grid-template-columns: 50px 1fr 1fr 60px;
+    gap: 0.5rem;
+    padding: 0.5rem 0.8rem 0.25rem;
+    margin-bottom: 0.25rem;
 `
 
 const rotate = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 `;
 
 export const LoadingCol = styled(Col)`
-    height: 12%;
-    width: 12%;
-    min-width: 100px;
-    min-height: 100px;
+    min-width: 80px;
+    min-height: 80px;
+    margin-top: 2rem;
 `
 
 export const LoadingImg = styled.img`
-    transition: 0.3s ease-in-out;
     animation: ${rotate} 1s linear infinite;
-    height: 100%;
-    width: 100%;
-    max-width: 400px;
-    max-height: 400px;
+    width: 80px;
+    height: 80px;
 `

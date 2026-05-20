@@ -10,162 +10,170 @@ import Autocomplete from '../Tools/SearchEngine/SearchEngine';
 import moveList from '../Tools/MoveList';
 import PokeBall from '../../Assets/pokeapp.png';
 
-import {
-    Switch,
-    Route,
-    useRouteMatch,
-    useHistory
-} from "react-router-dom";
+import { Route, Routes, useNavigate } from 'react-router-dom';
 
 import {
-    Text,
-    Title,
-    SearchContainer,
-    Bidoof404Img,
-    LoadingCol,
-    LoadingImg
-} from './SearchMoveStyles'
+  Text,
+  Title,
+  SearchContainer,
+  Bidoof404Img,
+  LoadingCol,
+  LoadingImg,
+} from './SearchMoveStyles';
 
 type pokemonInfo = {};
 
-const SearchMove: React.FC<{}> = () =>{
-    var max = moveList.length;
-    var rand =  Math.floor(Math.random() * Math.floor(max));
-    let match = useRouteMatch();
-    const history = useHistory();
-    const [formatedName, setFormatedName] = React.useState<string>(moveList[rand]);
-    const [prettyName, setPrettyName] = React.useState<string>(moveList[rand]);
-    const [moveInfo, setmoveInfo] = React.useState<pokemonInfo>(moveInfoInit);
-    const [loading, setLoading] = React.useState(<div></div>);
-
-    const formatName = (value: string) => {
-        let temp = "";
-        for(let i = 0; i < value.length; i++) {
-            if(value[i] === " " && i !== value.length - 1){
-                temp+="-";
-            }
-            else if(value[i] !== " "){
-                temp+=value[i];
-            }
-        }
-        temp = temp.toLowerCase();
-        setFormatedName(temp);
-        return temp;
+const SearchMove: React.FC = () => {
+  const max = moveList.length;
+  const rand = Math.floor(Math.random() * Math.floor(max));
+  const initialMove = moveList[rand];
+  const navigate = useNavigate();
+  const [formatedName, setFormatedName] = React.useState<string>(initialMove);
+  const [prettyName, setPrettyName] = React.useState<string>(() => {
+    let temp = '';
+    for (let i = 0; i < initialMove.length; i++) {
+      if (i === 0) {
+        temp += initialMove[0].toUpperCase();
+      } else if (initialMove[i] === '-') {
+        temp += ' ';
+      } else if (i !== 0 && initialMove[i - 1] === '-') {
+        temp += initialMove[i].toUpperCase();
+      } else {
+        temp += initialMove[i];
+      }
     }
+    return temp;
+  });
+  const [moveInfo, setmoveInfo] = React.useState<pokemonInfo>(moveInfoInit);
+  const [loading, setLoading] = React.useState(<div></div>);
 
-    const formatPretty = (value: string) => {
-        let temp = "";
-        for(let i = 0; i < value.length; i++) {
-            if(i === 0){
-                temp+=value[0].toUpperCase();
-            }
-            else if(value[i] === "-"){
-                temp+=" ";
-            }
-            else if(i !== 0 && value[i - 1] === "-"){
-                temp+=value[i].toUpperCase();
-            }
-            else {
-                temp+=value[i];
-            }
-        }
-        setPrettyName(temp);
+  const formatName = (value: string) => {
+    let temp = '';
+    for (let i = 0; i < value.length; i++) {
+      if (value[i] === ' ' && i !== value.length - 1) {
+        temp += '-';
+      } else if (value[i] !== ' ') {
+        temp += value[i];
+      }
     }
+    temp = temp.toLowerCase();
+    setFormatedName(temp);
+    return temp;
+  };
 
-    const searchByName = async () => {
-        try {
-            setLoading(
-                <Row className="justify-content-center mt-5">
-                    <LoadingCol xs="auto">
-                        <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
-                    </LoadingCol>
-                </Row>);
-            var apiUrl = 'https://pokeapi.co/api/v2/move/' + formatedName + '/';
-            const resp = await axios.get(apiUrl);
-            setmoveInfo(resp.data);
-            setLoading(<div></div>);
-            history.push(`${match.url}/info`);
-        }
-        catch(err) {
-            alert("Move Not Found");
-            setLoading(
-                <Row className="justify-content-center mt-5">
+  const formatPretty = (value: string) => {
+    let temp = '';
+    for (let i = 0; i < value.length; i++) {
+      if (i === 0) {
+        temp += value[0].toUpperCase();
+      } else if (value[i] === '-') {
+        temp += ' ';
+      } else if (i !== 0 && value[i - 1] === '-') {
+        temp += value[i].toUpperCase();
+      } else {
+        temp += value[i];
+      }
+    }
+    setPrettyName(temp);
+    return temp;
+  };
+
+  const searchByName = async () => {
+    try {
+      setLoading(
+        <Row className="justify-content-center mt-5">
+          <LoadingCol xs="auto">
+            <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
+          </LoadingCol>
+        </Row>
+      );
+      const apiUrl = 'https://pokeapi.co/api/v2/move/' + formatedName + '/';
+      const resp = await axios.get(apiUrl);
+      setmoveInfo(resp.data);
+      setLoading(<div></div>);
+      navigate('info');
+    } catch (err) {
+      alert('Move Not Found');
+      setLoading(
+        <Row className="justify-content-center mt-5">
+          <Col xs="auto">
+            <Bidoof404Img src={Bidoof404} alt={'404'} />
+          </Col>
+        </Row>
+      );
+      console.error(err);
+    }
+  };
+
+  const searchWithParam = async (name: string) => {
+    try {
+      setLoading(
+        <Row className="justify-content-center mt-5">
+          <LoadingCol xs="auto">
+            <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
+          </LoadingCol>
+        </Row>
+      );
+      const apiUrl = 'https://pokeapi.co/api/v2/move/' + name + '/';
+      const resp = await axios.get(apiUrl);
+      setmoveInfo(resp.data);
+      setLoading(<div></div>);
+      navigate('info');
+    } catch (err) {
+      alert('Move Not Found');
+      setLoading(
+        <Row className="justify-content-center mt-5">
+          <Col xs="auto">
+            <Bidoof404Img src={Bidoof404} alt={'404'} />
+          </Col>
+        </Row>
+      );
+      console.error(err);
+    }
+  };
+
+  const onValueChange = async (val: string, code: number) => {
+    formatPretty(val);
+    formatName(val);
+    if (code === 13) {
+      searchWithParam(formatName(val));
+    }
+  };
+
+  return (
+    <SearchContainer>
+      <Routes>
+        <Route path="info" element={<MoveInfo moveInfo={moveInfo} moveName={prettyName} />} />
+        <Route
+          index
+          element={
+            <Container className="full-height">
+              <Row className="full-height mt-5 mt-sm-4 mt-lg-5">
+                <Col xs={12}>
+                  <Row className="justify-content-center mt-0 mt-lg-5">
                     <Col xs="auto">
-                        <Bidoof404Img src={Bidoof404} alt={'404'}/>
+                      <Title>Search for a Move:</Title>
                     </Col>
-                </Row>
-                );
-            console.error(err);
-        }
-    }
-
-    const searchWithParam = async (name: string) => {
-        try {
-            setLoading(
-                <Row className="justify-content-center mt-5">
-                    <LoadingCol xs="auto">
-                        <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
-                    </LoadingCol>
-                </Row>);
-            var apiUrl = 'https://pokeapi.co/api/v2/move/' + name + '/';
-            const resp = await axios.get(apiUrl);
-            setmoveInfo(resp.data);
-            setLoading(<div></div>);
-            history.push(`${match.url}/info`);
-        }
-        catch(err) {
-            alert("Move Not Found");
-            setLoading(
-                <Row className="justify-content-center mt-5">
+                  </Row>
+                  <Row className="justify-content-center">
                     <Col xs="auto">
-                        <Bidoof404Img src={Bidoof404} alt={'404'}/>
+                      <Text>(Eg: Tackle, Thunder Shock)</Text>
                     </Col>
-                </Row>
-                );
-            console.error(err);
-        }
-    }
-    const onValueChange = async (val: string, code: number) => {
-        formatPretty(val);
-        formatName(val);
-        if(code === 13) {
-            searchWithParam(formatName(val));
-        }
-    }
-
-    return (
-        <SearchContainer>
-            <Switch>
-            <Route path={`${match.path}/info`}>
-                <MoveInfo moveInfo={moveInfo} moveName={prettyName}/>
-            </Route>
-            <Route path={`${match.path}/`}>
-                <Container className="full-height">
-                    <Row className="full-height mt-5 mt-sm-4 mt-lg-5">
-                        <Col xs={12}>
-                            <Row className="justify-content-center mt-0 mt-lg-5">
-                                <Col xs="auto">
-                                    <Title>Search for a Move:</Title>
-                                </Col>
-                            </Row>
-                            <Row className="justify-content-center">
-                                <Col xs="auto">
-                                    <Text>(Eg: Tackle, Thunder Shock)</Text>
-                                </Col>
-                            </Row>
-                            <Row className="justify-content-center mt-4">
-                                <Col xs="auto">
-                                    <Autocomplete options={moveList} onChangeValue={onValueChange} val={formatedName} search={searchByName}/>
-                                </Col>
-                            </Row>
-                            {loading}
-                        </Col>
-                    </Row>
-                </Container>
-            </Route>
-            </Switch>
-        </SearchContainer>
-    );
-}
+                  </Row>
+                  <Row className="justify-content-center mt-4">
+                    <Col xs="auto">
+                      <Autocomplete options={moveList} onChangeValue={onValueChange} val={prettyName} search={searchByName} />
+                    </Col>
+                  </Row>
+                  {loading}
+                </Col>
+              </Row>
+            </Container>
+          }
+        />
+      </Routes>
+    </SearchContainer>
+  );
+};
 
 export default SearchMove;

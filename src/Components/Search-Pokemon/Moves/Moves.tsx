@@ -1,4 +1,4 @@
-import React,{useEffect, useCallback} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Navigation from '../../Tools/Navigation/Navigation';
@@ -9,20 +9,15 @@ import {
     MovesContainer,
     Title,
     Text,
-    Text2,
-    Text3,
     Subtitle,
-    Subtitle2,
+    MoveRow,
+    MoveHeader,
     LoadingCol,
     LoadingImg
 } from './MovesStyles';
 
 type Props = {
     pkmnInfo: any,
-}
-
-interface ParamTypes {
-    name: string
 }
 
 type LvlType = {
@@ -35,50 +30,36 @@ type LvlType = {
 const Moves: React.FC<Props> = ({
     pkmnInfo
 }) =>{
-    let {name} = useParams<ParamTypes>();
+    const { name = '' } = useParams<'name'>();
     const [maLevel, setMaLevel] = React.useState<LvlType[]>();
     const [loading, setLoading] = React.useState(true);
 
     const pretty = (value: string) => {
-        let temp = "";
-        for(let i = 0; i < value.length; i++) {
-            if(i === 0){
-                temp+=value[0].toUpperCase();
-            }
-            else if(value[i] === "-"){
-                temp+=" ";
-            }
-            else if(i !== 0 && value[i - 1] === "-"){
-                temp+=value[i].toUpperCase();
-            }
-            else {
-                temp+=value[i];
-            }
-        }
-        return temp;
+        return value.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
     }
+
     const everything = useCallback(() => {
-        let promises = [];
+        const promises = [];
         for(let i = 0; i < pkmnInfo.moves.length; i++){
-            let url = pkmnInfo.moves[i].move.url;
+            const url = pkmnInfo.moves[i].move.url;
             promises.push(axios.get(url));
         }
         Promise.all(promises).then((responses) => {
-            let levelUp: LvlType[] = [];
+            const levelUp: LvlType[] = [];
             for (let i = 0; i < responses.length; i++) {
-                let size = pkmnInfo.moves[i].version_group_details.length;
-                let learn_method = pkmnInfo.moves[i].version_group_details[size - 1].move_learn_method.name;
-                let lvl = pkmnInfo.moves[i].version_group_details[size - 1].level_learned_at;
-                let name = pretty(responses[i].data.name);
-                let power = responses[i].data.power;
-                let type = pretty(responses[i].data.type.name);
+                const size = pkmnInfo.moves[i].version_group_details.length;
+                const learn_method = pkmnInfo.moves[i].version_group_details[size - 1].move_learn_method.name;
+                const lvl = pkmnInfo.moves[i].version_group_details[size - 1].level_learned_at;
+                const moveName = pretty(responses[i].data.name);
+                const power = responses[i].data.power;
+                const type = pretty(responses[i].data.type.name);
                 if(learn_method === "level-up") {
-                    let temp: LvlType = {
+                    const temp: LvlType = {
                         lvl: lvl,
-                        name: name,
+                        name: moveName,
                         power: power,
                         type: type
-                    }; 
+                    };
                     levelUp.push(temp);
                 }
             }
@@ -94,70 +75,39 @@ const Moves: React.FC<Props> = ({
 
     return (
         <MovesContainer>
-            <Navigation left={`/search/${name}/evolution`} right=""/>
-            <Row className="align-items-center full-height">
-                <Col xs={12} className="mb-5">
-                    <Row className="justify-content-center">
-                        <Col xs="auto">
-                            <Title>Moves:</Title>
-                        </Col>
-                    </Row>
-                    <Row className="justify-content-center">
-                        <Col xs="auto">
-                            <Text>(Some recent pokemon might not have moves)</Text>
-                        </Col>
-                    </Row>
-                    {loading && <Row className="justify-content-center">
-                        <LoadingCol xs="auto">
-                            <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
-                        </LoadingCol>
-                    </Row>}
-                    {!loading &&
-                    <>
-                    <Row className="mt-5 align-items-center justify-content-center">
-                        <h1>By Leveling up:</h1>
-                    </Row>
-                    <Row className="mt-5 align-items-center justify-content-center">
-                        <div className="full-width">
-                            <Row className="justify-content-center">
-                                <Col xs={3} sm={3} md={2}>
-                                    <Subtitle2>Level</Subtitle2>
-                                </Col>
-                                <Col xs={3} sm={3} md={2}>
-                                    <Subtitle>Name</Subtitle>
-                                </Col>
-                                <Col xs={3} sm={3} md={2}>
-                                    <Subtitle>Type</Subtitle>
-                                </Col>
-                                <Col xs={3} sm={3} md={1}>
-                                    <Subtitle>Power</Subtitle>
-                                </Col>
-                            </Row>
-                            {maLevel && maLevel.length>0 && maLevel.map((move, index) =>
-                            <Row className="justify-content-center" key={index}>
-                                <Col xs={3} sm={3} md={2}>
-                                    <Text3>{move.lvl}</Text3>
-                                </Col>
-                                <Col xs={3} sm={3} md={2}>
-                                    <Text2 className={move.type}>{move.name}</Text2>
-                                </Col>
-                                <Col xs={3} sm={3} md={2}>
-                                    <Text2 className={move.type}>{move.type}</Text2>
-                                </Col>
-                                <Col xs={3} sm={3} md={1}>
-                                    {move.power !== undefined ? 
-                                    <Text2>{move.power}</Text2>
-                                    : 
-                                    <Text2>-</Text2>
-                                    }
-                                </Col>
-                            </Row>
-                            )}
-                        </div>
-                    </Row>
-                    </>}
+            <div style={{ paddingTop: '0.5rem' }}>
+                <Navigation left={`/search/${name}/evolution`} right=""/>
+            </div>
+            <Row className="justify-content-center mt-3">
+                <Col xs="auto">
+                    <Title>Moves</Title>
                 </Col>
             </Row>
+            {loading && <Row className="justify-content-center">
+                <LoadingCol xs="auto">
+                    <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
+                </LoadingCol>
+            </Row>}
+            {!loading && maLevel && maLevel.length > 0 &&
+            <Row className="justify-content-center mt-4">
+                <Col xs={12} md={10} lg={8}>
+                    <Subtitle style={{ textAlign: 'center', fontSize: '1rem', marginBottom: '1rem' }}>By Leveling Up</Subtitle>
+                    <MoveHeader>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#b0b0c0', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center' }}>Lvl</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#b0b0c0', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Name</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#b0b0c0', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Type</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#b0b0c0', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center' }}>Pwr</span>
+                    </MoveHeader>
+                    {maLevel.map((move, index) => (
+                        <MoveRow key={index} className={move.type}>
+                            <span style={{ textAlign: 'center', fontWeight: 600, color: '#fff' }}>{move.lvl}</span>
+                            <span style={{ fontWeight: 600, color: '#fff' }}>{move.name}</span>
+                            <span style={{ fontWeight: 500, color: 'currentColor' }}>{move.type}</span>
+                            <span style={{ textAlign: 'center', fontWeight: 500, color: '#b0b0c0' }}>{move.power ?? '—'}</span>
+                        </MoveRow>
+                    ))}
+                </Col>
+            </Row>}
         </MovesContainer>
     );
 }

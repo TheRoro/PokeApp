@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { FaTimes } from 'react-icons/fa';
 import {Link as LinkR} from 'react-router-dom';
 
@@ -6,12 +6,23 @@ type Props = {
     isOpen: boolean
 }
 
+const slideIn = keyframes`
+    from {
+        opacity: 0;
+        transform: translateY(-16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+`;
+
 export const SidebarContainer = styled.aside`
     position: fixed;
     z-index: 999;
     width: 100%;
     height: 100%;
-    background: #121212;
+    background: linear-gradient(180deg, #b71c1c 0%, #8b0000 100%);
     display: grid;
     align-items: center;
     top: 0;
@@ -26,7 +37,7 @@ export const SidebarContainer = styled.aside`
 `
 
 export const CloseIcon = styled(FaTimes)`
-    color: #d1d1d1;
+    color: #f0f0f0;
 `
 
 export const Icon = styled.div`
@@ -37,47 +48,56 @@ export const Icon = styled.div`
     font-size: 2rem;
     cursor: pointer;
     outline: none;
+    transition: transform 0.2s ease, color 0.2s ease;
+
+    &:hover {
+        transform: rotate(90deg);
+        color: #fff;
+    }
 `
 
 export const SidebarWrapper = styled.div`
     color: #d1d1d1;
+    animation: ${slideIn} 0.35s ease forwards;
 `
 
 export const SidebarMenu = styled.ul`
     display: grid;
-    padding: 0;
+    padding: 0 1.5rem;
     margin: 0;
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(3, 80px);
+    grid-template-rows: repeat(3, 92px);
+    row-gap: 0.8rem;
     text-align: center;
 
     @media screen and (max-width: 480px) {
-        grid-template-rows: repeat(3, 80px);
+        grid-template-rows: repeat(3, 92px);
     }
 `
 
 export const SidebarLink = styled.button`
-    border: none;
-    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.08);
     cursor: pointer;
     margin: 0;
-    padding: 0;
+    padding: 0 1.5rem;
     outline: none!important;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.45rem;
+    font-weight: 700;
     text-decoration: none;
     list-style: none;
-    transition: 0.2s ease-in-out;
-    text-decoration: none;
-    color: #d1d1d1;
-    cursor: pointer;
+    transition: 0.22s ease-in-out;
+    color: #fff;
+    border-radius: 22px;
 
     &:hover {
-        color: #F4D849;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.16);
         text-decoration: none;
-        transition: 0.2s ease-in-out;
+        transform: translateY(-3px);
     }
 `
 

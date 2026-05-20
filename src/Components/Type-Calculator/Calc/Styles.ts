@@ -3,26 +3,50 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 export const TypeRow = styled(Row)`
-    margin: 0px 2% 0px 2%;
+    margin: 0;
+    padding: 0.25rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
 `
 
-export const Title = styled.h1`
-    font-size:calc(20px + 1vw);
-    font-weight: 100;
-    text-align: center;
-    padding-bottom: 1.5rem;
+export const Title = styled.h2`
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-secondary, #b0b0c0);
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.4rem 0;
+    margin-bottom: 0;
 `
 
 export const SubTitle = styled.p`
-    font-size:calc(20px + 1.5vw);
-    font-weight: 500;
-    margin-bottom: .1rem;
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin-bottom: 0;
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border-left: 5px solid currentColor;
+    display: inline-flex;
+    align-items: center;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
 `
 
-export const Text = styled.p`
-    font-size:calc(20px + 0.5vw);
+export const Text = styled.span`
+    font-size: 1.1rem;
     font-weight: 700;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin: 0.15rem 0.1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 `
+
 export const TypeCol = styled(Col)`
     padding: 0;
 `
@@ -32,77 +56,40 @@ type UnderlineProps = {
 }
 
 export const UnderlinedRow = styled(Row)<UnderlineProps>`
-    
-    ${props => props.type === 'Bug'
-    &&`
-        border-bottom: 1px solid #C0E11D;
-    `};
-    ${props => props.type === 'Dark'
-    &&`
-        border-bottom: 1px solid #51453C;
-    `};
-    ${props => props.type === 'Dragon'
-    &&`
-        border-bottom: 1px solid #6200EA;
-    `};
-    ${props => props.type === 'Electric'
-    &&`
-        border-bottom: 1px solid #FFFF00;
-    `};
-    ${props => props.type === 'Fairy'
-    &&`
-        border-bottom: 1px solid #FF6FDE;
-    `};
-    ${props => props.type === 'Fighting'
-    &&`
-        border-bottom: 1px solid #B42400;
-    `};
-    ${props => props.type === 'Fire'
-    &&`
-        border-bottom: 1px solid #FF9200;
-    `};
-    ${props => props.type === 'Flying'
-    &&`
-        border-bottom: 1px solid #9FA8DA;
-    `};
-    ${props => props.type === 'Ghost'
-    &&`
-        border-bottom: 1px solid #9575CD;
-    `};
-    ${props => props.type === 'Grass'
-    &&`
-        border-bottom: 1px solid #00D12F;
-    `};
-    ${props => props.type === 'Ground'
-    &&`
-        border-bottom: 1px solid #C4A96A;
-    `};
-    ${props => props.type === 'Ice'
-    &&`
-        border-bottom: 1px solid #18FFFF;
-    `};
-    ${props => props.type === 'Normal'
-    &&`
-        border-bottom: 1px solid #EFEBE9;
-    `};
-    ${props => props.type === 'Poison'
-    &&`
-        border-bottom: 1px solid #AA00FF;
-    `};
-    ${props => props.type === 'Psychic'
-    &&`
-        border-bottom: 1px solid #FF00C5;
-    `};
-    ${props => props.type === 'Rock'
-    &&`
-        border-bottom: 1px solid #A8814C;
-    `};
-    ${props => props.type === 'Steel'
-    &&`
-        border-bottom: 1px solid #9E9E9E;
-    `};
-    ${props => props.type === 'Water'
-    &&`
-        border-bottom: 1px solid #304FFE;
-    `};
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+`
+
+export const CoverageCard = styled.div`
+    background: linear-gradient(145deg, #352020 0%, #2A2D32 40%);
+    border: 2px solid rgba(220, 10, 45, 0.2);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+`
+
+export const CategoryLabel = styled.h3`
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 2rem 0 0.4rem;
+    padding: 0;
+
+    &:first-of-type {
+        margin-top: 0.25rem;
+    }
+`
+
+export const TypeBadge = styled.span`
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    margin: 0.2rem 0.2rem 0.5rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 `

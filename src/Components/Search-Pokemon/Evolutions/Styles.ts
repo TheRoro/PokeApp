@@ -3,58 +3,95 @@ import Container from 'react-bootstrap/Container';
 import { Col } from 'react-bootstrap';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
+const fadeInUp = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
 export const EvolutionsContainer = styled(Container)`
-    height: 95%;
+    min-height: 80vh;
+    padding: 1rem 1rem 2rem;
+    animation: ${fadeInUp} 0.6s ease forwards;
 `
 
 export const Title = styled.h1`
-    font-size:calc(30px + 3vw);
+    font-size: calc(20px + 1.8vw);
     font-weight: 900;
     text-align: center;
+    letter-spacing: 0.05em;
+    color: #fff;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(220, 10, 45, 0.3);
+    margin-bottom: 1.5rem;
 `
 
-export const SubTitle = styled.h1`
-    font-size:calc(15px + 1.5vw);
-    font-weight: 100;
+export const SubTitle = styled.h2`
+    font-size: 1rem;
+    font-weight: 700;
     text-align: center;
+    color: #fff;
+    text-transform: capitalize;
+    margin: 0.5rem 0 0;
+`
+
+export const EvolutionCard = styled.div`
+    background: linear-gradient(145deg, #352020 0%, #2A2D32 40%);
+    border: 2px solid rgba(220, 10, 45, 0.3);
+    border-radius: 16px;
+    padding: 1.25rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 140px;
+`
+
+export const EvolutionFlow = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+`
+
+export const Arrow = styled.span`
+    font-size: 1.5rem;
+    color: var(--pokedex-red, #DC0A2D);
+    font-weight: 900;
+
+    @media (max-width: 576px) {
+        transform: rotate(90deg);
+    }
 `
 
 export const LazyImage = styled(LazyLoadImage)`
-    height: 100%;
-    width: 100%;
-    max-width: 400px;
-    max-height: 400px;
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 12px;
+    padding: 0.5rem;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25));
 `
 
 export const Image = styled.img`
-    height: 100%;
-    width: 100%;
-    max-width: 200px;
-    max-height: 200px;
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
 `
 
 const rotate = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 `;
 
 export const LoadingCol = styled(Col)`
-    height: 12%;
-    width: 12%;
-    min-width: 100px;
-    min-height: 100px;
+    min-width: 80px;
+    min-height: 80px;
 `
 
 export const LoadingImg = styled.img`
-    transition: 0.3s ease-in-out;
     animation: ${rotate} 1s linear infinite;
-    height: 100%;
-    width: 100%;
-    max-width: 400px;
-    max-height: 400px;
+    width: 80px;
+    height: 80px;
 `

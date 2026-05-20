@@ -26,9 +26,11 @@ export class SearchEngine extends Component {
     var size = 10;
     let cont = 0;
     let i = 0;
+    // Normalize: treat spaces as dashes for matching (moves use dashes internally)
+    const normalizedInput = userInput.toLowerCase().replace(/ /g, '-');
     //Initial value
     while(cont < size && i < options.length) {
-      if(options[i].toLowerCase().indexOf(userInput.toLowerCase()) === 0){
+      if(options[i].toLowerCase().indexOf(normalizedInput) === 0){
         filteredOptions.push(options[i]);
         cont++;
       }
@@ -37,8 +39,8 @@ export class SearchEngine extends Component {
     //Contains value
     i = 0;
     while(cont < size && i < options.length) {
-      if(options[i].toLowerCase().indexOf(userInput.toLowerCase()) !== 0 && 
-        options[i].toLowerCase().indexOf(userInput.toLowerCase()) > -1){
+      if(options[i].toLowerCase().indexOf(normalizedInput) !== 0 && 
+        options[i].toLowerCase().indexOf(normalizedInput) > -1){
         filteredOptions.push(options[i]);
         cont++;
       }
@@ -53,16 +55,22 @@ export class SearchEngine extends Component {
     });
   };
 
+  // Format display name: replace hyphens with spaces for readability
+  prettyName = (name) => {
+    return name.replace(/-/g, ' ');
+  };
+
   onClick = (e) => {
+    const rawName = e.currentTarget.getAttribute('data-value');
     this.setState({
       activeOption: 0,
       filteredOptions: [],
       showOptions: false,
-      userInput: e.currentTarget.innerText,
+      userInput: this.prettyName(rawName),
       searching: true,
     });
-    if(e.currentTarget.innerText.toLowerCase())
-      this.props.onChangeValue(e.currentTarget.innerText.toLowerCase(), 13);
+    if(rawName)
+      this.props.onChangeValue(rawName.toLowerCase(), 13);
     else
       this.props.onChangeValue(this.state.userInput, 13);
   };
@@ -70,14 +78,15 @@ export class SearchEngine extends Component {
     const { activeOption, filteredOptions } = this.state;
 
     if (e.keyCode === 13) {
+      const selected = filteredOptions[activeOption];
       this.setState({
         activeOption: 0,
         showOptions: false,
-        userInput: filteredOptions[activeOption],
+        userInput: selected ? this.prettyName(selected) : this.state.userInput,
         searching: true,
       });
-      if(filteredOptions[activeOption])
-        this.props.onChangeValue(filteredOptions[activeOption], e.keyCode);
+      if(selected)
+        this.props.onChangeValue(selected, e.keyCode);
       else
         this.props.onChangeValue(this.state.userInput, e.keyCode);
     } else if (e.keyCode === 38) {
@@ -86,7 +95,7 @@ export class SearchEngine extends Component {
       }
       this.setState({ 
         activeOption: activeOption - 1,
-        userInput: filteredOptions[activeOption - 1]
+        userInput: this.prettyName(filteredOptions[activeOption - 1])
       });
     } else if (e.keyCode === 40) {
       if (activeOption === filteredOptions.length - 1) {
@@ -95,7 +104,7 @@ export class SearchEngine extends Component {
       
       this.setState({
         activeOption: activeOption + 1,
-        userInput: filteredOptions[activeOption + 1]
+        userInput: this.prettyName(filteredOptions[activeOption + 1])
       });
     }
   };
@@ -125,8 +134,8 @@ export class SearchEngine extends Component {
                 className = 'last-option'
               }
               return (
-                <li className={className} key={optionName} onClick={onClick}>
-                  {optionName}
+                <li className={className} key={optionName} data-value={optionName} onClick={onClick}>
+                  {this.prettyName(optionName)}
                 </li>
               );
             })}
@@ -135,7 +144,7 @@ export class SearchEngine extends Component {
       } else {
         optionList = (
           <div className="no-options">
-            <p>No pokemon was found</p>
+            <p>No match found</p>
           </div>
         );
       }
@@ -164,6 +173,18 @@ export class SearchEngine extends Component {
             onKeyDown={onKeyDown}
             value={userInput}
           />}
+          <button className="search-btn" onClick={() => {
+            this.setState({ showOptions: false, searching: true });
+            if(this.state.userInput) {
+              const apiName = this.state.userInput.replace(/ /g, '-');
+              this.props.onChangeValue(apiName, 13);
+            }
+          }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
         </div>
         {optionList}
       </React.Fragment>

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import RNavBar from './Components/Navbar/ResponsiveNavbar';
 import Home from './Components/Home/HomeComponent';
 import TypeCalculator from './Components/Type-Calculator/TypeCalculator';
@@ -7,41 +7,22 @@ import SearchMove from './Components/Search-Move/SearchMove';
 import TeamBuilder from './Components/TeamBuilder/TeamBuilder';
 import OlderVersions from './Components/Older-Versions/OlderVersions';
 import './Assets/TypeColors.css';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route
-} from 'react-router-dom';
-
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
-
-  useEffect(() => {
-  }, [])
+  useEffect(() => {}, []);
 
   return (
     <Router>
-      <RNavBar/>
-      <Switch>
-        <Route path="/calc">
-          <TypeCalculator/>
-        </Route>
-        <Route path="/search">
-          <SearchPokemon/>
-        </Route>
-        <Route path="/move">
-          <SearchMove/>
-        </Route>
-        <Route path="/teambuilder">
-          <TeamBuilder/>
-        </Route>
-        <Route path="/older-versions">
-          <OlderVersions/>
-        </Route>
-        <Route path="/">
-          <Home/>
-        </Route>
-      </Switch>
+      <RNavBar />
+      <Routes>
+        <Route path="/calc/*" element={<TypeCalculator />} />
+        <Route path="/search/*" element={<SearchPokemon />} />
+        <Route path="/move/*" element={<SearchMove />} />
+        <Route path="/teambuilder" element={<TeamBuilder />} />
+        <Route path="/older-versions" element={<OlderVersions />} />
+        <Route path="/" element={<Home />} />
+      </Routes>
     </Router>
   );
 }
