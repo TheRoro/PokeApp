@@ -17,6 +17,25 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+@media screen and (max-width: 576px) {
+  .search-box-curved,
+  .search-box {
+    width: 80vw;
+    min-width: 200px;
+    max-width: none;
+    font-size: 0.95rem;
+  }
+
+  ul.options,
+  ul.options li,
+  ul.options li.option-active,
+  ul.options li.last-option {
+    width: 80vw;
+    min-width: 200px;
+    max-width: none;
+  }
+}
+
 .search-box-curved {
   border-radius: 22px;
 }

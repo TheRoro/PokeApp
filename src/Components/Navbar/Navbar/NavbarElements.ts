@@ -30,6 +30,11 @@ export const NavbarContainer = styled.div`
   z-index: 1;
   width: 100%;
   padding: 0 24px;
+
+  @media screen and (max-width: 480px) {
+    height: 60px;
+    padding: 0 16px;
+  }
 `;
 
 export const NavLogo = styled(LinkR).attrs({ className: navLinkClassName })`
@@ -48,6 +53,11 @@ export const NavLogo = styled(LinkR).attrs({ className: navLinkClassName })`
   transition: all 0.2s ease-in-out;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
+  @media screen and (max-width: 480px) {
+    font-size: 1.3rem;
+    gap: 0.4rem;
+  }
+
   &::before {
     content: '';
     width: 18px;
@@ -57,6 +67,11 @@ export const NavLogo = styled(LinkR).attrs({ className: navLinkClassName })`
     border: 2px solid rgba(255, 255, 255, 0.4);
     box-shadow: 0 0 10px rgba(33, 150, 243, 0.6), inset 0 -2px 4px rgba(0, 0, 0, 0.15);
     flex-shrink: 0;
+
+    @media screen and (max-width: 480px) {
+      width: 14px;
+      height: 14px;
+    }
   }
 
   &.active {

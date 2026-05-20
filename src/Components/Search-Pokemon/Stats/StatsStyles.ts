@@ -52,6 +52,17 @@ export const StatsContainer = styled(Container)`
         padding: 2rem 1rem;
         margin-top: 1rem;
     }
+
+    @media screen and (max-width: 576px) {
+        height: auto;
+        padding: 0 0.5rem 2rem;
+
+        > .row.align-items-center {
+            padding: 1.25rem 0.75rem;
+            border-radius: 20px;
+            margin-top: 0.5rem;
+        }
+    }
 `
 
 export const Title = styled.h1`
@@ -63,6 +74,10 @@ export const Title = styled.h1`
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+
+    @media screen and (max-width: 576px) {
+        font-size: calc(24px + 2vw);
+    }
 `
 
 export const SubTitle = styled.h2`
@@ -90,6 +105,13 @@ export const SubTitle = styled.h2`
         background: currentColor;
         box-shadow: 0 0 6px currentColor;
     }
+
+    @media screen and (max-width: 576px) {
+        font-size: 0.85rem;
+        width: 160px;
+        max-width: 160px;
+        padding: 0.35rem 0.7rem;
+    }
 `
 
 export const Id = styled.h1`
@@ -109,6 +131,12 @@ export const LazyImage = styled(LazyLoadImage)`
     padding: 1rem;
     background: radial-gradient(circle at center, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
     filter: drop-shadow(0 18px 32px rgba(0, 0, 0, 0.28));
+
+    @media screen and (max-width: 576px) {
+        max-width: 260px;
+        max-height: 260px;
+        padding: 0.5rem;
+    }
 `
 
 export const LoadingCol = styled(Col)`

@@ -44,6 +44,12 @@ export const EvolutionCard = styled.div`
     flex-direction: column;
     align-items: center;
     min-width: 140px;
+
+    @media (max-width: 576px) {
+        min-width: 120px;
+        padding: 0.75rem;
+        border-radius: 12px;
+    }
 `
 
 export const EvolutionFlow = styled.div`
@@ -52,6 +58,11 @@ export const EvolutionFlow = styled.div`
     justify-content: center;
     flex-wrap: wrap;
     gap: 1rem;
+
+    @media (max-width: 576px) {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 `
 
 export const Arrow = styled.span`
@@ -61,6 +72,7 @@ export const Arrow = styled.span`
 
     @media (max-width: 576px) {
         transform: rotate(90deg);
+        margin: 0.25rem 0;
     }
 `
 
@@ -72,6 +84,11 @@ export const LazyImage = styled(LazyLoadImage)`
     padding: 0.5rem;
     background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
     filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25));
+
+    @media (max-width: 576px) {
+        width: 90px;
+        height: 90px;
+    }
 `
 
 export const Image = styled.img`

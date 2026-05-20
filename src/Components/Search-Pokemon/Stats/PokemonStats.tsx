@@ -67,7 +67,6 @@ const PokemonStats: React.FC<Props> = ({
             </LoadingCol>
         </Row>
     </Loading>);
-    const [stop, setStop] = React.useState<Boolean>(false);
     const [id, setId] = React.useState();
     const { name = '' } = useParams<'name'>();
     const [prettyName, setPrettyName] = React.useState(name);
@@ -96,8 +95,6 @@ const PokemonStats: React.FC<Props> = ({
         return temp
     })
 
-    const [isShiny, setIsShiny] = React.useState(false);
-
     const search = async () => {
         try {
             var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + name + '/';
@@ -110,8 +107,6 @@ const PokemonStats: React.FC<Props> = ({
             const shinyUrl = resp.data.sprites.other['official-artwork'].front_shiny;
             const defaultUrl = resp.data.sprites.other['official-artwork'].front_default;
             const gotShiny = shinyRoll && !!shinyUrl;
-            
-            setIsShiny(gotShiny);
             
             setImg(<div style={{ position: 'relative', display: 'inline-block' }}><LazyImage effect="blur" src={gotShiny ? shinyUrl : defaultUrl} alt={resp.data.name}/>{gotShiny && (
                 <div style={{
@@ -142,7 +137,6 @@ const PokemonStats: React.FC<Props> = ({
             setPrettyName(pretty(resp.data.name));
         }
         catch(err) {
-            setStop(true);
             console.error(err);
             setLoading(
                 <ErrorContainer>
@@ -162,6 +156,7 @@ const PokemonStats: React.FC<Props> = ({
             hasFetched.current = true;
             search();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [name]);
 
     return(

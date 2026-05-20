@@ -21,6 +21,13 @@ export const HomeContainer = styled.div`
     width: 100%;
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+
+    @media screen and (max-width: 480px) {
+        height: 70%;
+        padding: 0 1rem;
+    }
 `
 
 export const FooterContainer = styled.div`
@@ -30,10 +37,18 @@ export const FooterContainer = styled.div`
     opacity: 0;
     animation: fadeIn 0.8s ease forwards;
     animation-delay: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
+    }
+
+    @media screen and (max-width: 480px) {
+        height: auto;
+        padding: 1.5rem 0;
     }
 `
 
@@ -46,6 +61,10 @@ export const Title = styled.h1`
     color: #fff;
     text-shadow: 2px 2px 0px var(--pokedex-red), 4px 4px 0px rgba(0,0,0,0.1);
     animation: ${fadeInUp} 0.75s ease forwards;
+
+    @media screen and (max-width: 480px) {
+        font-size: calc(32px + 3vw);
+    }
 `
 
 export const Text = styled.p`

@@ -23,8 +23,9 @@ export const SidebarContainer = styled.aside`
     width: 100%;
     height: 100%;
     background: linear-gradient(180deg, #b71c1c 0%, #8b0000 100%);
-    display: grid;
+    display: flex;
     align-items: center;
+    justify-content: center;
     top: 0;
     left: 0;
     transition: 0.3s ease-in-out;
@@ -59,20 +60,23 @@ export const Icon = styled.div`
 export const SidebarWrapper = styled.div`
     color: #d1d1d1;
     animation: ${slideIn} 0.35s ease forwards;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 `
 
 export const SidebarMenu = styled.ul`
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     padding: 0 1.5rem;
     margin: 0;
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(3, 92px);
-    row-gap: 0.8rem;
+    gap: 1rem;
     text-align: center;
-
-    @media screen and (max-width: 480px) {
-        grid-template-rows: repeat(3, 92px);
-    }
+    list-style: none;
 `
 
 export const SidebarLink = styled.button`
@@ -80,7 +84,7 @@ export const SidebarLink = styled.button`
     background: rgba(255, 255, 255, 0.08);
     cursor: pointer;
     margin: 0;
-    padding: 0 1.5rem;
+    padding: 1rem 2.5rem;
     outline: none!important;
     display: flex;
     align-items: center;
@@ -92,12 +96,20 @@ export const SidebarLink = styled.button`
     transition: 0.22s ease-in-out;
     color: #fff;
     border-radius: 22px;
+    width: 280px;
+    max-width: 90vw;
 
     &:hover {
         color: #fff;
         background: rgba(255, 255, 255, 0.16);
         text-decoration: none;
         transform: translateY(-3px);
+    }
+
+    @media screen and (max-width: 480px) {
+        font-size: 1.2rem;
+        padding: 0.85rem 2rem;
+        width: 240px;
     }
 `
 

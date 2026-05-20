@@ -63,6 +63,12 @@ export const TypeLabel = styled.span`
         background: currentColor;
         box-shadow: 0 0 6px currentColor;
     }
+
+    @media screen and (max-width: 576px) {
+        font-size: 0.9rem;
+        width: 130px;
+        padding: 0.35rem 0.75rem;
+    }
 `
 
 export const Button = styled(Link)`
