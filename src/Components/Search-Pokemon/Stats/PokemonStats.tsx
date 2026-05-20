@@ -107,15 +107,32 @@ const PokemonStats: React.FC<Props> = ({
             
             // 1/100 chance of shiny!
             const shinyRoll = Math.floor(Math.random() * 100) === 0;
-            const spriteUrl = shinyRoll 
-                ? resp.data.sprites.other['official-artwork'].front_shiny
-                : resp.data.sprites.other['official-artwork'].front_default;
+            const shinyUrl = resp.data.sprites.other['official-artwork'].front_shiny;
+            const defaultUrl = resp.data.sprites.other['official-artwork'].front_default;
+            const gotShiny = shinyRoll && !!shinyUrl;
             
-            if (shinyRoll && spriteUrl) {
-                setIsShiny(true);
-            }
+            setIsShiny(gotShiny);
             
-            setImg(<div><LazyImage effect="blur" src={spriteUrl || resp.data.sprites.other['official-artwork'].front_default} alt={resp.data.name}/></div>);
+            setImg(<div style={{ position: 'relative', display: 'inline-block' }}><LazyImage effect="blur" src={gotShiny ? shinyUrl : defaultUrl} alt={resp.data.name}/>{gotShiny && (
+                <div style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                    color: '#000',
+                    fontWeight: 900,
+                    fontSize: '0.75rem',
+                    padding: '0.3rem 0.7rem',
+                    borderRadius: '999px',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase' as const,
+                    boxShadow: '0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3)',
+                    animation: 'shinyPulse 1.5s ease-in-out infinite',
+                    zIndex: 10,
+                }}>
+                    ✨ Shiny!
+                </div>
+            )}</div>);
             if(type1 !== capitalize(resp.data.types[0].type.name)){
                 setType1(capitalize(resp.data.types[0].type.name));
             }
@@ -138,12 +155,14 @@ const PokemonStats: React.FC<Props> = ({
         }
     }
 
+    const hasFetched = React.useRef(false);
+
     useEffect(() => {
-        if(!info && !stop){
+        if (!hasFetched.current) {
+            hasFetched.current = true;
             search();
         }
-            
-    });
+    }, [name]);
 
     return(
         <>{info ?
@@ -218,27 +237,8 @@ const PokemonStats: React.FC<Props> = ({
                         </Col>
                         <Col xs="auto" sm={12} md={6} className="mt-5 mt-md-0">
                             <Row className="justify-content-center">
-                                <Col xs="auto" style={{ position: 'relative' }}>
+                                <Col xs="auto">
                                     {img}
-                                    {isShiny && (
-                                        <div style={{
-                                            position: 'absolute',
-                                            top: '10px',
-                                            right: '10px',
-                                            background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                                            color: '#000',
-                                            fontWeight: 900,
-                                            fontSize: '0.75rem',
-                                            padding: '0.3rem 0.7rem',
-                                            borderRadius: '999px',
-                                            letterSpacing: '0.1em',
-                                            textTransform: 'uppercase',
-                                            boxShadow: '0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3)',
-                                            animation: 'shinyPulse 1.5s ease-in-out infinite',
-                                        }}>
-                                            ✨ Shiny!
-                                        </div>
-                                    )}
                                 </Col>
                             </Row>
                         </Col>
