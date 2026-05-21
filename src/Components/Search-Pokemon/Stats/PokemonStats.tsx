@@ -9,6 +9,7 @@ import PokeBall from '../../../Assets/pokeapp.png';
 import Bidoof404 from '../../../Assets/404-bidoof.png';
 import axios from 'axios';
 import { useParams } from "react-router-dom";
+import { toPokemonApiSlug } from '../../Tools/pokemonNames';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
 import {
@@ -97,7 +98,7 @@ const PokemonStats: React.FC<Props> = ({
 
     const search = async () => {
         try {
-            var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + name + '/';
+            var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + toPokemonApiSlug(name) + '/';
             const resp = await axios.get(apiUrl);
             setInfo(resp.data);
             setId(resp.data.species.url.substring(42, resp.data.species.url.length - 1));

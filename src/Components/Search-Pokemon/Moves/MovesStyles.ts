@@ -88,6 +88,39 @@ export const MoveHeader = styled.div`
     margin-bottom: 0.25rem;
 `
 
+export const VersionControls = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 1rem 0;
+`
+
+export const VersionSelect = styled.select`
+    min-width: 220px;
+    color: #fff;
+    background: #2a2d32;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+`
+
+export const LoadMoreButton = styled.button`
+    display: block;
+    margin: 1rem auto 0;
+    color: #fff;
+    background: rgba(220, 10, 45, 0.2);
+    border: 1px solid rgba(220, 10, 45, 0.6);
+    border-radius: 8px;
+    padding: 0.55rem 1rem;
+
+    &:disabled {
+        cursor: wait;
+        opacity: 0.6;
+    }
+`
+
 const rotate = keyframes`
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

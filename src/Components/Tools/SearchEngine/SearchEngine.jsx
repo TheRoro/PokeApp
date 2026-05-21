@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { formatPokemonName, toPokemonApiSlug } from '../pokemonNames';
 import './SearchEngine.css';
 
 export class SearchEngine extends Component {
@@ -26,11 +27,10 @@ export class SearchEngine extends Component {
     var size = 10;
     let cont = 0;
     let i = 0;
-    // Normalize: treat spaces as dashes for matching (moves use dashes internally)
-    const normalizedInput = userInput.toLowerCase().replace(/ /g, '-');
+    const normalizedInput = toPokemonApiSlug(userInput);
     //Initial value
     while(cont < size && i < options.length) {
-      if(options[i].toLowerCase().indexOf(normalizedInput) === 0){
+      if(toPokemonApiSlug(options[i]).indexOf(normalizedInput) === 0){
         filteredOptions.push(options[i]);
         cont++;
       }
@@ -39,8 +39,8 @@ export class SearchEngine extends Component {
     //Contains value
     i = 0;
     while(cont < size && i < options.length) {
-      if(options[i].toLowerCase().indexOf(normalizedInput) !== 0 && 
-        options[i].toLowerCase().indexOf(normalizedInput) > -1){
+      if(toPokemonApiSlug(options[i]).indexOf(normalizedInput) !== 0 &&
+        toPokemonApiSlug(options[i]).indexOf(normalizedInput) > -1){
         filteredOptions.push(options[i]);
         cont++;
       }
@@ -55,9 +55,8 @@ export class SearchEngine extends Component {
     });
   };
 
-  // Format display name: replace hyphens with spaces for readability
   prettyName = (name) => {
-    return name.replace(/-/g, ' ');
+    return formatPokemonName(name);
   };
 
   onClick = (e) => {
@@ -70,7 +69,7 @@ export class SearchEngine extends Component {
       searching: true,
     });
     if(rawName)
-      this.props.onChangeValue(rawName.toLowerCase(), 13);
+      this.props.onChangeValue(toPokemonApiSlug(rawName), 13);
     else
       this.props.onChangeValue(this.state.userInput, 13);
   };
@@ -86,7 +85,7 @@ export class SearchEngine extends Component {
         searching: true,
       });
       if(selected)
-        this.props.onChangeValue(selected, e.keyCode);
+        this.props.onChangeValue(toPokemonApiSlug(selected), e.keyCode);
       else
         this.props.onChangeValue(this.state.userInput, e.keyCode);
     } else if (e.keyCode === 38) {
@@ -176,7 +175,7 @@ export class SearchEngine extends Component {
           <button className="search-btn" onClick={() => {
             this.setState({ showOptions: false, searching: true });
             if(this.state.userInput) {
-              const apiName = this.state.userInput.replace(/ /g, '-');
+              const apiName = toPokemonApiSlug(this.state.userInput);
               this.props.onChangeValue(apiName, 13);
             }
           }}>

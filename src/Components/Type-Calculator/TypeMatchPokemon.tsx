@@ -1,8 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Bidoof404 from '../../Assets/404-bidoof.png';
+import typeList from '../../Assets/typeList';
+import {
+    findDualTypeMatches,
+    findMonotypeMatches,
+    PokemonMatch,
+    TypePokemonEntry,
+} from './typeMatching';
 
 const bidoofQuotes = [
     "Bidoof looked everywhere... no one here.",
@@ -12,6 +19,24 @@ const bidoofQuotes = [
     "Not even Arceus made this type combo.",
     "Bidoof used Search... It's not very effective.",
 ];
+
+const typeCache = new Map<string, Promise<TypePokemonEntry[]>>();
+
+function fetchTypePokemon(type: string): Promise<TypePokemonEntry[]> {
+    const key = type.toLowerCase();
+    const cached = typeCache.get(key);
+    if (cached) return cached;
+
+    const request = axios
+        .get(`https://pokeapi.co/api/v2/type/${key}`)
+        .then(response => response.data.pokemon as TypePokemonEntry[])
+        .catch(error => {
+            typeCache.delete(key);
+            throw error;
+        });
+    typeCache.set(key, request);
+    return request;
+}
 
 const Container = styled.div`
     margin-top: 2rem;
@@ -71,99 +96,115 @@ const Name = styled.span`
     text-transform: capitalize;
 `
 
+const RetryButton = styled.button`
+    color: #fff;
+    background: rgba(220, 10, 45, 0.2);
+    border: 1px solid rgba(220, 10, 45, 0.6);
+    border-radius: 8px;
+    padding: 0.5rem 0.9rem;
+`
+
 type Props = {
     type1: string;
     type2: string;
 }
 
-type PokemonEntry = {
-    name: string;
-    id: number;
-}
-
 const TypeMatchPokemon: React.FC<Props> = ({ type1, type2 }) => {
-    const [pokemon, setPokemon] = useState<PokemonEntry[]>([]);
+    const [matches, setMatches] = useState<PokemonMatch[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+    const [retry, setRetry] = useState(0);
     const navigate = useNavigate();
 
+    const selectedTypes = useMemo(
+        () => [type1, type2].filter(type => type.toLowerCase() !== 'none'),
+        [type1, type2],
+    );
+
     useEffect(() => {
-        const fetchPokemon = async () => {
+        let active = true;
+
+        async function loadMatches() {
+            setLoading(true);
+            setError(false);
             try {
-                setLoading(true);
-                const t1 = type1.toLowerCase();
-                const t2 = type2.toLowerCase();
-
-                const resp1 = await axios.get(`https://pokeapi.co/api/v2/type/${t1}`);
-                const type1Pokemon = resp1.data.pokemon.map((p: any) => p.pokemon.name);
-
-                let matches: string[];
-                if (t2 === 'none') {
-                    // Single type: only show pure mono-type pokemon
-                    const resp1Detailed = resp1.data.pokemon.map((p: any) => p.pokemon.name);
-                    // Fetch details for candidates to filter pure mono-type
-                    const candidates = resp1Detailed.sort(() => 0.5 - Math.random()).slice(0, 30);
-                    const pureMonotype: string[] = [];
-                    for (const pName of candidates) {
-                        if (pureMonotype.length >= 6) break;
-                        try {
-                            const pResp = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pName}`);
-                            if (pResp.data.types.length === 1) {
-                                pureMonotype.push(pName);
-                            }
-                        } catch { /* skip */ }
-                    }
-                    matches = pureMonotype;
-                } else {
-                    const resp2 = await axios.get(`https://pokeapi.co/api/v2/type/${t2}`);
-                    const type2Pokemon = new Set(resp2.data.pokemon.map((p: any) => p.pokemon.name));
-                    matches = type1Pokemon.filter((name: string) => type2Pokemon.has(name));
+                const primaryType = selectedTypes[0];
+                if (!primaryType) {
+                    if (active) setMatches([]);
+                    return;
                 }
 
-                // Pick up to 6 random ones
-                const shuffled = matches.sort(() => 0.5 - Math.random());
-                const selected = shuffled.slice(0, 6);
+                const primary = await fetchTypePokemon(primaryType);
+                let completeMatches: PokemonMatch[];
+                if (selectedTypes.length > 1) {
+                    const secondary = await fetchTypePokemon(selectedTypes[1]);
+                    completeMatches = findDualTypeMatches(primary, secondary);
+                } else {
+                    const otherTypeEntries = await Promise.all(
+                        typeList
+                            .filter(type => type.toLowerCase() !== primaryType.toLowerCase())
+                            .map(fetchTypePokemon),
+                    );
+                    completeMatches = findMonotypeMatches(primary, otherTypeEntries);
+                }
 
-                const entries: PokemonEntry[] = await Promise.all(
-                    selected.map(async (name: string) => {
-                        try {
-                            const resp = await axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`);
-                            return { name: resp.data.name, id: resp.data.id };
-                        } catch {
-                            return null;
-                        }
-                    })
-                ).then(results => results.filter(Boolean) as PokemonEntry[]);
-
-                setPokemon(entries);
-                setLoading(false);
-            } catch {
-                setLoading(false);
+                if (active) setMatches(completeMatches);
+            } catch (requestError) {
+                console.error(requestError);
+                if (active) {
+                    setMatches([]);
+                    setError(true);
+                }
+            } finally {
+                if (active) setLoading(false);
             }
+        }
+
+        void loadMatches();
+        return () => {
+            active = false;
         };
+    }, [selectedTypes, retry]);
 
-        fetchPokemon();
-    }, [type1, type2]);
-
-    const pretty = (name: string) => name.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
+    const pretty = (name: string) => name.split('-').map(word => word[0].toUpperCase() + word.slice(1)).join(' ');
+    const visibleMatches = matches.slice(0, 6);
+    const emptyQuoteIndex = selectedTypes
+        .join('-')
+        .split('')
+        .reduce((sum, character) => sum + character.charCodeAt(0), 0) % bidoofQuotes.length;
 
     if (loading) {
         return (
             <Container>
                 <SectionTitle>Pokémon with this type combo</SectionTitle>
                 <PokemonGrid>
-                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>Loading...</span>
+                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>Checking every match...</span>
                 </PokemonGrid>
             </Container>
         );
     }
 
-    if (pokemon.length === 0) return (
+    if (error) {
+        return (
+            <Container>
+                <SectionTitle>Pokémon with this type combo</SectionTitle>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+                    <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>
+                        PokeAPI could not load the type data.
+                    </span>
+                    <RetryButton type="button" onClick={() => setRetry(value => value + 1)}>Try again</RetryButton>
+                </div>
+            </Container>
+        );
+    }
+
+    if (matches.length === 0) return (
         <Container>
             <SectionTitle>Pokémon with this type combo</SectionTitle>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', padding: '1rem 0' }}>
-                <img src={Bidoof404} alt="bidoof" style={{ width: '80px', opacity: 0.8 }} />
+                <img src={Bidoof404} alt="Bidoof found no matching Pokémon" style={{ width: '80px', opacity: 0.8 }} />
                 <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', fontStyle: 'italic', textAlign: 'center' }}>
-                    {bidoofQuotes[Math.floor(Math.random() * bidoofQuotes.length)]}
+                    {bidoofQuotes[emptyQuoteIndex]}
                 </span>
             </div>
         </Container>
@@ -171,15 +212,17 @@ const TypeMatchPokemon: React.FC<Props> = ({ type1, type2 }) => {
 
     return (
         <Container>
-            <SectionTitle>Pokémon with this type combo</SectionTitle>
+            <SectionTitle>
+                Pokémon with this type combo · showing {visibleMatches.length} of {matches.length}
+            </SectionTitle>
             <PokemonGrid>
-                {pokemon.map((p) => (
-                    <PokemonCard key={p.id} onClick={() => navigate(`/search/${p.name}`)}>
+                {visibleMatches.map((pokemon) => (
+                    <PokemonCard key={pokemon.id} onClick={() => navigate(`/search/${pokemon.name}`)}>
                         <Sprite
-                            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png`}
-                            alt={p.name}
+                            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
+                            alt={pokemon.name}
                         />
-                        <Name>{pretty(p.name)}</Name>
+                        <Name>{pretty(pokemon.name)}</Name>
                     </PokemonCard>
                 ))}
             </PokemonGrid>

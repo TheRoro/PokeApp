@@ -6,6 +6,7 @@ import Navigation from '../../Tools/Navigation/Navigation';
 import Bidoof404 from '../../../Assets/404-bidoof.png';
 import PokeBall from '../../../Assets/pokeapp.png';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toPokemonApiSlug } from '../../Tools/pokemonNames';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import {
     SubTitle,
@@ -40,7 +41,7 @@ const Evolutions: React.FC<Props> = ({
     useEffect(() => {
         const fetchEvolutions = async () => {
             try {
-                const pokemonResp = await axios.get(`https://pokeapi.co/api/v2/pokemon/${name}/`);
+                const pokemonResp = await axios.get(`https://pokeapi.co/api/v2/pokemon/${toPokemonApiSlug(name)}/`);
                 const speciesResp = await axios.get(pokemonResp.data.species.url);
                 const evoResp = await axios.get(speciesResp.data.evolution_chain.url);
 

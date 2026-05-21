@@ -11,6 +11,7 @@ import Moves from '../Moves/Moves';
 import pkmnInfoInit from '../../../Assets/json/pkmnInfoInit.json';
 import pokemonList from '../../Tools/PokemonList';
 import SearchBar from '../../Tools/SearchEngine/SearchEngine';
+import { formatPokemonName, toPokemonApiSlug } from '../../Tools/pokemonNames';
 
 import { Route, Routes, useNavigate } from 'react-router-dom';
 
@@ -62,25 +63,11 @@ const SearchPokemon: React.FC = () => {
   }, []);
 
   const formated = (value: string) => {
-    let temp = '';
-    temp = value;
-    return temp;
+    return toPokemonApiSlug(value);
   };
 
   const pretty = (value: string) => {
-    let temp = '';
-    for (let i = 0; i < value.length; i++) {
-      if (i === 0) {
-        temp += value[0].toUpperCase();
-      } else if (value[i] === '-') {
-        temp += ' ';
-      } else if (i !== 0 && value[i - 1] === '-') {
-        temp += value[i].toUpperCase();
-      } else {
-        temp += value[i];
-      }
-    }
-    return temp;
+    return formatPokemonName(value);
   };
 
   const searchByName = async () => {
@@ -94,12 +81,13 @@ const SearchPokemon: React.FC = () => {
           </Row>
         </Loading>
       );
-      const apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + formatedName + '/';
+      const apiName = toPokemonApiSlug(formatedName);
+      const apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + apiName + '/';
       const resp = await axios.get(apiUrl);
       setpkmnInfo(resp.data);
       setpkmnId(resp.data.id);
       setLoading(<div></div>);
-      navigate(formatedName);
+      navigate(apiName);
     } catch (err) {
       alert('Pokemon Not Found');
       setLoading(
@@ -122,13 +110,14 @@ const SearchPokemon: React.FC = () => {
           </Row>
         </Loading>
       );
-      const apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + name.toLowerCase() + '/';
+      const apiName = toPokemonApiSlug(name);
+      const apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + apiName + '/';
       const resp = await axios.get(apiUrl);
       setpkmnInfo(resp.data);
       setFormatedName(resp.data.name);
       setpkmnId(resp.data.species.url.substring(42, resp.data.species.url.length - 1));
       setLoading(<div></div>);
-      navigate(name.toLowerCase());
+      navigate(apiName);
     } catch (err) {
       alert('Pokemon Not Found');
       setLoading(
@@ -162,7 +151,7 @@ const SearchPokemon: React.FC = () => {
     <SearchContainer>
       <Routes>
         <Route path=":name/evolution" element={<Evolutions pkmnName={formatedName} />} />
-        <Route path=":name/moves" element={<Moves pkmnInfo={pkmnInfo} />} />
+        <Route path=":name/moves" element={<Moves />} />
         <Route path=":name" element={<PokemonStats pkmnId={pkmnId} pkmnName={prettyName} pkmnInfo={pkmnInfo} />} />
         <Route
           index
