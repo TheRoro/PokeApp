@@ -20,18 +20,12 @@ import {
     LazyImage
 } from './Styles';
 
-type Props = {
-    pkmnName: string,
-}
-
 type EvoStage = {
     name: string;
     id: string;
 }
 
-const Evolutions: React.FC<Props> = ({
-    pkmnName
-}) => {
+const Evolutions: React.FC = () => {
     const { name = '' } = useParams<'name'>();
     const navigate = useNavigate();
     const [stages, setStages] = React.useState<EvoStage[][]>([]);
@@ -84,7 +78,7 @@ const Evolutions: React.FC<Props> = ({
             }
         };
         fetchEvolutions();
-    }, [name, pkmnName]);
+    }, [name]);
 
     const pretty = (value: string) => {
         return value.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');

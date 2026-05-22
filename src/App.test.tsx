@@ -3,6 +3,6 @@ import { render } from '@testing-library/react';
 import App from './App';
 
 test('renders app title', () => {
-  const { getByText } = render(<App />);
-  expect(getByText(/PokeApp/i)).toBeInTheDocument();
+  const { getByRole } = render(<App />);
+  expect(getByRole('heading', { name: 'PokeApp' })).toBeInTheDocument();
 });

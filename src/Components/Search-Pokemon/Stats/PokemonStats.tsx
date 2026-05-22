@@ -34,22 +34,20 @@ const typeColorMap: Record<string, string> = {
     Steel: '#9E9E9E', Water: '#304FFE', None: 'transparent',
 };
 
-type Props = {
-    pkmnName: string,
-    pkmnInfo: any,
-    pkmnId: number,
-}
-
 type infoType = {
     stats: any[],
     types: any[]
 };
 
-const PokemonStats: React.FC<Props> = ({
-    pkmnName,
-    pkmnInfo,
-    pkmnId
-}) =>{
+const loadingIndicator = <Loading>
+    <Row className="justify-content-center mt-5">
+        <LoadingCol xs="auto">
+            <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
+        </LoadingCol>
+    </Row>
+</Loading>;
+
+const PokemonStats: React.FC = () =>{
     const [type1, setType1] = React.useState<string>('Electric');
     const [type2, setType2] = React.useState<string>('None');
     const [img, setImg] = React.useState(
@@ -61,14 +59,8 @@ const PokemonStats: React.FC<Props> = ({
             </Row>
         </Loading>);
     const [info, setInfo] = React.useState<infoType>();
-    const [loading, setLoading] = React.useState(<Loading>
-        <Row className="justify-content-center mt-5">
-            <LoadingCol xs="auto">
-                <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
-            </LoadingCol>
-        </Row>
-    </Loading>);
-    const [id, setId] = React.useState();
+    const [loading, setLoading] = React.useState(loadingIndicator);
+    const [id, setId] = React.useState<string>();
     const { name = '' } = useParams<'name'>();
     const [prettyName, setPrettyName] = React.useState(name);
 
@@ -96,68 +88,69 @@ const PokemonStats: React.FC<Props> = ({
         return temp
     })
 
-    const search = async () => {
-        try {
-            var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + toPokemonApiSlug(name) + '/';
-            const resp = await axios.get(apiUrl);
-            setInfo(resp.data);
-            setId(resp.data.species.url.substring(42, resp.data.species.url.length - 1));
-            
-            // 1/100 chance of shiny!
-            const shinyRoll = Math.floor(Math.random() * 100) === 0;
-            const shinyUrl = resp.data.sprites.other['official-artwork'].front_shiny;
-            const defaultUrl = resp.data.sprites.other['official-artwork'].front_default;
-            const gotShiny = shinyRoll && !!shinyUrl;
-            
-            setImg(<div style={{ position: 'relative', display: 'inline-block' }}><LazyImage effect="blur" src={gotShiny ? shinyUrl : defaultUrl} alt={resp.data.name}/>{gotShiny && (
-                <div style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                    color: '#000',
-                    fontWeight: 900,
-                    fontSize: '0.75rem',
-                    padding: '0.3rem 0.7rem',
-                    borderRadius: '999px',
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase' as const,
-                    boxShadow: '0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3)',
-                    animation: 'shinyPulse 1.5s ease-in-out infinite',
-                    zIndex: 10,
-                }}>
-                    ✨ Shiny!
-                </div>
-            )}</div>);
-            if(type1 !== capitalize(resp.data.types[0].type.name)){
-                setType1(capitalize(resp.data.types[0].type.name));
-            }
-            if(resp.data.types.length > 1) {
-                setType2(capitalize(resp.data.types[1].type.name));
-            }
-            setPrettyName(pretty(resp.data.name));
-        }
-        catch(err) {
-            console.error(err);
-            setLoading(
-                <ErrorContainer>
-                    <Row className="h-100 align-items-center justify-content-center">
-                        <ErrorCol xs="auto">
-                            <Bidoof404Img src={Bidoof404} alt={'404'}/>
-                        </ErrorCol>
-                    </Row>
-                </ErrorContainer>);
-        }
-    }
-
-    const hasFetched = React.useRef(false);
-
     useEffect(() => {
-        if (!hasFetched.current) {
-            hasFetched.current = true;
-            search();
+        const controller = new AbortController();
+        setInfo(undefined);
+        setType2('None');
+        setLoading(loadingIndicator);
+
+        const search = async () => {
+            try {
+                const apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + toPokemonApiSlug(name) + '/';
+                const resp = await axios.get(apiUrl, { signal: controller.signal });
+                setInfo(resp.data);
+                setId(resp.data.species.url.substring(42, resp.data.species.url.length - 1));
+
+                // 1/100 chance of shiny!
+                const shinyRoll = Math.floor(Math.random() * 100) === 0;
+                const shinyUrl = resp.data.sprites.other['official-artwork'].front_shiny;
+                const defaultUrl = resp.data.sprites.other['official-artwork'].front_default;
+                const gotShiny = shinyRoll && !!shinyUrl;
+
+                setImg(<div style={{ position: 'relative', display: 'inline-block' }}><LazyImage effect="blur" src={gotShiny ? shinyUrl : defaultUrl} alt={resp.data.name}/>{gotShiny && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                        color: '#000',
+                        fontWeight: 900,
+                        fontSize: '0.75rem',
+                        padding: '0.3rem 0.7rem',
+                        borderRadius: '999px',
+                        letterSpacing: '0.1em',
+                        textTransform: 'uppercase' as const,
+                        boxShadow: '0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3)',
+                        animation: 'shinyPulse 1.5s ease-in-out infinite',
+                        zIndex: 10,
+                    }}>
+                        ✨ Shiny!
+                    </div>
+                )}</div>);
+                setType1(capitalize(resp.data.types[0].type.name));
+                setType2(
+                    resp.data.types.length > 1
+                        ? capitalize(resp.data.types[1].type.name)
+                        : 'None',
+                );
+                setPrettyName(pretty(resp.data.name));
+            }
+            catch(err) {
+                if (axios.isCancel(err)) return;
+                console.error(err);
+                setLoading(
+                    <ErrorContainer>
+                        <Row className="h-100 align-items-center justify-content-center">
+                            <ErrorCol xs="auto">
+                                <Bidoof404Img src={Bidoof404} alt={'404'}/>
+                            </ErrorCol>
+                        </Row>
+                    </ErrorContainer>);
+            }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
+        void search();
+        return () => controller.abort();
     }, [name]);
 
     return(

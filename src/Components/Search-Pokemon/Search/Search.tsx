@@ -2,32 +2,22 @@ import React, { useEffect, useCallback } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import axios from 'axios';
-import PokeBall from '../../../Assets/pokeapp.png';
-import Bidoof404 from '../../../Assets/404-bidoof.png';
 import Evolutions from '../Evolutions/Evolutions';
 import PokemonStats from '../Stats/PokemonStats';
 import Moves from '../Moves/Moves';
-import pkmnInfoInit from '../../../Assets/json/pkmnInfoInit.json';
 import pokemonList from '../../Tools/PokemonList';
 import SearchBar from '../../Tools/SearchEngine/SearchEngine';
-import { formatPokemonName, toPokemonApiSlug } from '../../Tools/pokemonNames';
+import { toPokemonApiSlug } from '../../Tools/pokemonNames';
 
 import { Route, Routes, useNavigate } from 'react-router-dom';
 
 import {
-  Bidoof404Img,
   Title,
   Text,
   SearchContainer,
   Icon,
   ImgIcon,
-  Loading,
-  LoadingCol,
-  Image,
 } from './Styles';
-
-type pokemonInfo = {};
 
 type listType = any[];
 
@@ -36,10 +26,6 @@ const totalPkmn = 898;
 const SearchPokemon: React.FC = () => {
   const navigate = useNavigate();
   const [formatedName, setFormatedName] = React.useState<string>('');
-  const [prettyName, setPrettyName] = React.useState<string>('');
-  const [pkmnInfo, setpkmnInfo] = React.useState<pokemonInfo>(pkmnInfoInit);
-  const [pkmnId, setpkmnId] = React.useState<number>(405);
-  const [loading, setLoading] = React.useState(<div></div>);
   const [list, setList] = React.useState<listType>([]);
 
   const generateRandom = useCallback(async () => {
@@ -62,84 +48,15 @@ const SearchPokemon: React.FC = () => {
     setList(randomPkmn);
   }, []);
 
-  const formated = (value: string) => {
-    return toPokemonApiSlug(value);
-  };
-
-  const pretty = (value: string) => {
-    return formatPokemonName(value);
-  };
-
-  const searchByName = async () => {
-    try {
-      setLoading(
-        <Loading>
-          <Row className="justify-content-center mt-5">
-            <LoadingCol xs="auto">
-              <Image src={PokeBall} alt="pokeball"></Image>
-            </LoadingCol>
-          </Row>
-        </Loading>
-      );
-      const apiName = toPokemonApiSlug(formatedName);
-      const apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + apiName + '/';
-      const resp = await axios.get(apiUrl);
-      setpkmnInfo(resp.data);
-      setpkmnId(resp.data.id);
-      setLoading(<div></div>);
-      navigate(apiName);
-    } catch (err) {
-      alert('Pokemon Not Found');
-      setLoading(
-        <div>
-          <Bidoof404Img src={Bidoof404} alt={'404'} />
-        </div>
-      );
-      console.error(err);
-    }
-  };
-
-  const searchWithParam = async (name: string) => {
-    try {
-      setLoading(
-        <Loading>
-          <Row className="justify-content-center mt-5">
-            <LoadingCol xs="auto">
-              <Image src={PokeBall} alt="pokeball"></Image>
-            </LoadingCol>
-          </Row>
-        </Loading>
-      );
-      const apiName = toPokemonApiSlug(name);
-      const apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + apiName + '/';
-      const resp = await axios.get(apiUrl);
-      setpkmnInfo(resp.data);
-      setFormatedName(resp.data.name);
-      setpkmnId(resp.data.species.url.substring(42, resp.data.species.url.length - 1));
-      setLoading(<div></div>);
-      navigate(apiName);
-    } catch (err) {
-      alert('Pokemon Not Found');
-      setLoading(
-        <Row className="justify-content-center mt-5">
-          <Col xs="auto">
-            <Bidoof404Img src={Bidoof404} alt={'404'} />
-          </Col>
-        </Row>
-      );
-      console.error(err);
-    }
-  };
-
   const onClickName = (id: number) => {
-    searchWithParam(id.toString());
+    navigate(id.toString());
   };
 
-  const onValueChange = async (val: string, code: number) => {
-    setFormatedName(formated(val));
-    setPrettyName(pretty(val));
+  const onValueChange = (val: string, code: number) => {
+    const apiName = toPokemonApiSlug(val);
+    setFormatedName(apiName);
     if (code === 13) {
-      searchWithParam(formated(val));
+      navigate(apiName);
     }
   };
 
@@ -150,9 +67,9 @@ const SearchPokemon: React.FC = () => {
   return (
     <SearchContainer>
       <Routes>
-        <Route path=":name/evolution" element={<Evolutions pkmnName={formatedName} />} />
+        <Route path=":name/evolution" element={<Evolutions />} />
         <Route path=":name/moves" element={<Moves />} />
-        <Route path=":name" element={<PokemonStats pkmnId={pkmnId} pkmnName={prettyName} pkmnInfo={pkmnInfo} />} />
+        <Route path=":name" element={<PokemonStats />} />
         <Route
           index
           element={
@@ -171,7 +88,7 @@ const SearchPokemon: React.FC = () => {
                   </Row>
                   <Row className="justify-content-center align-items-center mt-4">
                     <Col xs="auto">
-                      <SearchBar options={pokemonList} onChangeValue={onValueChange} val={formatedName} search={searchByName} />
+                      <SearchBar options={pokemonList} onChangeValue={onValueChange} val={formatedName} />
                     </Col>
                   </Row>
                   <Row className="justify-content-center align-items-center h-50 mt-4 mt-sm-0">
@@ -191,7 +108,6 @@ const SearchPokemon: React.FC = () => {
                       </Row>
                     </Col>
                   </Row>
-                  {loading}
                 </Col>
               </Row>
             </Container>

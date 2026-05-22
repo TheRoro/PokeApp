@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import RNavBar from './Components/Navbar/ResponsiveNavbar';
 import Home from './Components/Home/HomeComponent';
 import TypeCalculator from './Components/Type-Calculator/TypeCalculator';
@@ -10,8 +10,6 @@ import './Assets/TypeColors.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
-  useEffect(() => {}, []);
-
   return (
     <Router>
       <RNavBar />

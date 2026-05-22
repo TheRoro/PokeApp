@@ -4,13 +4,12 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import axios from 'axios';
 import Bidoof404 from '../../Assets/404-bidoof.png';
-import moveInfoInit from '../../Assets/json/moveInfo.json';
 import MoveInfo from './MoveInfo';
 import Autocomplete from '../Tools/SearchEngine/SearchEngine';
 import moveList from '../Tools/MoveList';
 import PokeBall from '../../Assets/pokeapp.png';
 
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
 import {
   Text,
@@ -20,8 +19,6 @@ import {
   LoadingCol,
   LoadingImg,
 } from './SearchMoveStyles';
-
-type pokemonInfo = {};
 
 const SearchMove: React.FC = () => {
   const max = moveList.length;
@@ -44,7 +41,7 @@ const SearchMove: React.FC = () => {
     }
     return temp;
   });
-  const [moveInfo, setmoveInfo] = React.useState<pokemonInfo>(moveInfoInit);
+  const [moveInfo, setmoveInfo] = React.useState<any | null>(null);
   const [loading, setLoading] = React.useState(<div></div>);
 
   const formatName = (value: string) => {
@@ -143,7 +140,12 @@ const SearchMove: React.FC = () => {
   return (
     <SearchContainer>
       <Routes>
-        <Route path="info" element={<MoveInfo moveInfo={moveInfo} moveName={prettyName} />} />
+        <Route
+          path="info"
+          element={moveInfo
+            ? <MoveInfo moveInfo={moveInfo} moveName={prettyName} />
+            : <Navigate to="/move" replace />}
+        />
         <Route
           index
           element={

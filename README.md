@@ -14,6 +14,7 @@ A Pokédex-inspired web app built with React + TypeScript. Search Pokémon, expl
 ## Tech Stack
 
 - React 18 + TypeScript 5
+- Vite 7
 - React Router v6
 - Bootstrap 5 / react-bootstrap 2
 - styled-components v5
@@ -40,7 +41,31 @@ You can access any Pokémon directly by name or ID:
 
 ## Deployment
 
-Deployed with CI/CD on [Render](https://render.com/).
+Install dependencies and run the app locally:
+
+```bash
+yarn install
+yarn dev
+```
+
+Run the same checks used by CI:
+
+```bash
+yarn test
+yarn build
+```
+
+GitHub Actions validates tests and production builds on Linux and Windows and
+reviews dependency changes in pull requests.
+
+PokeApp is deployed on [Render](https://render.com/) as a static site:
+
+- Build command: `yarn install --frozen-lockfile && yarn build`
+- Publish directory: `dist`
+
+The included `public/_redirects` rule routes direct SPA URLs back to
+`index.html`. PokeApp intentionally does not install a service worker; its
+PokeAPI-backed content requires a network connection.
 
 ---
 
