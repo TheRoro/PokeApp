@@ -7,6 +7,7 @@ A Pokédex-inspired web app built with React + TypeScript. Search Pokémon, expl
 - **Search Pokémon** — View stats, types, evolution chains, and movesets. Clickable evolutions for quick navigation.
 - **Search Move** — Detailed move info including type, category, power, accuracy, and effect descriptions.
 - **Type Calculator** — Select a type combo to see defensive/offensive coverage using updated terminology (Extremely Effective, Mostly Ineffective). Displays Pokémon that share your selected type combination.
+- **TeamBuilder** — Assemble six unique Pokémon and identify shared weaknesses, uncovered threats, resistances, and immunities from their combined typing.
 - **Full Pokédex (Gen 1–9)** — All 1025 Pokémon from Kanto through Paldea, including regional forms and Paradox Pokémon.
 - **Shiny Easter Egg** — 1/100 chance of encountering a shiny sprite when searching a Pokémon ✨
 - **Pokémon Quotes** — 135 iconic quotes from games and anime on the home page.
@@ -34,6 +35,7 @@ Pokédex device-inspired dark theme featuring:
 - [Search Pokémon](https://pokeapp.onrender.com/search/)
 - [Search Move](https://pokeapp.onrender.com/move)
 - [Type Calculator](https://pokeapp.onrender.com/calc)
+- [TeamBuilder](https://pokeapp.onrender.com/teambuilder)
 
 You can access any Pokémon directly by name or ID:
 - `https://pokeapp.onrender.com/search/pikachu`

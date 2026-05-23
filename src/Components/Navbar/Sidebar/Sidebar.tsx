@@ -30,8 +30,11 @@ const SideBar: React.FC<Props> = ({
       case 'move':
         navigate('/move');
         break;
-      default:
+      case 'calc':
         navigate('/calc');
+        break;
+      default:
+        navigate('/teambuilder');
         break;
     }
   };
@@ -51,6 +54,9 @@ const SideBar: React.FC<Props> = ({
           </SidebarLink>
           <SidebarLink onClick={() => clickHandler('calc')}>
             Type Calculator
+          </SidebarLink>
+          <SidebarLink onClick={() => clickHandler('teambuilder')}>
+            TeamBuilder
           </SidebarLink>
         </SidebarMenu>
       </SidebarWrapper>

@@ -1,95 +1,266 @@
-import React from 'react';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
 import Bidoof404 from '../../Assets/404-bidoof.png';
+import PokemonList from '../Tools/PokemonList';
+import { formatPokemonName, toPokemonApiSlug } from '../Tools/pokemonNames';
+import { getPokemonSuggestions } from './pokemonSuggestions';
+import { TeamPokemon } from './teamAnalysis';
+import {
+  EmptySlot,
+  ErrorText,
+  InputContainer,
+  NoSuggestions,
+  PokemonImage,
+  PokemonName,
+  RemoveButton,
+  SearchButton,
+  SearchForm,
+  SearchInput,
+  SlotCard,
+  SlotLabel,
+  Suggestion,
+  Suggestions,
+  TypeBadge,
+  Types,
+} from './TeamBuilderStyles';
 
-type Props = {}
+type PokemonResponse = {
+  id: number;
+  name: string;
+  sprites: {
+    front_default: string | null;
+    other: {
+      'official-artwork': {
+        front_default: string | null;
+      };
+    };
+  };
+  types: Array<{ type: { name: string } }>;
+};
 
-const Pokemon: React.FC<Props> = () => {
-    const [pkmnName, setpkmnName] = React.useState<string>('luxray');
-    const [pkmnImg, setpkmnImg] = React.useState(<img className="poke-builder" src={`https://pokeres.bastionbot.org/images/pokemon/405.png`} alt={'luxray'}/>);
-    const [types, setTypes] = React.useState<string[]>(['electric', '']);
-    const searchPkmn = async (name: string) => {
-        try {
-            setpkmnImg(<div>
-                Loading...
-            </div>);
-            setTypes(['', '']);
-            var apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + name + '/';
-            const resp = await axios.get(apiUrl);
-            setpkmnImg(<img className="poke-builder" src={`${resp.data.sprites.other['official-artwork'].front_default}`} alt={resp.data.name}/>);
-            
-            let temp = [];
-            for(let i = 0; i < 2; i++) {
-                if(resp.data.types[i] !== undefined){
-                    temp.push(resp.data.types[i].type.name);
-                }
-                else{
-                    temp.push('');
-                }
+type Props = {
+  animateIn: boolean;
+  exiting: boolean;
+  index: number;
+  pokemon: TeamPokemon | null;
+  onLoaded: (pokemon: TeamPokemon) => string | null;
+  onRemove: () => void;
+};
+
+const Pokemon: React.FC<Props> = ({
+  animateIn,
+  exiting,
+  index,
+  pokemon,
+  onLoaded,
+  onRemove,
+}) => {
+  const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeSuggestion, setActiveSuggestion] = useState(0);
+  const controllerRef = useRef<AbortController>();
+  const suggestions = useMemo(
+    () => getPokemonSuggestions(PokemonList, query),
+    [query],
+  );
+  const canSuggest = query.trim().length > 0 && !/^\d+$/.test(query.trim());
+  const listboxId = `team-pokemon-suggestions-${index}`;
+
+  useEffect(() => {
+    setQuery(pokemon?.displayName ?? '');
+    setError('');
+  }, [pokemon]);
+
+  useEffect(
+    () => () => {
+      controllerRef.current?.abort();
+    },
+    [],
+  );
+
+  const loadPokemon = async (value: string) => {
+    const slug = toPokemonApiSlug(value);
+
+    if (!slug) {
+      setError('Enter a Pokémon name or Pokédex number.');
+      return;
+    }
+
+    setShowSuggestions(false);
+    controllerRef.current?.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await axios.get<PokemonResponse>(
+        `https://pokeapi.co/api/v2/pokemon/${slug}/`,
+        { signal: controller.signal },
+      );
+      const data = response.data;
+      const imageUrl =
+        data.sprites.other['official-artwork'].front_default ??
+        data.sprites.front_default ??
+        Bidoof404;
+      const result: TeamPokemon = {
+        id: data.id,
+        name: data.name,
+        displayName: formatPokemonName(data.name),
+        imageUrl,
+        types: data.types.map(entry => entry.type.name),
+      };
+      const validationError = onLoaded(result);
+
+      if (validationError) {
+        setError(validationError);
+        return;
+      }
+
+      setQuery(result.displayName);
+    } catch (requestError) {
+      if (axios.isCancel(requestError)) return;
+      if (axios.isAxiosError(requestError) && requestError.response?.status === 404) {
+        setError(`No Pokémon found for “${value.trim()}”.`);
+      } else {
+        setError('Could not load this Pokémon. Check your connection and try again.');
+      }
+    } finally {
+      if (!controller.signal.aborted) setLoading(false);
+    }
+  };
+
+  const searchPokemon = (event: React.FormEvent) => {
+    event.preventDefault();
+    void loadPokemon(query);
+  };
+
+  const selectSuggestion = (suggestion: string) => {
+    const displayName = formatPokemonName(suggestion);
+    setQuery(displayName);
+    setShowSuggestions(false);
+    void loadPokemon(suggestion);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSuggestions || suggestions.length === 0) {
+      if (event.key === 'Escape') setShowSuggestions(false);
+      return;
+    }
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setActiveSuggestion(current => (current + 1) % suggestions.length);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setActiveSuggestion(
+        current => (current - 1 + suggestions.length) % suggestions.length,
+      );
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      selectSuggestion(suggestions[activeSuggestion]);
+    } else if (event.key === 'Escape') {
+      setShowSuggestions(false);
+    }
+  };
+
+  const remove = () => {
+    if (exiting) return;
+    controllerRef.current?.abort();
+    onRemove();
+  };
+
+  return (
+    <SlotCard
+      aria-label={`Team slot ${index + 1}`}
+      $animateIn={animateIn}
+      $removing={exiting}
+    >
+      <SearchForm onSubmit={searchPokemon}>
+        <InputContainer>
+          <SlotLabel htmlFor={`team-pokemon-${index}`}>
+            Pokémon {index + 1}
+          </SlotLabel>
+          <SearchInput
+            id={`team-pokemon-${index}`}
+            value={query}
+            onChange={event => {
+              setQuery(event.target.value);
+              setError('');
+              setActiveSuggestion(0);
+              setShowSuggestions(true);
+            }}
+            onFocus={() => setShowSuggestions(true)}
+            onKeyDown={handleKeyDown}
+            onBlur={() => setShowSuggestions(false)}
+            placeholder="Name or Pokédex #"
+            autoComplete="off"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={showSuggestions && suggestions.length > 0}
+            aria-controls={
+              showSuggestions && suggestions.length > 0 ? listboxId : undefined
             }
-            setTypes(temp);
-        }
-        catch(err) {
-            setpkmnImg(<div>
-                <img className="poke-builder" src={Bidoof404} alt={'404'}/>
-            </div>);
-            console.error(err);
-        }
-    }
+            aria-activedescendant={
+              showSuggestions && suggestions.length > 0
+                ? `${listboxId}-${activeSuggestion}`
+                : undefined
+            }
+          />
+          {showSuggestions && canSuggest && suggestions.length > 0 && (
+            <Suggestions id={listboxId} role="listbox">
+              {suggestions.map((suggestion, suggestionIndex) => (
+                <Suggestion
+                  id={`${listboxId}-${suggestionIndex}`}
+                  role="option"
+                  aria-selected={suggestionIndex === activeSuggestion}
+                  key={suggestion}
+                  $active={suggestionIndex === activeSuggestion}
+                  onMouseDown={event => {
+                    event.preventDefault();
+                    selectSuggestion(suggestion);
+                  }}
+                >
+                  {formatPokemonName(suggestion)}
+                </Suggestion>
+              ))}
+            </Suggestions>
+          )}
+          {showSuggestions && canSuggest && suggestions.length === 0 && (
+            <NoSuggestions>No matching Pokémon</NoSuggestions>
+          )}
+        </InputContainer>
+        <SearchButton type="submit" disabled={loading}>
+          {loading ? 'Loading…' : 'Add'}
+        </SearchButton>
+      </SearchForm>
+      <ErrorText role={error ? 'alert' : undefined}>{error}</ErrorText>
 
-    const handleChangeName = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = '';
-        value = e.target.value.toString().toLowerCase();
-        setpkmnName(value);
-    }
-
-    const handleKeypress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        var key  = e.key || e.keyCode;
-        if (key === 'Enter' || key === 13 || key === 'Tab' || key === 9) {
-            searchPkmn(pkmnName);
-        }
-    };
-
-    const handleOut = () => {
-        searchPkmn(pkmnName);
-    };
-
-    return (
-        <Col xs={6} sm={4} md={4} lg={2} className="search-text">
-            <Row className="justify-content-center">
-                <Col xs="auto">
-                    <input className="search-teambuilder" value={pkmnName} onChange={handleChangeName} onKeyPress={handleKeypress} onBlur={handleOut}>
-                    </input>
-                </Col>
-            </Row>
-            <Row className="justify-content-center">
-                <Col xs={12}>
-                    <div className="builder-textdiv">
-                        <h1 className="builder-text centered-text">{pkmnName}</h1>
-                    </div>
-                </Col>
-            </Row>
-            <Row className="justify-content-center">
-                <Col xs={12}>
-                    {pkmnImg}
-                </Col>
-            </Row>
-            {types[0][0] !== undefined && 
-            <Row className="justify-content-center">
-                <Col xs="auto">
-                    <p className={`${types[0][0].toUpperCase() + types[0].slice(1)} typetext`}>{types[0]}</p>
-                </Col>
-            </Row>}
-            {types[1][0] !== undefined && 
-            <Row className="justify-content-center">
-                <Col xs="auto">
-                    <p className={`${types[1][0].toUpperCase() + types[1].slice(1)} typetext`}>{types[1]}</p>
-                </Col>
-            </Row>}
-        </Col>
-    );
-}
+      {pokemon ? (
+        <>
+          <PokemonImage src={pokemon.imageUrl} alt={pokemon.displayName} />
+          <PokemonName>{pokemon.displayName}</PokemonName>
+          <Types aria-label={`${pokemon.displayName} types`}>
+            {pokemon.types.map(type => {
+              const displayType = formatPokemonName(type);
+              return (
+                <TypeBadge className={displayType} key={type}>
+                  {displayType}
+                </TypeBadge>
+              );
+            })}
+          </Types>
+          <RemoveButton type="button" onClick={remove} disabled={exiting}>
+            Remove
+          </RemoveButton>
+        </>
+      ) : (
+        <EmptySlot>Search to add a team member.</EmptySlot>
+      )}
+    </SlotCard>
+  );
+};
 
 export default Pokemon;

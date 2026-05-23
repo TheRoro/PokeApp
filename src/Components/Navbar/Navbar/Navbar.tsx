@@ -33,6 +33,9 @@ const Navbar: React.FC<Props> = ({ toggle }) => {
             <NavItem>
               <NavLink end to="/calc">Type Calculator</NavLink>
             </NavItem>
+            <NavItem>
+              <NavLink end to="/teambuilder">TeamBuilder</NavLink>
+            </NavItem>
           </NavMenu>
         </NavbarContainer>
       </Nav>
