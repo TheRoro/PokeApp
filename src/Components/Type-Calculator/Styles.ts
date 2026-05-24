@@ -16,7 +16,8 @@ const fadeInUp = keyframes`
 
 export const TypeCalDiv = styled.div`
     min-height: auto;
-    min-width: 282px;
+    width: 100%;
+    min-width: 0;
     padding: 2rem 0;
     animation: ${fadeInUp} 0.7s ease forwards;
 `
@@ -104,7 +105,8 @@ export const Button = styled(Link)`
     }
 
     &:focus-visible {
-        outline: none;
+        outline: 3px solid rgba(255, 222, 0, 0.75);
+        outline-offset: 3px;
         box-shadow: 0 0 0 3px rgba(220, 10, 45, 0.25);
     }
 `

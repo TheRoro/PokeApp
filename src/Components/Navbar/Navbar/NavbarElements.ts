@@ -89,8 +89,11 @@ export const NavLogo = styled(LinkR).attrs({ className: navLinkClassName })`
   }
 `;
 
-export const MobileIcon = styled.div`
+export const MobileIcon = styled.button`
   display: none;
+  padding: 0.4rem;
+  background: transparent;
+  border: 0;
 
   @media screen and (max-width: 990px) {
     display: block;
@@ -102,6 +105,11 @@ export const MobileIcon = styled.div`
 
     &:hover {
       color: #fff;
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba(255, 222, 0, 0.8);
+      outline-offset: 2px;
     }
   }
 `;
@@ -129,7 +137,6 @@ export const NavLinks = styled(LinkR).attrs({ className: navLinkClassName })`
   cursor: pointer;
   padding: 0;
   padding-bottom: 0.3rem;
-  outline: none !important;
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -178,6 +185,11 @@ export const NavLinks = styled(LinkR).attrs({ className: navLinkClassName })`
       width: 100%;
       background: #fff;
     }
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(255, 222, 0, 0.8);
+    outline-offset: 4px;
   }
 `;
 

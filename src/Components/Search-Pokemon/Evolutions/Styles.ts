@@ -34,7 +34,7 @@ export const SubTitle = styled.h2`
     margin: 0.5rem 0 0;
 `
 
-export const EvolutionCard = styled.div`
+export const EvolutionCard = styled.button`
     background: linear-gradient(145deg, #352020 0%, #2A2D32 40%);
     border: 2px solid rgba(220, 10, 45, 0.3);
     border-radius: 16px;
@@ -44,6 +44,20 @@ export const EvolutionCard = styled.div`
     flex-direction: column;
     align-items: center;
     min-width: 140px;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+        border-color: var(--pokedex-red);
+        transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+        outline: 3px solid rgba(255, 222, 0, 0.7);
+        outline-offset: 3px;
+    }
 
     @media (max-width: 576px) {
         min-width: 120px;

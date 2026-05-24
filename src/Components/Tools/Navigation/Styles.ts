@@ -27,6 +27,11 @@ export const NavButton = styled(Link)`
         box-shadow: 0 0px 0 #6B1411, 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
+    &:focus-visible {
+        outline: 3px solid rgba(255, 222, 0, 0.8);
+        outline-offset: 3px;
+    }
+
     i {
         font-size: 1.2rem;
     }

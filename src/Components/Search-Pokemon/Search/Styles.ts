@@ -50,7 +50,8 @@ const bounce = keyframes`
 
 export const SearchContainer = styled(Container)`
     height: 75%;
-    min-width: 343px;
+    width: 100%;
+    min-width: 0;
     animation: ${fadeInUp} 0.7s ease forwards;
 `
 
@@ -124,6 +125,11 @@ export const Icon = styled.button`
         border-color: var(--pokedex-red);
         box-shadow: 0 12px 28px rgba(220, 10, 45, 0.3);
         transform: translateY(-6px) scale(1.04);
+    }
+
+    &:focus-visible {
+        outline: 3px solid rgba(255, 222, 0, 0.75);
+        outline-offset: 4px;
     }
 `
 

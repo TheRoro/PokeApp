@@ -49,9 +49,10 @@
   color: #888;
 }
 
-.search-box-curved:focus,
-.search-box:focus {
-  outline: none;
+.search-box-curved:focus-visible,
+.search-box:focus-visible {
+  outline: 3px solid rgba(255, 222, 0, 0.65);
+  outline-offset: 2px;
   border-color: var(--pokedex-red);
   box-shadow: 0 0 0 3px rgba(220, 10, 45, 0.2), 0 8px 24px rgba(0, 0, 0, 0.3);
 }
@@ -87,6 +88,11 @@
   color: #fff;
   background: var(--pokedex-red);
   transform: translateY(-50%) scale(1.05);
+}
+
+.search-btn:focus-visible {
+  outline: 3px solid rgba(255, 222, 0, 0.75);
+  outline-offset: 2px;
 }
 
 ul.options {

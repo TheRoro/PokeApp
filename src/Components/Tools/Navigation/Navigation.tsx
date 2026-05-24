@@ -6,12 +6,16 @@ import {NavButton} from './Styles';
 
 type Props = {
     left: string,
-    right: string
+    right: string,
+    leftLabel?: string,
+    rightLabel?: string,
 }
 
 const Navigation: React.FC<Props> = ({
     left,
-    right
+    right,
+    leftLabel = 'Previous page',
+    rightLabel = 'Next page',
 }) => {
     return(
     <div>
@@ -20,8 +24,8 @@ const Navigation: React.FC<Props> = ({
             <Col xs={6}>
                 <Row className="justify-content-start">
                     <Col xs="auto">
-                        <NavButton to={left}>
-                            <i className="fas fa-angle-left fa-2x"></i>
+                        <NavButton to={left} aria-label={leftLabel}>
+                            <i className="fas fa-angle-left fa-2x" aria-hidden="true"></i>
                         </NavButton>
                     </Col>
                 </Row>
@@ -29,8 +33,8 @@ const Navigation: React.FC<Props> = ({
             <Col xs={6}>
                 <Row className="justify-content-end">
                     <Col xs="auto">
-                        <NavButton to={right}>
-                            <i className="fas fa-angle-right fa-2x"></i>
+                        <NavButton to={right} aria-label={rightLabel}>
+                            <i className="fas fa-angle-right fa-2x" aria-hidden="true"></i>
                         </NavButton>
                     </Col>
                 </Row>
@@ -41,8 +45,8 @@ const Navigation: React.FC<Props> = ({
             <Col xs={6}>
                 <Row className="justify-content-start">
                     <Col xs="auto">
-                        <NavButton to={left}>
-                            <i className="fas fa-angle-left fa-2x"></i>
+                        <NavButton to={left} aria-label={leftLabel}>
+                            <i className="fas fa-angle-left fa-2x" aria-hidden="true"></i>
                         </NavButton>
                     </Col>
                 </Row>

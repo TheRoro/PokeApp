@@ -78,7 +78,6 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) => {
 
     const computeTypeCoverage = useCallback((firstType: string, secondType: string, firstIndex: IndexType, secondIndex: IndexType) => {
         if (firstType === 'None' && secondType === 'None') {
-            alert('Select at least one type');
             return undefined;
         }
 

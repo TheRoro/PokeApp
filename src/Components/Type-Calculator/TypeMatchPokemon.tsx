@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Bidoof404 from '../../Assets/404-bidoof.png';
 import typeList from '../../Assets/typeList';
+import ApiError, { ApiErrorInfo } from '../Tools/ApiError/ApiError';
+import { describeApiError } from '../Tools/ApiError/apiErrors';
 import {
     findDualTypeMatches,
     findMonotypeMatches,
@@ -62,7 +64,7 @@ const PokemonGrid = styled.div`
     justify-content: center;
 `
 
-const PokemonCard = styled.div`
+const PokemonCard = styled.button`
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -73,11 +75,18 @@ const PokemonCard = styled.div`
     cursor: pointer;
     transition: all 0.2s ease;
     width: 100px;
+    color: inherit;
+    font: inherit;
 
     &:hover {
         background: rgba(220, 10, 45, 0.1);
         border-color: rgba(220, 10, 45, 0.4);
         transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+        outline: 3px solid rgba(255, 222, 0, 0.7);
+        outline-offset: 3px;
     }
 `
 
@@ -96,14 +105,6 @@ const Name = styled.span`
     text-transform: capitalize;
 `
 
-const RetryButton = styled.button`
-    color: #fff;
-    background: rgba(220, 10, 45, 0.2);
-    border: 1px solid rgba(220, 10, 45, 0.6);
-    border-radius: 8px;
-    padding: 0.5rem 0.9rem;
-`
-
 type Props = {
     type1: string;
     type2: string;
@@ -112,7 +113,7 @@ type Props = {
 const TypeMatchPokemon: React.FC<Props> = ({ type1, type2 }) => {
     const [matches, setMatches] = useState<PokemonMatch[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    const [error, setError] = useState<ApiErrorInfo | null>(null);
     const [retry, setRetry] = useState(0);
     const navigate = useNavigate();
 
@@ -126,7 +127,7 @@ const TypeMatchPokemon: React.FC<Props> = ({ type1, type2 }) => {
 
         async function loadMatches() {
             setLoading(true);
-            setError(false);
+            setError(null);
             try {
                 const primaryType = selectedTypes[0];
                 if (!primaryType) {
@@ -150,10 +151,9 @@ const TypeMatchPokemon: React.FC<Props> = ({ type1, type2 }) => {
 
                 if (active) setMatches(completeMatches);
             } catch (requestError) {
-                console.error(requestError);
                 if (active) {
                     setMatches([]);
-                    setError(true);
+                    setError(describeApiError(requestError, 'type matches'));
                 }
             } finally {
                 if (active) setLoading(false);
@@ -175,7 +175,7 @@ const TypeMatchPokemon: React.FC<Props> = ({ type1, type2 }) => {
 
     if (loading) {
         return (
-            <Container>
+            <Container role="status" aria-label="Loading matching Pokémon">
                 <SectionTitle>Pokémon with this type combo</SectionTitle>
                 <PokemonGrid>
                     <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>Checking every match...</span>
@@ -188,12 +188,7 @@ const TypeMatchPokemon: React.FC<Props> = ({ type1, type2 }) => {
         return (
             <Container>
                 <SectionTitle>Pokémon with this type combo</SectionTitle>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
-                    <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>
-                        PokeAPI could not load the type data.
-                    </span>
-                    <RetryButton type="button" onClick={() => setRetry(value => value + 1)}>Try again</RetryButton>
-                </div>
+                <ApiError error={error} onRetry={() => setRetry(value => value + 1)} />
             </Container>
         );
     }
@@ -217,10 +212,15 @@ const TypeMatchPokemon: React.FC<Props> = ({ type1, type2 }) => {
             </SectionTitle>
             <PokemonGrid>
                 {visibleMatches.map((pokemon) => (
-                    <PokemonCard key={pokemon.id} onClick={() => navigate(`/search/${pokemon.name}`)}>
+                    <PokemonCard
+                        type="button"
+                        key={pokemon.id}
+                        aria-label={`View ${pretty(pokemon.name)}`}
+                        onClick={() => navigate(`/search/${pokemon.name}`)}
+                    >
                         <Sprite
                             src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
-                            alt={pokemon.name}
+                            alt=""
                         />
                         <Name>{pretty(pokemon.name)}</Name>
                     </PokemonCard>

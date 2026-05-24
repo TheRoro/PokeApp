@@ -252,6 +252,11 @@ export const RemoveButton = styled.button`
     color: #fff;
     border-color: #fff;
   }
+
+  &:focus-visible {
+    outline: 3px solid rgba(255, 222, 0, 0.7);
+    outline-offset: 2px;
+  }
 `;
 
 export const Actions = styled.div`
@@ -269,6 +274,11 @@ export const ResetButton = styled.button`
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 8px;
   cursor: pointer;
+
+  &:focus-visible {
+    outline: 3px solid rgba(255, 222, 0, 0.7);
+    outline-offset: 2px;
+  }
 `;
 
 export const Analysis = styled.section`

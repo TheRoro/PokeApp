@@ -3,20 +3,24 @@ import PropTypes from 'prop-types';
 import { formatPokemonName, toPokemonApiSlug } from '../pokemonNames';
 import './SearchEngine.css';
 
+let nextSearchId = 0;
+
 export class SearchEngine extends Component {
   constructor(props) {
     super(props);
-    this.state.userInput = this.props.val;
+    this.listboxId = `search-suggestions-${nextSearchId++}`;
+    this.state = {
+      activeOption: 0,
+      filteredOptions: [],
+      showOptions: false,
+      userInput: this.props.val || '',
+      searching: false,
+    };
   }
   static propTypes = {
     options: PropTypes.instanceOf(Array).isRequired,
-  };
-  state = {
-    activeOption: 0,
-    filteredOptions: [],
-    showOptions: false,
-    userInput: '',
-    searching: false,
+    onChangeValue: PropTypes.func.isRequired,
+    label: PropTypes.string,
   };
 
   onChange = (e) => {
@@ -76,7 +80,15 @@ export class SearchEngine extends Component {
   onKeyDown = (e) => {
     const { activeOption, filteredOptions } = this.state;
 
-    if (e.keyCode === 13) {
+    if (
+      filteredOptions.length === 0 &&
+      (e.key === 'ArrowUp' || e.key === 'ArrowDown')
+    ) {
+      return;
+    }
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
       const selected = filteredOptions[activeOption];
       this.setState({
         activeOption: 0,
@@ -85,10 +97,11 @@ export class SearchEngine extends Component {
         searching: true,
       });
       if(selected)
-        this.props.onChangeValue(toPokemonApiSlug(selected), e.keyCode);
+        this.props.onChangeValue(toPokemonApiSlug(selected), 13);
       else
-        this.props.onChangeValue(this.state.userInput, e.keyCode);
-    } else if (e.keyCode === 38) {
+        this.props.onChangeValue(this.state.userInput, 13);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
       if (activeOption === 0) {
         return;
       }
@@ -96,7 +109,8 @@ export class SearchEngine extends Component {
         activeOption: activeOption - 1,
         userInput: this.prettyName(filteredOptions[activeOption - 1])
       });
-    } else if (e.keyCode === 40) {
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
       if (activeOption === filteredOptions.length - 1) {
         return;
       }
@@ -105,6 +119,8 @@ export class SearchEngine extends Component {
         activeOption: activeOption + 1,
         userInput: this.prettyName(filteredOptions[activeOption + 1])
       });
+    } else if (e.key === 'Escape') {
+      this.setState({ showOptions: false, activeOption: 0 });
     }
   };
 
@@ -120,7 +136,7 @@ export class SearchEngine extends Component {
     if (showOptions && userInput) {
       if (filteredOptions.length) {
         optionList = (
-          <ul className="options">
+          <ul className="options" id={this.listboxId} role="listbox">
             {filteredOptions.map((optionName, index) => {
               let className;
               if (index === filteredOptions.length - 1 && index === activeOption) {
@@ -133,7 +149,16 @@ export class SearchEngine extends Component {
                 className = 'last-option'
               }
               return (
-                <li className={className} key={optionName} data-value={optionName} onClick={onClick}>
+                <li
+                  id={`${this.listboxId}-${index}`}
+                  className={className}
+                  key={optionName}
+                  data-value={optionName}
+                  role="option"
+                  aria-selected={index === activeOption}
+                  onMouseDown={event => event.preventDefault()}
+                  onClick={onClick}
+                >
                   {this.prettyName(optionName)}
                 </li>
               );
@@ -142,7 +167,7 @@ export class SearchEngine extends Component {
         );
       } else {
         optionList = (
-          <div className="no-options">
+          <div className="no-options" role="status">
             <p>No match found</p>
           </div>
         );
@@ -156,23 +181,37 @@ export class SearchEngine extends Component {
           this.state.filteredOptions.length === 0 ||
           this.state.searching === true ? 
           <input
+            aria-label={this.props.label || 'Search'}
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={showOptions && filteredOptions.length > 0}
+            aria-controls={showOptions && filteredOptions.length > 0 ? this.listboxId : undefined}
+            aria-activedescendant={showOptions && filteredOptions.length > 0 ? `${this.listboxId}-${activeOption}` : undefined}
             placeholder="Search"
             type="text"
             className="search-box-curved"
             onChange={onChange}
             onKeyDown={onKeyDown}
+            onBlur={() => this.setState({ showOptions: false })}
             value={userInput}
           />
           :
           <input
+            aria-label={this.props.label || 'Search'}
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={showOptions && filteredOptions.length > 0}
+            aria-controls={showOptions && filteredOptions.length > 0 ? this.listboxId : undefined}
+            aria-activedescendant={showOptions && filteredOptions.length > 0 ? `${this.listboxId}-${activeOption}` : undefined}
             placeholder="Search"
             type="text"
             className="search-box"
             onChange={onChange}
             onKeyDown={onKeyDown}
+            onBlur={() => this.setState({ showOptions: false })}
             value={userInput}
           />}
-          <button className="search-btn" onClick={() => {
+          <button type="button" className="search-btn" aria-label={this.props.label || 'Search'} onClick={() => {
             this.setState({ showOptions: false, searching: true });
             if(this.state.userInput) {
               const apiName = toPokemonApiSlug(this.state.userInput);

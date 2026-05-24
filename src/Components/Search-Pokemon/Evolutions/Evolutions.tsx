@@ -3,10 +3,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import axios from 'axios';
 import Navigation from '../../Tools/Navigation/Navigation';
-import Bidoof404 from '../../../Assets/404-bidoof.png';
 import PokeBall from '../../../Assets/pokeapp.png';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toPokemonApiSlug } from '../../Tools/pokemonNames';
+import ApiError, { ApiErrorInfo } from '../../Tools/ApiError/ApiError';
+import { describeApiError } from '../../Tools/ApiError/apiErrors';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import {
     SubTitle,
@@ -30,14 +31,19 @@ const Evolutions: React.FC = () => {
     const navigate = useNavigate();
     const [stages, setStages] = React.useState<EvoStage[][]>([]);
     const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState(false);
+    const [error, setError] = React.useState<ApiErrorInfo | null>(null);
+    const [retry, setRetry] = React.useState(0);
 
     useEffect(() => {
+        const controller = new AbortController();
         const fetchEvolutions = async () => {
+            setLoading(true);
+            setError(null);
             try {
-                const pokemonResp = await axios.get(`https://pokeapi.co/api/v2/pokemon/${toPokemonApiSlug(name)}/`);
-                const speciesResp = await axios.get(pokemonResp.data.species.url);
-                const evoResp = await axios.get(speciesResp.data.evolution_chain.url);
+                const config = { signal: controller.signal };
+                const pokemonResp = await axios.get(`https://pokeapi.co/api/v2/pokemon/${toPokemonApiSlug(name)}/`, config);
+                const speciesResp = await axios.get(pokemonResp.data.species.url, config);
+                const evoResp = await axios.get(speciesResp.data.evolution_chain.url, config);
 
                 const allStages: EvoStage[][] = [];
 
@@ -73,12 +79,14 @@ const Evolutions: React.FC = () => {
                 setStages(allStages);
                 setLoading(false);
             } catch (err) {
-                setError(true);
+                if (axios.isCancel(err)) return;
+                setError(describeApiError(err, 'evolution data'));
                 setLoading(false);
             }
         };
-        fetchEvolutions();
-    }, [name]);
+        void fetchEvolutions();
+        return () => controller.abort();
+    }, [name, retry]);
 
     const pretty = (value: string) => {
         return value.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
@@ -87,7 +95,12 @@ const Evolutions: React.FC = () => {
     return (
         <EvolutionsContainer>
             <div style={{ paddingTop: '0.5rem' }}>
-                <Navigation left={`/search/${name}`} right={`/search/${name}/moves`} />
+                <Navigation
+                    left={`/search/${name}`}
+                    right={`/search/${name}/moves`}
+                    leftLabel="Back to Pokémon details"
+                    rightLabel="View moves"
+                />
             </div>
             <Row className="justify-content-center mt-3">
                 <Col xs="auto">
@@ -95,19 +108,14 @@ const Evolutions: React.FC = () => {
                 </Col>
             </Row>
             {loading && (
-                <Row className="justify-content-center mt-5">
+                <Row className="justify-content-center mt-5" role="status" aria-label="Loading evolutions">
                     <LoadingCol xs="auto">
-                        <LoadingImg src={PokeBall} alt="pokeball" />
+                        <LoadingImg src={PokeBall} alt="" />
                     </LoadingCol>
                 </Row>
             )}
             {error && (
-                <Row className="justify-content-center mt-5">
-                    <Col xs="auto">
-                        <img src={Bidoof404} alt="404" style={{ maxWidth: '160px' }} />
-                        <SubTitle>No evolution data found</SubTitle>
-                    </Col>
-                </Row>
+                <ApiError error={error} onRetry={() => setRetry(value => value + 1)} />
             )}
             {!loading && !error && (
                 <Row className="justify-content-center mt-4">
@@ -118,11 +126,16 @@ const Evolutions: React.FC = () => {
                                     {stageIdx > 0 && <Arrow>→</Arrow>}
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}>
                                         {stage.map((pokemon) => (
-                                            <EvolutionCard key={pokemon.id} onClick={() => navigate(`/search/${pokemon.name}`)} style={{ cursor: 'pointer' }}>
+                                            <EvolutionCard
+                                                type="button"
+                                                key={pokemon.id}
+                                                aria-label={`View ${pretty(pokemon.name)}`}
+                                                onClick={() => navigate(`/search/${pokemon.name}`)}
+                                            >
                                                 <LazyImage
                                                     effect="blur"
                                                     src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`}
-                                                    alt={pokemon.name}
+                                                    alt=""
                                                 />
                                                 <SubTitle>{pretty(pokemon.name)}</SubTitle>
                                             </EvolutionCard>

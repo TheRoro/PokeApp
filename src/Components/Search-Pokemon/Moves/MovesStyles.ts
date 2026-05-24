@@ -104,6 +104,11 @@ export const VersionSelect = styled.select`
     border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 8px;
     padding: 0.55rem 0.75rem;
+
+    &:focus-visible {
+        outline: 3px solid rgba(255, 222, 0, 0.7);
+        outline-offset: 2px;
+    }
 `
 
 export const LoadMoreButton = styled.button`
@@ -118,6 +123,11 @@ export const LoadMoreButton = styled.button`
     &:disabled {
         cursor: wait;
         opacity: 0.6;
+    }
+
+    &:focus-visible {
+        outline: 3px solid rgba(255, 222, 0, 0.7);
+        outline-offset: 2px;
     }
 `
 

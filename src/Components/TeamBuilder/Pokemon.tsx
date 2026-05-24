@@ -5,6 +5,7 @@ import PokemonList from '../Tools/PokemonList';
 import { formatPokemonName, toPokemonApiSlug } from '../Tools/pokemonNames';
 import { getPokemonSuggestions } from './pokemonSuggestions';
 import { TeamPokemon } from './teamAnalysis';
+import { describeApiError } from '../Tools/ApiError/apiErrors';
 import {
   EmptySlot,
   ErrorText,
@@ -122,11 +123,8 @@ const Pokemon: React.FC<Props> = ({
       setQuery(result.displayName);
     } catch (requestError) {
       if (axios.isCancel(requestError)) return;
-      if (axios.isAxiosError(requestError) && requestError.response?.status === 404) {
-        setError(`No Pokémon found for “${value.trim()}”.`);
-      } else {
-        setError('Could not load this Pokémon. Check your connection and try again.');
-      }
+      const apiError = describeApiError(requestError, 'Pokémon');
+      setError(`${apiError.title}. ${apiError.message}`);
     } finally {
       if (!controller.signal.aborted) setLoading(false);
     }
@@ -218,10 +216,8 @@ const Pokemon: React.FC<Props> = ({
                   aria-selected={suggestionIndex === activeSuggestion}
                   key={suggestion}
                   $active={suggestionIndex === activeSuggestion}
-                  onMouseDown={event => {
-                    event.preventDefault();
-                    selectSuggestion(suggestion);
-                  }}
+                  onMouseDown={event => event.preventDefault()}
+                  onClick={() => selectSuggestion(suggestion)}
                 >
                   {formatPokemonName(suggestion)}
                 </Suggestion>

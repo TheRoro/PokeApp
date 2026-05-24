@@ -6,6 +6,8 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import PokeBall from '../../../Assets/pokeapp.png';
 import { toPokemonApiSlug } from '../../Tools/pokemonNames';
+import ApiError, { ApiErrorInfo } from '../../Tools/ApiError/ApiError';
+import { describeApiError } from '../../Tools/ApiError/apiErrors';
 import {
     getLevelUpMoves,
     getLevelUpVersionGroups,
@@ -92,7 +94,7 @@ const Moves: React.FC = () => {
     const [visibleCount, setVisibleCount] = useState(MOVE_BATCH_SIZE);
     const [displayMoves, setDisplayMoves] = useState<DisplayMove[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    const [error, setError] = useState<ApiErrorInfo | null>(null);
     const [retry, setRetry] = useState(0);
 
     const versionGroups = useMemo(
@@ -109,7 +111,7 @@ const Moves: React.FC = () => {
 
         async function loadPokemon() {
             setLoading(true);
-            setError(false);
+            setError(null);
             setPokemonMoves([]);
             setDisplayMoves([]);
             try {
@@ -121,8 +123,7 @@ const Moves: React.FC = () => {
                 setSelectedVersion(groups[0]?.name ?? '');
                 setVisibleCount(MOVE_BATCH_SIZE);
             } catch (requestError) {
-                console.error(requestError);
-                if (active) setError(true);
+                if (active) setError(describeApiError(requestError, 'moves'));
             } finally {
                 if (active) setLoading(false);
             }
@@ -145,7 +146,7 @@ const Moves: React.FC = () => {
 
         async function loadMoveDetails() {
             setLoading(true);
-            setError(false);
+            setError(null);
             try {
                 const visibleMoves = levelUpMoves.slice(0, visibleCount);
                 const details = await mapWithConcurrency<LevelUpMove, DisplayMove>(
@@ -163,8 +164,7 @@ const Moves: React.FC = () => {
                 );
                 if (active) setDisplayMoves(details);
             } catch (requestError) {
-                console.error(requestError);
-                if (active) setError(true);
+                if (active) setError(describeApiError(requestError, 'move details'));
             } finally {
                 if (active) setLoading(false);
             }
@@ -174,14 +174,18 @@ const Moves: React.FC = () => {
         return () => {
             active = false;
         };
-    }, [levelUpMoves, selectedVersion, visibleCount]);
+    }, [levelUpMoves, selectedVersion, visibleCount, retry]);
 
     const hasMore = displayMoves.length < levelUpMoves.length;
 
     return (
         <MovesContainer>
             <div style={{ paddingTop: '0.5rem' }}>
-                <Navigation left={`/search/${pokemonName}/evolution`} right=""/>
+                <Navigation
+                    left={`/search/${pokemonName}/evolution`}
+                    right=""
+                    leftLabel="Back to evolutions"
+                />
             </div>
             <Row className="justify-content-center mt-3">
                 <Col xs="auto">
@@ -210,24 +214,20 @@ const Moves: React.FC = () => {
             </VersionControls>}
 
             {loading && displayMoves.length === 0 &&
-            <Row className="justify-content-center">
+            <Row className="justify-content-center" role="status" aria-label="Loading moves">
                 <LoadingCol xs="auto">
-                    <LoadingImg src={PokeBall} alt="Loading moves"></LoadingImg>
+                    <LoadingImg src={PokeBall} alt=""></LoadingImg>
                 </LoadingCol>
             </Row>}
 
             {error &&
-            <Row className="justify-content-center mt-4">
-                <Col xs={12} className="text-center">
-                    <Text>PokeAPI could not load this learnset.</Text>
-                    <LoadMoreButton type="button" onClick={() => setRetry(value => value + 1)}>
-                        Try again
-                    </LoadMoreButton>
-                </Col>
-            </Row>}
+            <ApiError error={error} onRetry={() => setRetry(value => value + 1)} />}
 
             {!error && !loading && selectedVersion && levelUpMoves.length === 0 &&
             <Text>This Pokémon has no level-up moves in {pretty(selectedVersion)}.</Text>}
+
+            {!error && !loading && versionGroups.length === 0 &&
+            <Text>No level-up move data is available for this Pokémon.</Text>}
 
             {displayMoves.length > 0 &&
             <Row className="justify-content-center mt-4">

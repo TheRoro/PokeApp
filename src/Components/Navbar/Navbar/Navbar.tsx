@@ -11,17 +11,24 @@ import {
 } from './NavbarElements';
 
 type Props = {
-  toggle: any,
+  isOpen: boolean,
+  toggle: () => void,
 }
 
-const Navbar: React.FC<Props> = ({ toggle }) => {
+const Navbar: React.FC<Props> = ({ isOpen, toggle }) => {
   return (
     <>
       <Nav>
         <NavbarContainer>
           <NavLogo end to="/">PokeApp</NavLogo>
-          <MobileIcon onClick={toggle}>
-            <FaBars />
+          <MobileIcon
+            type="button"
+            onClick={toggle}
+            aria-controls="mobile-navigation"
+            aria-expanded={isOpen}
+            aria-label="Open navigation menu"
+          >
+            <FaBars aria-hidden="true" />
           </MobileIcon>
           <NavMenu>
             <NavItem>

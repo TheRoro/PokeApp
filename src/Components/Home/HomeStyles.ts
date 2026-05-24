@@ -102,7 +102,8 @@ export const FooterLink = styled.button`
     }
 
     &:focus-visible {
-        outline: none;
+        outline: 3px solid rgba(255, 222, 0, 0.75);
+        outline-offset: 3px;
         box-shadow: 0 0 0 3px rgba(220, 10, 45, 0.2);
     }
 `

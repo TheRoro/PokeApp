@@ -3,11 +3,12 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import axios from 'axios';
-import Bidoof404 from '../../Assets/404-bidoof.png';
 import MoveInfo from './MoveInfo';
 import Autocomplete from '../Tools/SearchEngine/SearchEngine';
 import moveList from '../Tools/MoveList';
 import PokeBall from '../../Assets/pokeapp.png';
+import ApiError, { ApiErrorInfo } from '../Tools/ApiError/ApiError';
+import { describeApiError } from '../Tools/ApiError/apiErrors';
 
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
@@ -15,7 +16,6 @@ import {
   Text,
   Title,
   SearchContainer,
-  Bidoof404Img,
   LoadingCol,
   LoadingImg,
 } from './SearchMoveStyles';
@@ -25,7 +25,6 @@ const SearchMove: React.FC = () => {
   const rand = Math.floor(Math.random() * Math.floor(max));
   const initialMove = moveList[rand];
   const navigate = useNavigate();
-  const [formatedName, setFormatedName] = React.useState<string>(initialMove);
   const [prettyName, setPrettyName] = React.useState<string>(() => {
     let temp = '';
     for (let i = 0; i < initialMove.length; i++) {
@@ -42,7 +41,12 @@ const SearchMove: React.FC = () => {
     return temp;
   });
   const [moveInfo, setmoveInfo] = React.useState<any | null>(null);
-  const [loading, setLoading] = React.useState(<div></div>);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<ApiErrorInfo | null>(null);
+  const [lastSearch, setLastSearch] = React.useState(initialMove);
+  const controllerRef = React.useRef<AbortController>();
+
+  React.useEffect(() => () => controllerRef.current?.abort(), []);
 
   const formatName = (value: string) => {
     let temp = '';
@@ -53,9 +57,7 @@ const SearchMove: React.FC = () => {
         temp += value[i];
       }
     }
-    temp = temp.toLowerCase();
-    setFormatedName(temp);
-    return temp;
+    return temp.toLowerCase();
   };
 
   const formatPretty = (value: string) => {
@@ -71,69 +73,39 @@ const SearchMove: React.FC = () => {
         temp += value[i];
       }
     }
-    setPrettyName(temp);
     return temp;
   };
 
-  const searchByName = async () => {
+  const searchMove = async (name: string) => {
+    const apiName = formatName(name);
+    if (!apiName) return;
+
+    setLastSearch(apiName);
+    setError(null);
+    setLoading(true);
+    controllerRef.current?.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
     try {
-      setLoading(
-        <Row className="justify-content-center mt-5">
-          <LoadingCol xs="auto">
-            <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
-          </LoadingCol>
-        </Row>
-      );
-      const apiUrl = 'https://pokeapi.co/api/v2/move/' + formatedName + '/';
-      const resp = await axios.get(apiUrl);
+      const apiUrl = 'https://pokeapi.co/api/v2/move/' + apiName + '/';
+      const resp = await axios.get(apiUrl, { signal: controller.signal });
       setmoveInfo(resp.data);
-      setLoading(<div></div>);
+      setPrettyName(formatPretty(resp.data.name));
       navigate('info');
     } catch (err) {
-      alert('Move Not Found');
-      setLoading(
-        <Row className="justify-content-center mt-5">
-          <Col xs="auto">
-            <Bidoof404Img src={Bidoof404} alt={'404'} />
-          </Col>
-        </Row>
-      );
-      console.error(err);
+      if (axios.isCancel(err)) return;
+      setError(describeApiError(err, 'move'));
+    } finally {
+      if (controllerRef.current === controller) setLoading(false);
     }
   };
 
-  const searchWithParam = async (name: string) => {
-    try {
-      setLoading(
-        <Row className="justify-content-center mt-5">
-          <LoadingCol xs="auto">
-            <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
-          </LoadingCol>
-        </Row>
-      );
-      const apiUrl = 'https://pokeapi.co/api/v2/move/' + name + '/';
-      const resp = await axios.get(apiUrl);
-      setmoveInfo(resp.data);
-      setLoading(<div></div>);
-      navigate('info');
-    } catch (err) {
-      alert('Move Not Found');
-      setLoading(
-        <Row className="justify-content-center mt-5">
-          <Col xs="auto">
-            <Bidoof404Img src={Bidoof404} alt={'404'} />
-          </Col>
-        </Row>
-      );
-      console.error(err);
-    }
-  };
-
-  const onValueChange = async (val: string, code: number) => {
-    formatPretty(val);
-    formatName(val);
+  const onValueChange = (val: string, code: number) => {
+    const apiName = formatName(val);
+    setPrettyName(formatPretty(val));
+    setError(null);
     if (code === 13) {
-      searchWithParam(formatName(val));
+      void searchMove(apiName);
     }
   };
 
@@ -164,10 +136,21 @@ const SearchMove: React.FC = () => {
                   </Row>
                   <Row className="justify-content-center mt-4">
                     <Col xs="auto">
-                      <Autocomplete options={moveList} onChangeValue={onValueChange} val={prettyName} search={searchByName} />
+                      <Autocomplete
+                        options={moveList}
+                        onChangeValue={onValueChange}
+                        val={prettyName}
+                        label="Search moves"
+                      />
                     </Col>
                   </Row>
-                  {loading}
+                  {loading &&
+                    <Row className="justify-content-center mt-5" role="status" aria-label="Loading move">
+                      <LoadingCol xs="auto">
+                        <LoadingImg src={PokeBall} alt="" />
+                      </LoadingCol>
+                    </Row>}
+                  {error && <ApiError error={error} onRetry={() => void searchMove(lastSearch)} />}
                 </Col>
               </Row>
             </Container>

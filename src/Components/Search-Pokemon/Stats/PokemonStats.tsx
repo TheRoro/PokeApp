@@ -6,19 +6,17 @@ import Navigation from '../../Tools/Navigation/Navigation';
 import DefensiveCoverage from '../Coverage/DefensiveCoverage';
 import OffensiveCoverage from '../Coverage/OffensiveCoverage';
 import PokeBall from '../../../Assets/pokeapp.png';
-import Bidoof404 from '../../../Assets/404-bidoof.png';
 import axios from 'axios';
 import { useParams } from "react-router-dom";
 import { toPokemonApiSlug } from '../../Tools/pokemonNames';
+import ApiError from '../../Tools/ApiError/ApiError';
+import { describeApiError } from '../../Tools/ApiError/apiErrors';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
 import {
     StatsContainer,
     Title,
     SubTitle,
-    Bidoof404Img,
-    ErrorContainer,
-    ErrorCol,
     Id,
     Loading,
     LoadingCol,
@@ -39,10 +37,10 @@ type infoType = {
     types: any[]
 };
 
-const loadingIndicator = <Loading>
+const loadingIndicator = <Loading role="status" aria-label="Loading Pokémon">
     <Row className="justify-content-center mt-5">
         <LoadingCol xs="auto">
-            <LoadingImg src={PokeBall} alt="pokeball"></LoadingImg>
+            <LoadingImg src={PokeBall} alt=""></LoadingImg>
         </LoadingCol>
     </Row>
 </Loading>;
@@ -63,6 +61,7 @@ const PokemonStats: React.FC = () =>{
     const [id, setId] = React.useState<string>();
     const { name = '' } = useParams<'name'>();
     const [prettyName, setPrettyName] = React.useState(name);
+    const [retry, setRetry] = React.useState(0);
 
     const pretty = (value: string) => {
         let temp = "";
@@ -137,27 +136,29 @@ const PokemonStats: React.FC = () =>{
             }
             catch(err) {
                 if (axios.isCancel(err)) return;
-                console.error(err);
                 setLoading(
-                    <ErrorContainer>
-                        <Row className="h-100 align-items-center justify-content-center">
-                            <ErrorCol xs="auto">
-                                <Bidoof404Img src={Bidoof404} alt={'404'}/>
-                            </ErrorCol>
-                        </Row>
-                    </ErrorContainer>);
+                    <ApiError
+                        error={describeApiError(err, 'Pokémon')}
+                        onRetry={() => setRetry(value => value + 1)}
+                    />,
+                );
             }
         }
 
         void search();
         return () => controller.abort();
-    }, [name]);
+    }, [name, retry]);
 
     return(
         <>{info ?
         <StatsContainer>
             <div style={{ paddingTop: '1rem' }}>
-                <Navigation left={`/search`} right={`/search/${name}/evolution`}/>
+                <Navigation
+                    left="/search"
+                    right={`/search/${name}/evolution`}
+                    leftLabel="Back to Pokémon search"
+                    rightLabel="View evolutions"
+                />
             </div>
             <Row className="align-items-center">
                 <Col xs={12} className="mb-5">

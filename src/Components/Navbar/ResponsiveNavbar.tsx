@@ -9,13 +9,13 @@ const NavBar: React.FC<Props> = () => {
     const [isOpen, setIsOpen] = React.useState(false);
 
     const toggle = () => {
-        setIsOpen(!isOpen);
+        setIsOpen(current => !current);
     };
 
     return (
         <>
             <Sidebar isOpen={isOpen} toggle={toggle}/>
-            <Navbar toggle={toggle}/>
+            <Navbar isOpen={isOpen} toggle={toggle}/>
         </>
     );
 }

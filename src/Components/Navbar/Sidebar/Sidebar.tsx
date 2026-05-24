@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   SidebarContainer,
@@ -10,7 +10,7 @@ import {
 } from './SidebarElements';
 
 type Props = {
-  toggle: any,
+  toggle: () => void,
   isOpen: boolean,
 }
 
@@ -19,6 +19,39 @@ const SideBar: React.FC<Props> = ({
   isOpen,
 }) => {
   const navigate = useNavigate();
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    previousFocusRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    closeButtonRef.current?.focus();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') toggle();
+      if (event.key !== 'Tab') return;
+
+      const focusable = Array.from(
+        sidebarRef.current?.querySelectorAll<HTMLElement>('button, a[href]') ?? [],
+      ).filter(element => !element.hasAttribute('disabled'));
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      previousFocusRef.current?.focus();
+    };
+  }, [isOpen, toggle]);
 
   const clickHandler = (value: string) => {
     toggle();
@@ -40,9 +73,20 @@ const SideBar: React.FC<Props> = ({
   };
 
   return (
-    <SidebarContainer isOpen={isOpen} onClick={toggle}>
-      <Icon onClick={toggle}>
-        <CloseIcon />
+    <SidebarContainer
+      id="mobile-navigation"
+      ref={sidebarRef}
+      isOpen={isOpen}
+      aria-hidden={!isOpen}
+      aria-label="Mobile navigation"
+      aria-modal="true"
+      role="dialog"
+      onClick={event => {
+        if (event.target === event.currentTarget) toggle();
+      }}
+    >
+      <Icon ref={closeButtonRef} type="button" onClick={toggle} aria-label="Close navigation menu">
+        <CloseIcon aria-hidden="true" />
       </Icon>
       <SidebarWrapper>
         <SidebarMenu>

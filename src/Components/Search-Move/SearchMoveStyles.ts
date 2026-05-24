@@ -45,7 +45,8 @@ export const Bidoof404Img = styled.img`
 `
 
 export const SearchContainer = styled.div`
-    min-width: 268px;
+    width: 100%;
+    min-width: 0;
     animation: ${fadeInUp} 0.7s ease forwards;
 `
 

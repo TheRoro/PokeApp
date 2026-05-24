@@ -88,7 +88,12 @@ const SearchPokemon: React.FC = () => {
                   </Row>
                   <Row className="justify-content-center align-items-center mt-4">
                     <Col xs="auto">
-                      <SearchBar options={pokemonList} onChangeValue={onValueChange} val={formatedName} />
+                      <SearchBar
+                        options={pokemonList}
+                        onChangeValue={onValueChange}
+                        val={formatedName}
+                        label="Search Pokémon"
+                      />
                     </Col>
                   </Row>
                   <Row className="justify-content-center align-items-center h-50 mt-4 mt-sm-0">
@@ -98,7 +103,12 @@ const SearchPokemon: React.FC = () => {
                           <Col key={index} xs={6} sm={6} md={4} lg={4} xl={4} className="h-100">
                             <Row className="justify-content-center align-items-center mt-5">
                               <Col xs="auto">
-                                <Icon value={name[0]} onClick={() => onClickName(name[0] as number)}>
+                                <Icon
+                                  type="button"
+                                  value={name[0]}
+                                  aria-label={`View ${name[1]}`}
+                                  onClick={() => onClickName(name[0] as number)}
+                                >
                                   <ImgIcon src={`${name[2]}`} alt="" />
                                 </Icon>
                               </Col>

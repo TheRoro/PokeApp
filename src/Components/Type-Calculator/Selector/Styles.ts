@@ -44,8 +44,9 @@ export const Select = styled.select`
     background-repeat: no-repeat;
     background-position: right 12px center;
 
-    &:focus {
-        outline: none;
+    &:focus-visible {
+        outline: 3px solid rgba(255, 222, 0, 0.65);
+        outline-offset: 2px;
         border-color: var(--pokedex-red, #DC0A2D);
         box-shadow: 0 0 0 3px rgba(220, 10, 45, 0.15);
     }

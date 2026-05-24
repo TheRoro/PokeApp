@@ -91,14 +91,14 @@ const TypeSelector: React.FC<Props> = ({type1, type2, setType1, setType2}) =>{
                                 transition: 'border-color 0.3s ease',
                             }}>
                                 <Col xs="auto">
-                                    <span style={{
+                                    <label htmlFor="primary-type" style={{
                                         fontSize: '0.85rem', fontWeight: 700,
                                         color: '#a0a0b0', textTransform: 'uppercase',
                                         letterSpacing: '0.08em',
-                                    }}>Type 1</span>
+                                    }}>Type 1</label>
                                 </Col>
                                 <Col xs="auto" className="ms-auto">
-                                    <Select value={type1} onChange={handleChangeType1}>
+                                    <Select id="primary-type" value={type1} onChange={handleChangeType1}>
                                     {AllTypes.map((option, index) => (
                                         <option value={option.value} key={index}>{option.label}</option>
                                     ))}
@@ -115,14 +115,14 @@ const TypeSelector: React.FC<Props> = ({type1, type2, setType1, setType2}) =>{
                                 transition: 'border-color 0.3s ease',
                             }}>
                                 <Col xs="auto">
-                                    <span style={{
+                                    <label htmlFor="secondary-type" style={{
                                         fontSize: '0.85rem', fontWeight: 700,
                                         color: '#a0a0b0', textTransform: 'uppercase',
                                         letterSpacing: '0.08em',
-                                    }}>Type 2</span>
+                                    }}>Type 2</label>
                                 </Col>
                                 <Col xs="auto" className="ms-auto">
-                                    <Select value={type2} onChange={handleChangeType2}>
+                                    <Select id="secondary-type" value={type2} onChange={handleChangeType2}>
                                     {AllTypes.map((option, index) => (
                                         <option value={option.value} key={index}>{option.label}</option>
                                     ))}

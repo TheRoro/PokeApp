@@ -35,25 +35,32 @@ export const SidebarContainer = styled.aside`
     top: ${(p: Props) => (
         p.isOpen ? '0' : '-100%'
     )};
+    visibility: ${(p: Props) => (p.isOpen ? 'visible' : 'hidden')};
+    pointer-events: ${(p: Props) => (p.isOpen ? 'auto' : 'none')};
 `
 
 export const CloseIcon = styled(FaTimes)`
     color: #f0f0f0;
 `
 
-export const Icon = styled.div`
+export const Icon = styled.button`
     position: absolute;
     top: 1.5rem;
     right: 1.5rem;
     background: transparent;
+    border: 0;
     font-size: 2rem;
     cursor: pointer;
-    outline: none;
     transition: transform 0.2s ease, color 0.2s ease;
 
     &:hover {
         transform: rotate(90deg);
         color: #fff;
+    }
+
+    &:focus-visible {
+        outline: 3px solid rgba(255, 222, 0, 0.8);
+        outline-offset: 3px;
     }
 `
 
@@ -85,7 +92,6 @@ export const SidebarLink = styled.button`
     cursor: pointer;
     margin: 0;
     padding: 1rem 2.5rem;
-    outline: none!important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -104,6 +110,11 @@ export const SidebarLink = styled.button`
         background: rgba(255, 255, 255, 0.16);
         text-decoration: none;
         transform: translateY(-3px);
+    }
+
+    &:focus-visible {
+        outline: 3px solid rgba(255, 222, 0, 0.8);
+        outline-offset: 3px;
     }
 
     @media screen and (max-width: 480px) {
@@ -125,7 +136,6 @@ export const SidebarRoute = styled(LinkR)`
     padding: 16px 64px;
     color: #010606;
     font-size: 16px;
-    outline: none;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     text-decoration: none;
@@ -134,5 +144,10 @@ export const SidebarRoute = styled(LinkR)`
         transition: all 0.2s ease-in-out;
         background: #fff;
         color: #010606;
+    }
+
+    &:focus-visible {
+        outline: 3px solid rgba(255, 222, 0, 0.8);
+        outline-offset: 3px;
     }
 `
