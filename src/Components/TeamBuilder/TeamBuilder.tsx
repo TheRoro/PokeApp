@@ -12,19 +12,18 @@ import {
   CoverageRow,
   CoverageRowTitle,
   EmptySummary,
-  Header,
-  Hint,
-  Page,
   ResetButton,
+  SummaryIcon,
   SummaryBadge,
   SummaryCount,
   SummaryMetric,
   SummaryText,
   SummaryType,
   TeamGrid,
-  Title,
   TypeList,
 } from './TeamBuilderStyles';
+import { ToolPage, ToolPageHeader } from '../Tools/ToolLayout';
+import typeIcons from '../../Assets/type-icons';
 
 type TeamSlot = {
   id: number;
@@ -65,11 +64,12 @@ const SummaryList: React.FC<SummaryListProps> = ({
             className={item.type}
             key={item.type}
           >
-            <SummaryCount>{value}</SummaryCount>
+            <SummaryIcon src={typeIcons[item.type]} alt="" />
             <SummaryText>
               <SummaryType>{item.type}</SummaryType>
               <SummaryMetric>{metricLabel}</SummaryMetric>
             </SummaryText>
+            <SummaryCount>{value}</SummaryCount>
           </SummaryBadge>
         );
       })}
@@ -213,13 +213,12 @@ const TeamBuilder: React.FC = () => {
     );
 
   return (
-    <Page>
-      <Header>
-        <Title>TeamBuilder</Title>
-        <Hint>
-          Build a six-Pokémon team and spot shared defensive weaknesses as you go.
-        </Hint>
-      </Header>
+    <ToolPage>
+      <ToolPageHeader
+        eyebrow="Pokédex team analysis"
+        title="Team Builder"
+        description="Build a six-Pokémon team and spot shared defensive weaknesses as you go."
+      />
 
       <TeamGrid>
         {slots.map((slot, index) => (
@@ -293,7 +292,7 @@ const TeamBuilder: React.FC = () => {
           </Analysis>
         </>
       )}
-    </Page>
+    </ToolPage>
   );
 };
 

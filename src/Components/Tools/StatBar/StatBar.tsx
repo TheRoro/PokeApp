@@ -1,8 +1,13 @@
 import React, { useEffect } from 'react';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 
-import {Bar} from './Styles';
+import {
+    Bar,
+    StatLabel,
+    StatName,
+    StatRow,
+    StatTrack,
+    StatValue,
+} from './Styles';
 
 type Props = {
     value: number,
@@ -46,20 +51,15 @@ const StatBar: React.FC<Props> = ({
       }, [setBarColor, setPercentage, value]);
 
     return(
-        <Col>
-            <Row className="justify-content-center">
-                <Col xs={6} lg={5}>
-                    <Row className="justify-content-end">
-                        <Col xs="auto">
-                            {name +': ' + value}
-                        </Col>
-                    </Row>
-                </Col>
-                <Col xs={6} lg={7}>
-                    <Bar color={barColor} width={`${percentage}%`} />
-                </Col>
-            </Row>
-        </Col>
+        <StatRow>
+            <StatLabel>
+                <StatName>{name}</StatName>
+                <StatValue>{value}</StatValue>
+            </StatLabel>
+            <StatTrack>
+                <Bar color={barColor} width={`${percentage}%`} />
+            </StatTrack>
+        </StatRow>
     );
 }
 export default StatBar;

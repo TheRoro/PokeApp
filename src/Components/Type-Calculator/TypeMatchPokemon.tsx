@@ -43,15 +43,18 @@ function fetchTypePokemon(type: string): Promise<TypePokemonEntry[]> {
 const Container = styled.div`
     margin-top: 2rem;
     padding: 1.25rem 1.5rem;
-    background: linear-gradient(145deg, #352020 0%, #2A2D32 40%);
-    border: 2px solid rgba(220, 10, 45, 0.2);
-    border-radius: 16px;
+    background: #303339;
+    border: 1px solid #4a4e55;
+    border-radius: 20px;
+    box-shadow:
+        0 4px 0 #1f2226,
+        0 14px 28px rgba(0, 0, 0, 0.16);
 `
 
 const SectionTitle = styled.h3`
     font-size: 0.75rem;
     font-weight: 800;
-    color: rgba(255, 255, 255, 0.5);
+    color: #aaa299;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     margin-bottom: 1rem;
@@ -70,23 +73,23 @@ const PokemonCard = styled.button`
     align-items: center;
     padding: 0.75rem;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: #383c42;
+    border: 1px solid #4a4e55;
     cursor: pointer;
     transition: all 0.2s ease;
     width: 100px;
-    color: inherit;
+    color: #fffaf1;
     font: inherit;
 
     &:hover {
-        background: rgba(220, 10, 45, 0.1);
-        border-color: rgba(220, 10, 45, 0.4);
-        transform: translateY(-2px);
+        background: #41454b;
+        border-color: #5b6068;
+        box-shadow: 0 4px 10px rgba(77, 63, 49, 0.12);
     }
 
     &:focus-visible {
-        outline: 3px solid rgba(255, 222, 0, 0.7);
-        outline-offset: 3px;
+        outline: 3px solid rgba(215, 45, 56, 0.18);
+        outline-offset: 2px;
     }
 `
 
@@ -99,7 +102,7 @@ const Sprite = styled.img`
 const Name = styled.span`
     font-size: 0.7rem;
     font-weight: 700;
-    color: #fff;
+    color: #fffaf1;
     text-align: center;
     margin-top: 0.25rem;
     text-transform: capitalize;
@@ -176,9 +179,9 @@ const TypeMatchPokemon: React.FC<Props> = ({ type1, type2 }) => {
     if (loading) {
         return (
             <Container role="status" aria-label="Loading matching Pokémon">
-                <SectionTitle>Pokémon with this type combo</SectionTitle>
+                <SectionTitle>Pokémon with this typing</SectionTitle>
                 <PokemonGrid>
-                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>Checking every match...</span>
+                    <span style={{ color: '#aaa299', fontSize: '0.8rem' }}>Checking every match...</span>
                 </PokemonGrid>
             </Container>
         );
@@ -187,7 +190,7 @@ const TypeMatchPokemon: React.FC<Props> = ({ type1, type2 }) => {
     if (error) {
         return (
             <Container>
-                <SectionTitle>Pokémon with this type combo</SectionTitle>
+                <SectionTitle>Pokémon with this typing</SectionTitle>
                 <ApiError error={error} onRetry={() => setRetry(value => value + 1)} />
             </Container>
         );
@@ -195,10 +198,10 @@ const TypeMatchPokemon: React.FC<Props> = ({ type1, type2 }) => {
 
     if (matches.length === 0) return (
         <Container>
-            <SectionTitle>Pokémon with this type combo</SectionTitle>
+            <SectionTitle>Pokémon with this typing</SectionTitle>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', padding: '1rem 0' }}>
                 <img src={Bidoof404} alt="Bidoof found no matching Pokémon" style={{ width: '80px', opacity: 0.8 }} />
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', fontStyle: 'italic', textAlign: 'center' }}>
+                <span style={{ color: '#aaa299', fontSize: '0.8rem', fontStyle: 'italic', textAlign: 'center' }}>
                     {bidoofQuotes[emptyQuoteIndex]}
                 </span>
             </div>
@@ -208,7 +211,7 @@ const TypeMatchPokemon: React.FC<Props> = ({ type1, type2 }) => {
     return (
         <Container>
             <SectionTitle>
-                Pokémon with this type combo · showing {visibleMatches.length} of {matches.length}
+                Pokémon with this typing · showing {visibleMatches.length} of {matches.length}
             </SectionTitle>
             <PokemonGrid>
                 {visibleMatches.map((pokemon) => (

@@ -10,8 +10,8 @@ export const Nav = styled.nav`
   justify-content: end;
   align-items: center;
   font-size: 1rem;
-  background: linear-gradient(180deg, #E8413C 0%, #CC2D28 100%);
-  border-bottom: 4px solid #8B1A17;
+  background: linear-gradient(180deg, #e43a46 0%, #d72d38 100%);
+  border-bottom: 4px solid #8e1821;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   top: 0;
   z-index: 10;
@@ -38,7 +38,7 @@ export const NavbarContainer = styled.div`
 `;
 
 export const NavLogo = styled(LinkR).attrs({ className: navLinkClassName })`
-  color: #fff;
+  color: #fffaf1;
   opacity: 1;
   justify-self: flex-start;
   cursor: pointer;
@@ -83,7 +83,7 @@ export const NavLogo = styled(LinkR).attrs({ className: navLinkClassName })`
   }
 
   &:hover {
-    color: #fff;
+    color: #fffaf1;
     text-decoration: none;
     transform: translateY(-1px);
   }
@@ -100,16 +100,17 @@ export const MobileIcon = styled.button`
     height: 50px;
     font-size: 1.8rem;
     cursor: pointer;
-    color: #fff;
-    transition: color 0.2s ease;
+    color: #fffaf1;
+    transition: transform 0.2s ease, color 0.2s ease;
 
     &:hover {
       color: #fff;
+      transform: scale(1.05);
     }
 
     &:focus-visible {
-      outline: 3px solid rgba(255, 222, 0, 0.8);
-      outline-offset: 2px;
+      outline: 3px solid rgba(255, 255, 255, 0.26);
+      outline-offset: 3px;
     }
   }
 `;
@@ -132,47 +133,49 @@ export const NavMenu = styled.ul`
 export const NavItem = styled.li``;
 
 export const NavLinks = styled(LinkR).attrs({ className: navLinkClassName })`
-  border: none;
-  background: none;
+  border: 0;
+  background: transparent;
   cursor: pointer;
-  padding: 0;
-  padding-bottom: 0.3rem;
+  padding: 0.55rem 0.25rem;
   display: flex;
   align-items: center;
+  justify-content: center;
   text-decoration: none;
-  margin: 0 1.5rem;
+  margin: 0 1.15rem;
   height: 100%;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: #fff;
-  opacity: 0.85;
-  transition: color 0.2s ease, opacity 0.2s ease;
+  color: #fffaf1;
+  opacity: 0.88;
+  transition: transform 0.2s ease, color 0.2s ease, opacity 0.2s ease;
   position: relative;
 
   &::after {
-    content: '';
     position: absolute;
-    left: 50%;
-    bottom: -4px;
-    width: 0;
-    height: 3px;
+    right: 0;
+    bottom: 0.15rem;
+    left: 0;
+    height: 2px;
+    content: '';
+    background: #fffaf1;
     border-radius: 999px;
-    background: #fff;
-    transform: translateX(-50%);
-    transition: width 0.25s ease;
+    opacity: 0;
+    transform: scaleX(0.45);
+    transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
   &.active {
     opacity: 1;
-    color: #fff;
+    color: #fffaf1;
     font-weight: 800;
 
     &::after {
-      width: 100%;
+      opacity: 1;
+      transform: scaleX(1);
     }
 
     &:hover {
-      opacity: 0.92;
+      opacity: 1;
     }
   }
 
@@ -180,16 +183,17 @@ export const NavLinks = styled(LinkR).attrs({ className: navLinkClassName })`
     color: #fff;
     text-decoration: none;
     opacity: 1;
+    transform: translateY(-1px);
 
     &::after {
-      width: 100%;
-      background: #fff;
+      opacity: 1;
+      transform: scaleX(1);
     }
   }
 
   &:focus-visible {
-    outline: 3px solid rgba(255, 222, 0, 0.8);
-    outline-offset: 4px;
+    outline: 3px solid rgba(255, 255, 255, 0.28);
+    outline-offset: 3px;
   }
 `;
 

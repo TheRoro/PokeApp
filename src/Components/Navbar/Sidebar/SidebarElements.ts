@@ -22,7 +22,7 @@ export const SidebarContainer = styled.aside`
     z-index: 999;
     width: 100%;
     height: 100%;
-    background: linear-gradient(180deg, #b71c1c 0%, #8b0000 100%);
+    background: linear-gradient(180deg, #e43a46 0%, #b51f2b 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -40,13 +40,14 @@ export const SidebarContainer = styled.aside`
 `
 
 export const CloseIcon = styled(FaTimes)`
-    color: #f0f0f0;
+    color: #fffaf1;
 `
 
 export const Icon = styled.button`
     position: absolute;
     top: 1.5rem;
     right: 1.5rem;
+    padding: 0.4rem;
     background: transparent;
     border: 0;
     font-size: 2rem;
@@ -59,8 +60,8 @@ export const Icon = styled.button`
     }
 
     &:focus-visible {
-        outline: 3px solid rgba(255, 222, 0, 0.8);
-        outline-offset: 3px;
+        outline: 2px solid rgba(255, 255, 255, 0.28);
+        outline-offset: 2px;
     }
 `
 
@@ -87,8 +88,8 @@ export const SidebarMenu = styled.ul`
 `
 
 export const SidebarLink = styled.button`
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.08);
+    border: 0;
+    background: transparent;
     cursor: pointer;
     margin: 0;
     padding: 1rem 2.5rem;
@@ -100,21 +101,21 @@ export const SidebarLink = styled.button`
     text-decoration: none;
     list-style: none;
     transition: 0.22s ease-in-out;
-    color: #fff;
-    border-radius: 22px;
+    color: #fffaf1;
+    border-radius: var(--button-radius);
     width: 280px;
     max-width: 90vw;
 
     &:hover {
         color: #fff;
-        background: rgba(255, 255, 255, 0.16);
+        background: rgba(255, 250, 241, 0.1);
         text-decoration: none;
-        transform: translateY(-3px);
+        transform: translateY(-2px);
     }
 
     &:focus-visible {
-        outline: 3px solid rgba(255, 222, 0, 0.8);
-        outline-offset: 3px;
+        outline: 2px solid rgba(255, 255, 255, 0.28);
+        outline-offset: 2px;
     }
 
     @media screen and (max-width: 480px) {
@@ -147,7 +148,7 @@ export const SidebarRoute = styled(LinkR)`
     }
 
     &:focus-visible {
-        outline: 3px solid rgba(255, 222, 0, 0.8);
-        outline-offset: 3px;
+        outline: 2px solid rgba(255, 255, 255, 0.28);
+        outline-offset: 2px;
     }
 `

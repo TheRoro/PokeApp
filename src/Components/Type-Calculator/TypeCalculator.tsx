@@ -8,23 +8,55 @@ import DefensiveCoverage from '../Search-Pokemon/Coverage/DefensiveCoverage';
 import OffensiveCoverage from '../Search-Pokemon/Coverage/OffensiveCoverage';
 import Navigation from '../Tools/Navigation/Navigation';
 import typeList from '../../Assets/typeList';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { getTypeColor } from '../Tools/TypeBadge';
+import typeIcons from '../../Assets/type-icons';
+import {
+  Navigate,
+  Route,
+  Routes,
+  createSearchParams,
+  useSearchParams,
+} from 'react-router-dom';
 
 import {
   TypeCalDiv,
   ResultsContainer,
   TypeContainer,
   Button,
-  TypeLabel,
   LastRow,
+  ResultsDescription,
+  ResultsEyebrow,
+  ResultsHeader,
+  ResultsTitle,
+  SelectedType,
+  SelectedTypeIcon,
+  SelectedTypeIconFrame,
+  SelectedTypeName,
+  SelectedTypeRole,
+  SelectedTypes,
+  SelectedTypeText,
 } from './Styles';
 
 type typeName = string;
 
+const parseType = (value: string | null): typeName | null => {
+  if (!value) return null;
+
+  if (value.toLowerCase() === 'none') return 'None';
+  return typeList.find(type => type.toLowerCase() === value.toLowerCase()) ?? null;
+};
+
 const TypeCal: React.FC = () => {
   const totalTypes = typeList.length;
-  const [type1, setType1] = React.useState<typeName>('Water');
-  const [type2, setType2] = React.useState<typeName>('Poison');
+  const [searchParams] = useSearchParams();
+  const queryType1 = searchParams.get('type1');
+  const queryType2 = searchParams.get('type2');
+  const [type1, setType1] = React.useState<typeName>(
+    () => parseType(queryType1) ?? 'Water',
+  );
+  const [type2, setType2] = React.useState<typeName>(
+    () => parseType(queryType2) ?? 'Poison',
+  );
 
   const generateRandom = useCallback(() => {
     const total = 2;
@@ -40,26 +72,67 @@ const TypeCal: React.FC = () => {
   }, [totalTypes]);
 
   useEffect(() => {
-    generateRandom();
-  }, [generateRandom]);
+    if (!queryType1 && !queryType2) generateRandom();
+  }, [generateRandom, queryType1, queryType2]);
+
+  const resultType1 = parseType(queryType1) ?? 'None';
+  const parsedResultType2 = parseType(queryType2);
+  const resultType2 =
+    parsedResultType2 && parsedResultType2 !== resultType1
+      ? parsedResultType2
+      : 'None';
+  const resultSearch = createSearchParams({
+    type1: type1.toLowerCase(),
+    type2: type2.toLowerCase(),
+  }).toString();
 
   return (
     <Routes>
       <Route
         path="results"
         element={
-          (type1 !== 'None' || type2 !== 'None') ? (
+          (resultType1 !== 'None' || resultType2 !== 'None') ? (
             <TypeCalDiv>
               <ResultsContainer>
                 <Navigation left="/calc" right="" />
-                <Row className="justify-content-center" style={{ gap: '0.5rem', marginBottom: '0.5rem' }}>
-                  <Col xs="auto"><TypeLabel className={`${type1}`}>{type1}</TypeLabel></Col>
-                  {type2 !== 'None' &&
-                  <Col xs="auto"><TypeLabel className={`${type2}`}>{type2}</TypeLabel></Col>}
-                </Row>
-                <DefensiveCoverage type1={type1} type2={type2} />
-                <OffensiveCoverage type1={type1} type2={type2} />
-                <TypeMatchPokemon type1={type1} type2={type2} />
+                <ResultsHeader>
+                  <ResultsEyebrow>Matchup analysis</ResultsEyebrow>
+                  <ResultsTitle>Matchup results</ResultsTitle>
+                  <ResultsDescription>
+                    See how this typing handles incoming attacks, what each type hits well, and which Pokémon share it.
+                  </ResultsDescription>
+                </ResultsHeader>
+                <SelectedTypes aria-label="Selected types">
+                  <SelectedType
+                    $color={getTypeColor(resultType1)}
+                    aria-label={`Primary type: ${resultType1}`}
+                  >
+                    <SelectedTypeIconFrame $color={getTypeColor(resultType1)}>
+                      <SelectedTypeIcon src={typeIcons[resultType1]} alt="" />
+                    </SelectedTypeIconFrame>
+                    <SelectedTypeText>
+                      <SelectedTypeRole>Primary type</SelectedTypeRole>
+                      <SelectedTypeName>{resultType1}</SelectedTypeName>
+                    </SelectedTypeText>
+                  </SelectedType>
+                  {resultType2 !== 'None' && (
+                    <SelectedType
+                      $color={getTypeColor(resultType2)}
+                      aria-label={`Secondary type: ${resultType2}`}
+                    >
+                      <SelectedTypeIconFrame $color={getTypeColor(resultType2)}>
+                        <SelectedTypeIcon src={typeIcons[resultType2]} alt="" />
+                      </SelectedTypeIconFrame>
+                      <SelectedTypeText>
+                        <SelectedTypeRole>Secondary type</SelectedTypeRole>
+                        <SelectedTypeName>{resultType2}</SelectedTypeName>
+                      </SelectedTypeText>
+                    </SelectedType>
+                  )}
+                </SelectedTypes>
+                <DefensiveCoverage type1={resultType1} type2={resultType2} />
+                <OffensiveCoverage type1={resultType1} type2={resultType2} />
+                <TypeMatchPokemon type1={resultType1} type2={resultType2} />
               </ResultsContainer>
             </TypeCalDiv>
           ) : (
@@ -77,7 +150,7 @@ const TypeCal: React.FC = () => {
               {(type1 !== 'None' || type2 !== 'None') &&
               <LastRow className="justify-content-center align-items-center">
                 <Col xs="auto">
-                  <Button to="results">
+                  <Button to={`/calc/results?${resultSearch}`}>
                     Calculate
                   </Button>
                 </Col>

@@ -1,7 +1,5 @@
 import React from 'react';
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import axios from 'axios';
 import MoveInfo from './MoveInfo';
 import Autocomplete from '../Tools/SearchEngine/SearchEngine';
@@ -9,103 +7,101 @@ import moveList from '../Tools/MoveList';
 import PokeBall from '../../Assets/pokeapp.png';
 import ApiError, { ApiErrorInfo } from '../Tools/ApiError/ApiError';
 import { describeApiError } from '../Tools/ApiError/apiErrors';
+import { ToolPageHeader } from '../Tools/ToolLayout';
+import { selectDiscoveryMoves } from './moveDiscovery';
+import typeIcons from '../../Assets/type-icons';
+import DiscoveryTile, {
+  DiscoveryContent,
+  DiscoveryGrid,
+  DiscoveryImage,
+  DiscoverySearch,
+  DiscoverySearchControl,
+} from '../Tools/DiscoveryTile';
+import { getTypeColor } from '../Tools/TypeBadge';
 
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 
 import {
-  Text,
-  Title,
   SearchContainer,
   LoadingCol,
   LoadingImg,
+  MoveLoading,
 } from './SearchMoveStyles';
 
-const SearchMove: React.FC = () => {
-  const max = moveList.length;
-  const rand = Math.floor(Math.random() * Math.floor(max));
-  const initialMove = moveList[rand];
-  const navigate = useNavigate();
-  const [prettyName, setPrettyName] = React.useState<string>(() => {
-    let temp = '';
-    for (let i = 0; i < initialMove.length; i++) {
-      if (i === 0) {
-        temp += initialMove[0].toUpperCase();
-      } else if (initialMove[i] === '-') {
-        temp += ' ';
-      } else if (i !== 0 && initialMove[i - 1] === '-') {
-        temp += initialMove[i].toUpperCase();
-      } else {
-        temp += initialMove[i];
-      }
-    }
-    return temp;
-  });
-  const [moveInfo, setmoveInfo] = React.useState<any | null>(null);
-  const [loading, setLoading] = React.useState(false);
+const formatName = (value: string) =>
+  value.trim().replace(/\s+/g, '-').toLowerCase();
+
+const formatPretty = (value: string) =>
+  value
+    .split('-')
+    .filter(Boolean)
+    .map(word => word[0].toUpperCase() + word.slice(1))
+    .join(' ');
+
+const MoveDetailsRoute: React.FC = () => {
+  const { name = '' } = useParams<'name'>();
+  const [moveInfo, setMoveInfo] = React.useState<any | null>(null);
+  const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<ApiErrorInfo | null>(null);
-  const [lastSearch, setLastSearch] = React.useState(initialMove);
-  const controllerRef = React.useRef<AbortController>();
+  const [retry, setRetry] = React.useState(0);
 
-  React.useEffect(() => () => controllerRef.current?.abort(), []);
-
-  const formatName = (value: string) => {
-    let temp = '';
-    for (let i = 0; i < value.length; i++) {
-      if (value[i] === ' ' && i !== value.length - 1) {
-        temp += '-';
-      } else if (value[i] !== ' ') {
-        temp += value[i];
-      }
-    }
-    return temp.toLowerCase();
-  };
-
-  const formatPretty = (value: string) => {
-    let temp = '';
-    for (let i = 0; i < value.length; i++) {
-      if (i === 0) {
-        temp += value[0].toUpperCase();
-      } else if (value[i] === '-') {
-        temp += ' ';
-      } else if (i !== 0 && value[i - 1] === '-') {
-        temp += value[i].toUpperCase();
-      } else {
-        temp += value[i];
-      }
-    }
-    return temp;
-  };
-
-  const searchMove = async (name: string) => {
-    const apiName = formatName(name);
-    if (!apiName) return;
-
-    setLastSearch(apiName);
+  React.useEffect(() => {
+    const controller = new AbortController();
+    setMoveInfo(null);
     setError(null);
     setLoading(true);
-    controllerRef.current?.abort();
-    const controller = new AbortController();
-    controllerRef.current = controller;
-    try {
-      const apiUrl = 'https://pokeapi.co/api/v2/move/' + apiName + '/';
-      const resp = await axios.get(apiUrl, { signal: controller.signal });
-      setmoveInfo(resp.data);
-      setPrettyName(formatPretty(resp.data.name));
-      navigate('info');
-    } catch (err) {
-      if (axios.isCancel(err)) return;
-      setError(describeApiError(err, 'move'));
-    } finally {
-      if (controllerRef.current === controller) setLoading(false);
-    }
+
+    axios
+      .get(`https://pokeapi.co/api/v2/move/${formatName(name)}/`, {
+        signal: controller.signal,
+      })
+      .then(response => setMoveInfo(response.data))
+      .catch(requestError => {
+        if (!axios.isCancel(requestError)) {
+          setError(describeApiError(requestError, 'move'));
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [name, retry]);
+
+  if (loading) {
+    return (
+      <MoveLoading role="status" aria-label="Loading move">
+        <LoadingCol>
+          <LoadingImg src={PokeBall} alt="" />
+        </LoadingCol>
+      </MoveLoading>
+    );
+  }
+
+  if (error) {
+    return <ApiError error={error} onRetry={() => setRetry(value => value + 1)} />;
+  }
+
+  return moveInfo
+    ? <MoveInfo moveInfo={moveInfo} moveName={formatPretty(moveInfo.name)} />
+    : null;
+};
+
+const SearchMove: React.FC = () => {
+  const navigate = useNavigate();
+  const [discoveryMoves] = React.useState(() => selectDiscoveryMoves(6));
+  const [prettyName, setPrettyName] = React.useState('');
+  const searchMove = (name: string) => {
+    const apiName = formatName(name);
+    if (!apiName) return;
+    navigate(apiName);
   };
 
   const onValueChange = (val: string, code: number) => {
     const apiName = formatName(val);
     setPrettyName(formatPretty(val));
-    setError(null);
     if (code === 13) {
-      void searchMove(apiName);
+      searchMove(apiName);
     }
   };
 
@@ -113,46 +109,46 @@ const SearchMove: React.FC = () => {
     <SearchContainer>
       <Routes>
         <Route
-          path="info"
-          element={moveInfo
-            ? <MoveInfo moveInfo={moveInfo} moveName={prettyName} />
-            : <Navigate to="/move" replace />}
+          path=":name"
+          element={<MoveDetailsRoute />}
         />
         <Route
           index
           element={
-            <Container className="full-height">
-              <Row className="full-height mt-5 mt-sm-4 mt-lg-5">
-                <Col xs={12}>
-                  <Row className="justify-content-center mt-0 mt-lg-5">
-                    <Col xs="auto">
-                      <Title>Search for a Move:</Title>
-                    </Col>
-                  </Row>
-                  <Row className="justify-content-center">
-                    <Col xs="auto">
-                      <Text>(Eg: Tackle, Thunder Shock)</Text>
-                    </Col>
-                  </Row>
-                  <Row className="justify-content-center mt-4">
-                    <Col xs="auto">
-                      <Autocomplete
-                        options={moveList}
-                        onChangeValue={onValueChange}
-                        val={prettyName}
-                        label="Search moves"
-                      />
-                    </Col>
-                  </Row>
-                  {loading &&
-                    <Row className="justify-content-center mt-5" role="status" aria-label="Loading move">
-                      <LoadingCol xs="auto">
-                        <LoadingImg src={PokeBall} alt="" />
-                      </LoadingCol>
-                    </Row>}
-                  {error && <ApiError error={error} onRetry={() => void searchMove(lastSearch)} />}
-                </Col>
-              </Row>
+            <Container>
+              <DiscoveryContent>
+                <ToolPageHeader
+                  eyebrow="Move database"
+                  title="Find a move"
+                  description="Search by name, or discover a random move from six different types below."
+                />
+                <DiscoverySearch>
+                  <DiscoverySearchControl>
+                    <Autocomplete
+                      options={moveList}
+                      onChangeValue={onValueChange}
+                      val={prettyName}
+                      label="Search moves"
+                    />
+                  </DiscoverySearchControl>
+                </DiscoverySearch>
+                <DiscoveryGrid>
+                  {discoveryMoves.map(move => {
+                    const prettyMove = formatPretty(move.name);
+                    return (
+                      <DiscoveryTile
+                        key={move.type}
+                        ariaLabel={`View ${prettyMove}, ${move.type} type`}
+                        color={getTypeColor(move.type)}
+                        label={prettyMove}
+                        onClick={() => searchMove(move.name)}
+                      >
+                        <DiscoveryImage src={typeIcons[move.type]} alt="" />
+                      </DiscoveryTile>
+                    );
+                  })}
+                </DiscoveryGrid>
+              </DiscoveryContent>
             </Container>
           }
         />

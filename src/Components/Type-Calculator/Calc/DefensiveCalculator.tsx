@@ -6,8 +6,10 @@ import TypeList from '../../../Assets/typeList';
 import {
     CoverageCard,
     CategoryLabel,
-    TypeBadge
+    TypeBadge,
+    TypeIcon,
 } from './Styles';
+import typeIcons from '../../../Assets/type-icons';
 
 const TOTAL_TYPES = 18;
 
@@ -146,50 +148,65 @@ const Calc: React.FC<CalculatorProps> = ({ type1, type2 }) => {
                 <>
                     {effects[5]?.length > 0 && (
                         <div>
-                            <CategoryLabel>Extremely Effective (×4)</CategoryLabel>
+                            <CategoryLabel>Takes 4× damage from</CategoryLabel>
                             <div>
                                 {effects[5].map((type, index) => (
-                                    <TypeBadge className={type} key={index}>{type}</TypeBadge>
+                                    <TypeBadge className={type} key={index}>
+                                        <TypeIcon src={typeIcons[type]} alt="" />
+                                        {type}
+                                    </TypeBadge>
                                 ))}
                             </div>
                         </div>
                     )}
                     {effects[4]?.length > 0 && (
                         <div>
-                            <CategoryLabel>Super Effective (×2)</CategoryLabel>
+                            <CategoryLabel>Weak to (2× damage)</CategoryLabel>
                             <div>
                                 {effects[4].map((type, index) => (
-                                    <TypeBadge className={type} key={index}>{type}</TypeBadge>
+                                    <TypeBadge className={type} key={index}>
+                                        <TypeIcon src={typeIcons[type]} alt="" />
+                                        {type}
+                                    </TypeBadge>
                                 ))}
                             </div>
                         </div>
                     )}
                     {effects[2]?.length > 0 && (
                         <div>
-                            <CategoryLabel>Not Very Effective (×0.5)</CategoryLabel>
+                            <CategoryLabel>Resists (0.5× damage)</CategoryLabel>
                             <div>
                                 {effects[2].map((type, index) => (
-                                    <TypeBadge className={type} key={index}>{type}</TypeBadge>
+                                    <TypeBadge className={type} key={index}>
+                                        <TypeIcon src={typeIcons[type]} alt="" />
+                                        {type}
+                                    </TypeBadge>
                                 ))}
                             </div>
                         </div>
                     )}
                     {effects[1]?.length > 0 && (
                         <div>
-                            <CategoryLabel>Mostly Ineffective (×0.25)</CategoryLabel>
+                            <CategoryLabel>Strongly resists (0.25× damage)</CategoryLabel>
                             <div>
                                 {effects[1].map((type, index) => (
-                                    <TypeBadge className={type} key={index}>{type}</TypeBadge>
+                                    <TypeBadge className={type} key={index}>
+                                        <TypeIcon src={typeIcons[type]} alt="" />
+                                        {type}
+                                    </TypeBadge>
                                 ))}
                             </div>
                         </div>
                     )}
                     {effects[0]?.length > 0 && (
                         <div>
-                            <CategoryLabel>No Effect (×0)</CategoryLabel>
+                            <CategoryLabel>Immune to (0× damage)</CategoryLabel>
                             <div>
                                 {effects[0].map((type, index) => (
-                                    <TypeBadge className={type} key={index}>{type}</TypeBadge>
+                                    <TypeBadge className={type} key={index}>
+                                        <TypeIcon src={typeIcons[type]} alt="" />
+                                        {type}
+                                    </TypeBadge>
                                 ))}
                             </div>
                         </div>

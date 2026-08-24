@@ -8,6 +8,8 @@ import PokeBall from '../../../Assets/pokeapp.png';
 import { toPokemonApiSlug } from '../../Tools/pokemonNames';
 import ApiError, { ApiErrorInfo } from '../../Tools/ApiError/ApiError';
 import { describeApiError } from '../../Tools/ApiError/apiErrors';
+import { ToolPageHeader } from '../../Tools/ToolLayout';
+import typeIcons from '../../../Assets/type-icons';
 import {
     getLevelUpMoves,
     getLevelUpVersionGroups,
@@ -17,15 +19,19 @@ import {
 } from './moveData';
 import {
     MovesContainer,
-    Title,
     Text,
     Subtitle,
+    MoveListCard,
     MoveRow,
     MoveHeader,
+    MoveType,
+    MoveTypeIcon,
     LoadingCol,
     LoadingImg,
+    MoveLoading,
     LoadMoreButton,
     VersionControls,
+    VersionLabel,
     VersionSelect,
 } from './MovesStyles';
 
@@ -39,6 +45,7 @@ type MoveApiResponse = {
 };
 
 type PokemonApiResponse = {
+    name: string;
     moves: PokemonMove[];
 };
 
@@ -47,6 +54,7 @@ type DisplayMove = {
     type: string;
     power: number | null;
     name: string;
+    slug: string;
 };
 
 const pokemonCache = new Map<string, Promise<PokemonApiResponse>>();
@@ -96,6 +104,7 @@ const Moves: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<ApiErrorInfo | null>(null);
     const [retry, setRetry] = useState(0);
+    const [resolvedName, setResolvedName] = useState(pokemonName);
 
     const versionGroups = useMemo(
         () => getLevelUpVersionGroups(pokemonMoves),
@@ -114,11 +123,13 @@ const Moves: React.FC = () => {
             setError(null);
             setPokemonMoves([]);
             setDisplayMoves([]);
+            setResolvedName(pokemonName);
             try {
                 const data = await cachedPokemon(pokemonName);
                 if (!active) return;
 
                 const groups = getLevelUpVersionGroups(data.moves);
+                setResolvedName(data.name);
                 setPokemonMoves(data.moves);
                 setSelectedVersion(groups[0]?.name ?? '');
                 setVisibleCount(MOVE_BATCH_SIZE);
@@ -158,6 +169,7 @@ const Moves: React.FC = () => {
                             level: move.level,
                             name: pretty(detail.name),
                             power: detail.power,
+                            slug: detail.name,
                             type: pretty(detail.type.name),
                         };
                     },
@@ -177,27 +189,30 @@ const Moves: React.FC = () => {
     }, [levelUpMoves, selectedVersion, visibleCount, retry]);
 
     const hasMore = displayMoves.length < levelUpMoves.length;
+    const displayName = /^\d+$/.test(resolvedName)
+        ? 'Pokémon'
+        : pretty(resolvedName);
 
     return (
         <MovesContainer>
             <div style={{ paddingTop: '0.5rem' }}>
                 <Navigation
-                    left={`/search/${pokemonName}/evolution`}
+                    left={`/search/${resolvedName}/evolution`}
                     right=""
                     leftLabel="Back to evolutions"
                 />
             </div>
-            <Row className="justify-content-center mt-3">
-                <Col xs="auto">
-                    <Title>Moves</Title>
-                </Col>
-            </Row>
+            <ToolPageHeader
+                eyebrow="Pokédex move data"
+                title={`${displayName} moves`}
+                description="Browse level-up moves by game version."
+            />
 
             {versionGroups.length > 0 &&
             <VersionControls>
-                <label htmlFor="move-version" style={{ color: '#fff', fontWeight: 700 }}>
+                <VersionLabel htmlFor="move-version">
                     Game version group
-                </label>
+                </VersionLabel>
                 <VersionSelect
                     id="move-version"
                     value={selectedVersion}
@@ -214,11 +229,12 @@ const Moves: React.FC = () => {
             </VersionControls>}
 
             {loading && displayMoves.length === 0 &&
-            <Row className="justify-content-center" role="status" aria-label="Loading moves">
-                <LoadingCol xs="auto">
+            <MoveLoading role="status" aria-label="Loading moves">
+                <LoadingCol>
                     <LoadingImg src={PokeBall} alt=""></LoadingImg>
                 </LoadingCol>
-            </Row>}
+                <span>Loading level-up moves...</span>
+            </MoveLoading>}
 
             {error &&
             <ApiError error={error} onRetry={() => setRetry(value => value + 1)} />}
@@ -232,31 +248,41 @@ const Moves: React.FC = () => {
             {displayMoves.length > 0 &&
             <Row className="justify-content-center mt-4">
                 <Col xs={12} md={10} lg={8}>
-                    <Subtitle style={{ textAlign: 'center', fontSize: '1rem', marginBottom: '1rem' }}>
-                        By Leveling Up · {pretty(selectedVersion)}
-                    </Subtitle>
-                    <MoveHeader>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#b0b0c0', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center' }}>Lvl</span>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#b0b0c0', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Name</span>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#b0b0c0', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Type</span>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#b0b0c0', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center' }}>Pwr</span>
-                    </MoveHeader>
-                    {displayMoves.map(move => (
-                        <MoveRow key={`${move.level}-${move.name}`} className={move.type}>
-                            <span style={{ textAlign: 'center', fontWeight: 600, color: '#fff' }}>{move.level}</span>
-                            <span style={{ fontWeight: 600, color: '#fff' }}>{move.name}</span>
-                            <span style={{ fontWeight: 500, color: 'currentColor' }}>{move.type}</span>
-                            <span style={{ textAlign: 'center', fontWeight: 500, color: '#b0b0c0' }}>{move.power ?? '—'}</span>
-                        </MoveRow>
-                    ))}
-                    {hasMore &&
-                    <LoadMoreButton
-                        type="button"
-                        disabled={loading}
-                        onClick={() => setVisibleCount(count => count + MOVE_BATCH_SIZE)}
-                    >
-                        {loading ? 'Loading...' : `Load more (${levelUpMoves.length - displayMoves.length} remaining)`}
-                    </LoadMoreButton>}
+                    <MoveListCard>
+                        <Subtitle style={{ textAlign: 'center', fontSize: '1rem', marginBottom: '1rem' }}>
+                            By leveling up · {pretty(selectedVersion)}
+                        </Subtitle>
+                        <MoveHeader>
+                            <span style={{ textAlign: 'center' }}>Lvl</span>
+                            <span>Name</span>
+                            <span>Type</span>
+                            <span style={{ textAlign: 'center' }}>Pwr</span>
+                        </MoveHeader>
+                        {displayMoves.map(move => (
+                            <MoveRow
+                                key={`${move.level}-${move.name}`}
+                                className={move.type}
+                                to={`/move/${move.slug}`}
+                                aria-label={`View ${move.name} move details`}
+                            >
+                                <span style={{ textAlign: 'center', fontWeight: 700, color: '#fffaf1' }}>{move.level}</span>
+                                <span style={{ fontWeight: 700, color: '#fffaf1' }}>{move.name}</span>
+                                <MoveType>
+                                    <MoveTypeIcon src={typeIcons[move.type]} alt="" />
+                                    {move.type}
+                                </MoveType>
+                                <span style={{ textAlign: 'center', fontWeight: 600, color: '#aaa299' }}>{move.power ?? '—'}</span>
+                            </MoveRow>
+                        ))}
+                        {hasMore &&
+                        <LoadMoreButton
+                            type="button"
+                            disabled={loading}
+                            onClick={() => setVisibleCount(count => count + MOVE_BATCH_SIZE)}
+                        >
+                            {loading ? 'Loading...' : `Load more (${levelUpMoves.length - displayMoves.length} remaining)`}
+                        </LoadMoreButton>}
+                    </MoveListCard>
                 </Col>
             </Row>}
         </MovesContainer>

@@ -8,11 +8,9 @@ import {
 const fadeInUp = keyframes`
     from {
         opacity: 0;
-        transform: translateY(20px);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
     }
 `;
 
@@ -90,7 +88,7 @@ export const FooterLink = styled.button`
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-secondary, #b0b0c0);
-    border-radius: 8px;
+    border-radius: var(--button-radius);
     transition: all .2s ease-in-out;
     letter-spacing: 0.02em;
 

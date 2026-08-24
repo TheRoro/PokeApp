@@ -36,7 +36,7 @@ const RetryButton = styled.button`
   font-weight: 700;
   background: rgba(220, 10, 45, 0.2);
   border: 1px solid var(--pokedex-red);
-  border-radius: 8px;
+  border-radius: var(--button-radius);
   cursor: pointer;
 
   &:focus-visible {

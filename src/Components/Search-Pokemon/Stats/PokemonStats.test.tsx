@@ -29,6 +29,17 @@ function pokemon(name: string, id: number) {
   };
 }
 
+function species(entry: string) {
+  return {
+    flavor_text_entries: [
+      {
+        flavor_text: entry,
+        language: { name: 'en' },
+      },
+    ],
+  };
+}
+
 function ChangePokemon() {
   const navigate = useNavigate();
   return <button onClick={() => navigate('/search/charmander')}>Next Pokémon</button>;
@@ -37,7 +48,13 @@ function ChangePokemon() {
 test('refreshes Pokémon data when the route parameter changes', async () => {
   mockedGet
     .mockResolvedValueOnce({ data: pokemon('pikachu', 25) })
-    .mockResolvedValueOnce({ data: pokemon('charmander', 4) });
+    .mockResolvedValueOnce({
+      data: species('It stores electricity in its cheeks.'),
+    })
+    .mockResolvedValueOnce({ data: pokemon('charmander', 4) })
+    .mockResolvedValueOnce({
+      data: species('The flame on its tail shows the strength of its life force.'),
+    });
 
   render(
     <MemoryRouter initialEntries={['/search/pikachu']}>
@@ -51,12 +68,18 @@ test('refreshes Pokémon data when the route parameter changes', async () => {
   );
 
   expect(await screen.findByRole('heading', { name: 'Pikachu' })).toBeInTheDocument();
+  expect(screen.getByText('It stores electricity in its cheeks.')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Next Pokémon' }));
   expect(await screen.findByRole('heading', { name: 'Charmander' })).toBeInTheDocument();
+  expect(
+    screen.getByText('The flame on its tail shows the strength of its life force.'),
+  ).toBeInTheDocument();
 
-  await waitFor(() => expect(mockedGet).toHaveBeenCalledTimes(2));
+  await waitFor(() => expect(mockedGet).toHaveBeenCalledTimes(4));
   expect(mockedGet.mock.calls.map(call => call[0])).toEqual([
     'https://pokeapi.co/api/v2/pokemon/pikachu/',
+    'https://pokeapi.co/api/v2/pokemon-species/25/',
     'https://pokeapi.co/api/v2/pokemon/charmander/',
+    'https://pokeapi.co/api/v2/pokemon-species/4/',
   ]);
 });

@@ -64,12 +64,27 @@ export const SlotCard = styled.section<{
   $animateIn: boolean;
   $removing: boolean;
 }>`
+  position: relative;
   min-height: 330px;
   padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  background: rgba(54, 58, 64, 0.75);
-  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  border: 1px solid #4a4e55;
+  border-radius: 22px;
+  background: #303339;
+  box-shadow:
+    0 4px 0 #1f2226,
+    0 14px 28px rgba(0, 0, 0, 0.16);
+
+  &::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 58px;
+    height: 5px;
+    content: '';
+    background: #d72d38;
+    border-radius: 0 0 8px 0;
+  }
   ${({ $animateIn }) =>
     $animateIn &&
     css`
@@ -115,13 +130,14 @@ export const SearchInput = styled.input`
   min-height: 44px;
   padding: 0.65rem 0.75rem;
   color: var(--text-primary);
-  background: var(--bg-dark);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  background: #2a2d32;
+  border: 2px solid #4a4e55;
+  border-radius: 14px;
 
   &:focus-visible {
-    outline: 3px solid rgba(255, 222, 0, 0.5);
-    outline-offset: 2px;
+    outline: 3px solid rgba(215, 45, 56, 0.14);
+    outline-offset: 1px;
+    border-color: #d72d38;
   }
 `;
 
@@ -137,7 +153,7 @@ export const Suggestions = styled.ul`
   overflow-y: auto;
   background: #202328;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  border-radius: 11px;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
   list-style: none;
 `;
@@ -149,7 +165,7 @@ export const Suggestion = styled.li<{ $active: boolean }>`
   text-align: left;
   background: ${({ $active }) =>
     $active ? 'rgba(220, 10, 45, 0.35)' : 'transparent'};
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
 
   &:hover {
@@ -168,7 +184,7 @@ export const NoSuggestions = styled.div`
   font-size: 0.85rem;
   background: #202328;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  border-radius: 11px;
 `;
 
 export const SearchButton = styled.button`
@@ -176,10 +192,18 @@ export const SearchButton = styled.button`
   padding: 0.6rem 0.9rem;
   color: #fff;
   font-weight: 700;
-  background: var(--pokedex-red);
-  border: 0;
-  border-radius: 8px;
+  background: #d72d38;
+  border: 2px solid #ef5963;
+  border-radius: var(--button-radius);
+  box-shadow: 0 4px 0 #8e1821;
   cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #e43a46;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #8e1821;
+  }
 
   &:disabled {
     cursor: wait;
@@ -187,8 +211,8 @@ export const SearchButton = styled.button`
   }
 
   &:focus-visible {
-    outline: 3px solid rgba(255, 222, 0, 0.6);
-    outline-offset: 2px;
+    outline: 3px solid rgba(255, 255, 255, 0.22);
+    outline-offset: 3px;
   }
 `;
 
@@ -219,7 +243,7 @@ export const TypeBadge = styled.span`
   font-weight: 800;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid currentColor;
-  border-radius: 999px;
+  border-radius: var(--button-radius);
 `;
 
 export const EmptySlot = styled.p`
@@ -245,7 +269,7 @@ export const RemoveButton = styled.button`
   color: var(--text-secondary);
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 7px;
+  border-radius: var(--button-radius);
   cursor: pointer;
 
   &:hover {
@@ -254,8 +278,8 @@ export const RemoveButton = styled.button`
   }
 
   &:focus-visible {
-    outline: 3px solid rgba(255, 222, 0, 0.7);
-    outline-offset: 2px;
+    outline: 3px solid rgba(255, 255, 255, 0.2);
+    outline-offset: 3px;
   }
 `;
 
@@ -270,29 +294,67 @@ export const ResetButton = styled.button`
   padding: 0.6rem 1.2rem;
   color: #fff;
   font-weight: 700;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 8px;
+  background: #d72d38;
+  border: 2px solid #ef5963;
+  border-radius: 999px;
+  box-shadow: 0 4px 0 #8e1821;
   cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #e43a46;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #8e1821;
+  }
 
   &:focus-visible {
-    outline: 3px solid rgba(255, 222, 0, 0.7);
-    outline-offset: 2px;
+    outline: 3px solid rgba(255, 255, 255, 0.2);
+    outline-offset: 3px;
   }
 `;
 
 export const Analysis = styled.section`
+  position: relative;
   max-width: 1180px;
   margin: 2rem auto 0;
   padding: 1.5rem;
-  background: linear-gradient(145deg, #352020 0%, #2a2d32 45%);
-  border: 2px solid rgba(220, 10, 45, 0.25);
-  border-radius: 16px;
+  overflow: hidden;
+  background: #303339;
+  border: 1px solid #4a4e55;
+  border-radius: 22px;
+  box-shadow:
+    0 4px 0 #1f2226,
+    0 14px 28px rgba(0, 0, 0, 0.16);
+
+  &::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 72px;
+    height: 5px;
+    content: '';
+    background: #d72d38;
+    border-radius: 0 0 8px 0;
+  }
 `;
 
 export const AnalysisTitle = styled.h2`
-  margin: 0 0 0.25rem;
-  font-size: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0 0 0.35rem;
+  color: #e7e3dd;
+  font-size: 1.2rem;
+  font-weight: 800;
+
+  &::before {
+    width: 28px;
+    height: 4px;
+    content: '';
+    background: #d72d38;
+    border-radius: 999px;
+    box-shadow: 0 2px 0 #831921;
+  }
 `;
 
 export const AnalysisHint = styled.p`
@@ -341,8 +403,8 @@ export const CoverageLabel = styled.h4`
 
 export const TypeList = styled.ul`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
-  gap: 0.4rem;
+  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+  gap: 0.55rem;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -351,37 +413,43 @@ export const TypeList = styled.ul`
 
 export const SummaryBadge = styled.li`
   display: grid;
-  grid-template-columns: 52px minmax(0, 1fr);
+  grid-template-columns: 32px minmax(0, 1fr) 30px;
   align-items: center;
+  gap: 0.55rem;
   min-width: 0;
-  min-height: 58px;
+  min-height: 50px;
+  padding: 0.45rem 0.55rem;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid currentColor;
-  border-radius: 10px;
+  background: #383c42;
+  border: 1px solid #4a4e55;
+  border-left: 4px solid currentColor;
+  border-radius: 14px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 `;
 
 export const SummaryCount = styled.strong`
   display: grid;
-  width: 52px;
-  height: 100%;
-  min-height: 58px;
-  padding: 0.35rem;
+  width: 30px;
+  height: 30px;
   place-items: center;
-  color: currentColor;
-  font-size: 1.65rem;
-  font-weight: 900;
+  color: #fffaf1;
+  font-size: 0.85rem;
+  font-weight: 800;
   line-height: 1;
-  background: rgba(255, 255, 255, 0.08);
-  border-right: 1px solid currentColor;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  background: #2a2d32;
+  border: 1px solid #4a4e55;
+  border-radius: 10px;
 `;
 
 export const SummaryText = styled.span`
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding: 0.45rem 0.65rem;
+`;
+
+export const SummaryIcon = styled.img`
+  width: 30px;
+  height: 30px;
 `;
 
 export const SummaryType = styled.strong`
@@ -393,10 +461,9 @@ export const SummaryType = styled.strong`
 
 export const SummaryMetric = styled.span`
   color: var(--text-secondary);
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
 `;
 
 export const EmptySummary = styled.p`

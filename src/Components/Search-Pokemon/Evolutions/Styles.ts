@@ -4,25 +4,14 @@ import { Col } from 'react-bootstrap';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const fadeInUp = keyframes`
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 `;
 
 export const EvolutionsContainer = styled(Container)`
     min-height: 80vh;
     padding: 1rem 1rem 2rem;
-    animation: ${fadeInUp} 0.6s ease forwards;
-`
-
-export const Title = styled.h1`
-    font-size: calc(20px + 1.8vw);
-    font-weight: 900;
-    text-align: center;
-    letter-spacing: 0.05em;
-    color: #fff;
-    text-transform: uppercase;
-    text-shadow: 0 0 10px rgba(220, 10, 45, 0.3);
-    margin-bottom: 1.5rem;
+    animation: ${fadeInUp} 180ms ease-out forwards;
 `
 
 export const SubTitle = styled.h2`
@@ -35,9 +24,11 @@ export const SubTitle = styled.h2`
 `
 
 export const EvolutionCard = styled.button`
-    background: linear-gradient(145deg, #352020 0%, #2A2D32 40%);
-    border: 2px solid rgba(220, 10, 45, 0.3);
-    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    background: #303339;
+    border: 1px solid #4a4e55;
+    border-radius: 18px;
     padding: 1.25rem;
     text-align: center;
     display: flex;
@@ -47,15 +38,30 @@ export const EvolutionCard = styled.button`
     color: inherit;
     font: inherit;
     cursor: pointer;
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    box-shadow:
+        0 4px 0 #1f2226,
+        0 14px 26px rgba(0, 0, 0, 0.16);
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+
+    &::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 52px;
+        height: 5px;
+        content: '';
+        background: #d72d38;
+        border-radius: 0 0 8px 0;
+    }
 
     &:hover {
-        border-color: var(--pokedex-red);
+        background: #383c42;
+        border-color: #5b6068;
         transform: translateY(-2px);
     }
 
     &:focus-visible {
-        outline: 3px solid rgba(255, 222, 0, 0.7);
+        outline: 3px solid rgba(215, 45, 56, 0.2);
         outline-offset: 3px;
     }
 
@@ -79,10 +85,39 @@ export const EvolutionFlow = styled.div`
     }
 `
 
+export const EvolutionStage = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+`
+
+export const StageLabel = styled.span`
+    color: #aaa299;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+`
+
 export const Arrow = styled.span`
-    font-size: 1.5rem;
-    color: var(--pokedex-red, #DC0A2D);
-    font-weight: 900;
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    align-items: center;
+    justify-content: center;
+    color: #fffaf1;
+    background: #d72d38;
+    border: 2px solid #ef5963;
+    border-radius: 50%;
+    box-shadow: 0 3px 0 #8e1821;
+
+    svg {
+        display: block;
+        width: 15px;
+        height: 15px;
+    }
 
     @media (max-width: 576px) {
         transform: rotate(90deg);

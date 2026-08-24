@@ -5,16 +5,19 @@ import axios from 'axios';
 import Navigation from '../../Tools/Navigation/Navigation';
 import PokeBall from '../../../Assets/pokeapp.png';
 import { useNavigate, useParams } from 'react-router-dom';
+import { FaArrowRight } from 'react-icons/fa';
 import { toPokemonApiSlug } from '../../Tools/pokemonNames';
 import ApiError, { ApiErrorInfo } from '../../Tools/ApiError/ApiError';
 import { describeApiError } from '../../Tools/ApiError/apiErrors';
+import { ToolPageHeader } from '../../Tools/ToolLayout';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import {
     SubTitle,
-    Title,
     EvolutionsContainer,
     EvolutionCard,
     EvolutionFlow,
+    EvolutionStage,
+    StageLabel,
     Arrow,
     LoadingCol,
     LoadingImg,
@@ -33,15 +36,18 @@ const Evolutions: React.FC = () => {
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<ApiErrorInfo | null>(null);
     const [retry, setRetry] = React.useState(0);
+    const [resolvedName, setResolvedName] = React.useState(name);
 
     useEffect(() => {
         const controller = new AbortController();
         const fetchEvolutions = async () => {
             setLoading(true);
             setError(null);
+            setResolvedName(name);
             try {
                 const config = { signal: controller.signal };
                 const pokemonResp = await axios.get(`https://pokeapi.co/api/v2/pokemon/${toPokemonApiSlug(name)}/`, config);
+                setResolvedName(pokemonResp.data.name);
                 const speciesResp = await axios.get(pokemonResp.data.species.url, config);
                 const evoResp = await axios.get(speciesResp.data.evolution_chain.url, config);
 
@@ -91,22 +97,25 @@ const Evolutions: React.FC = () => {
     const pretty = (value: string) => {
         return value.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
     };
+    const displayName = /^\d+$/.test(resolvedName)
+        ? 'Pokémon'
+        : pretty(resolvedName);
 
     return (
         <EvolutionsContainer>
             <div style={{ paddingTop: '0.5rem' }}>
                 <Navigation
-                    left={`/search/${name}`}
-                    right={`/search/${name}/moves`}
+                    left={`/search/${resolvedName}`}
+                    right={`/search/${resolvedName}/moves`}
                     leftLabel="Back to Pokémon details"
                     rightLabel="View moves"
                 />
             </div>
-            <Row className="justify-content-center mt-3">
-                <Col xs="auto">
-                    <Title>Evolutions</Title>
-                </Col>
-            </Row>
+            <ToolPageHeader
+                eyebrow="Pokédex progression"
+                title={`${displayName} evolutions`}
+                description="Explore every known stage in this Pokémon's evolution chain."
+            />
             {loading && (
                 <Row className="justify-content-center mt-5" role="status" aria-label="Loading evolutions">
                     <LoadingCol xs="auto">
@@ -123,8 +132,13 @@ const Evolutions: React.FC = () => {
                         <EvolutionFlow>
                             {stages.map((stage, stageIdx) => (
                                 <React.Fragment key={stageIdx}>
-                                    {stageIdx > 0 && <Arrow>→</Arrow>}
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}>
+                                    {stageIdx > 0 && (
+                                        <Arrow aria-hidden="true">
+                                            <FaArrowRight />
+                                        </Arrow>
+                                    )}
+                                    <EvolutionStage>
+                                        <StageLabel>Stage {stageIdx + 1}</StageLabel>
                                         {stage.map((pokemon) => (
                                             <EvolutionCard
                                                 type="button"
@@ -140,7 +154,7 @@ const Evolutions: React.FC = () => {
                                                 <SubTitle>{pretty(pokemon.name)}</SubTitle>
                                             </EvolutionCard>
                                         ))}
-                                    </div>
+                                    </EvolutionStage>
                                 </React.Fragment>
                             ))}
                         </EvolutionFlow>

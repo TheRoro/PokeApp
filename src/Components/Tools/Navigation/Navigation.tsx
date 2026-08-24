@@ -1,8 +1,6 @@
 import React from 'react';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-
-import {NavButton} from './Styles';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { Arrow, NavButton, NavigationBar } from './Styles';
 
 type Props = {
     left: string,
@@ -14,47 +12,23 @@ type Props = {
 const Navigation: React.FC<Props> = ({
     left,
     right,
-    leftLabel = 'Previous page',
-    rightLabel = 'Next page',
+    leftLabel = 'Back',
+    rightLabel = 'Next',
 }) => {
-    return(
-    <div>
-    {right !== "" ? 
-        <Row className="">
-            <Col xs={6}>
-                <Row className="justify-content-start">
-                    <Col xs="auto">
-                        <NavButton to={left} aria-label={leftLabel}>
-                            <i className="fas fa-angle-left fa-2x" aria-hidden="true"></i>
-                        </NavButton>
-                    </Col>
-                </Row>
-            </Col>
-            <Col xs={6}>
-                <Row className="justify-content-end">
-                    <Col xs="auto">
-                        <NavButton to={right} aria-label={rightLabel}>
-                            <i className="fas fa-angle-right fa-2x" aria-hidden="true"></i>
-                        </NavButton>
-                    </Col>
-                </Row>
-            </Col>
-        </Row>
-    : 
-        <Row className="">
-            <Col xs={6}>
-                <Row className="justify-content-start">
-                    <Col xs="auto">
-                        <NavButton to={left} aria-label={leftLabel}>
-                            <i className="fas fa-angle-left fa-2x" aria-hidden="true"></i>
-                        </NavButton>
-                    </Col>
-                </Row>
-            </Col>
-        </Row>
-    }
-    </div>
-    )
+    return (
+      <NavigationBar>
+        <NavButton to={left}>
+          <Arrow aria-hidden="true"><FaChevronLeft /></Arrow>
+          {leftLabel}
+        </NavButton>
+        {right !== '' && (
+          <NavButton to={right}>
+            {rightLabel}
+            <Arrow aria-hidden="true"><FaChevronRight /></Arrow>
+          </NavButton>
+        )}
+      </NavigationBar>
+    );
 }
 
 export default Navigation;

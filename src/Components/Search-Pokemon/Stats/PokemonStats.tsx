@@ -11,30 +11,49 @@ import { useParams } from "react-router-dom";
 import { toPokemonApiSlug } from '../../Tools/pokemonNames';
 import ApiError from '../../Tools/ApiError/ApiError';
 import { describeApiError } from '../../Tools/ApiError/apiErrors';
+import { getTypeColor } from '../../Tools/TypeBadge';
+import { ToolPageHeader } from '../../Tools/ToolLayout';
+import typeIcons from '../../../Assets/type-icons';
+import { FaPlay } from 'react-icons/fa';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
 import {
-    StatsContainer,
-    Title,
-    SubTitle,
-    Id,
+    CryButton,
+    CryControls,
+    CryMessage,
+    HiddenAudio,
     Loading,
     LoadingCol,
     LoadingImg,
-    LazyImage
+    LazyImage,
+    PokemonTypeCard,
+    PokemonTypeIcon,
+    PokemonTypeName,
+    PokemonTypeRole,
+    PokemonTypes,
+    PokemonTypeText,
+    StatTotal,
+    StatsContainer,
 } from './StatsStyles';
-
-const typeColorMap: Record<string, string> = {
-    Bug: '#C0E11D', Dark: '#705898', Dragon: '#6200EA', Electric: '#FFFF00',
-    Fairy: '#FF6FDE', Fighting: '#B42400', Fire: '#FF9200', Flying: '#9FA8DA',
-    Ghost: '#9575CD', Grass: '#00D12F', Ground: '#C4A96A', Ice: '#18FFFF',
-    Normal: '#EFEBE9', Poison: '#AA00FF', Psychic: '#FF00C5', Rock: '#A8814C',
-    Steel: '#9E9E9E', Water: '#304FFE', None: 'transparent',
-};
 
 type infoType = {
     stats: any[],
-    types: any[]
+    types: any[],
+    cries?: {
+        latest?: string | null,
+        legacy?: string | null,
+    }
+};
+
+const getEnglishPokedexEntry = (entries: any[]) => {
+    const entry = [...entries]
+        .reverse()
+        .find(item => item.language.name === 'en');
+
+    return entry?.flavor_text
+        ?.replace(/[\n\f\r]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim() ?? '';
 };
 
 const loadingIndicator = <Loading role="status" aria-label="Loading Pokémon">
@@ -59,9 +78,15 @@ const PokemonStats: React.FC = () =>{
     const [info, setInfo] = React.useState<infoType>();
     const [loading, setLoading] = React.useState(loadingIndicator);
     const [id, setId] = React.useState<string>();
+    const [pokedexEntry, setPokedexEntry] = React.useState('');
     const { name = '' } = useParams<'name'>();
     const [prettyName, setPrettyName] = React.useState(name);
     const [retry, setRetry] = React.useState(0);
+    const [cryUrl, setCryUrl] = React.useState('');
+    const [cryError, setCryError] = React.useState('');
+    const [isCryPlaying, setIsCryPlaying] = React.useState(false);
+    const audioRef = React.useRef<HTMLAudioElement>(null);
+    const autoPlayedCryRef = React.useRef('');
 
     const pretty = (value: string) => {
         let temp = "";
@@ -91,14 +116,34 @@ const PokemonStats: React.FC = () =>{
         const controller = new AbortController();
         setInfo(undefined);
         setType2('None');
+        setPokedexEntry('');
+        setCryUrl('');
+        setCryError('');
+        setIsCryPlaying(false);
+        autoPlayedCryRef.current = '';
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
         setLoading(loadingIndicator);
 
         const search = async () => {
             try {
                 const apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + toPokemonApiSlug(name) + '/';
                 const resp = await axios.get(apiUrl, { signal: controller.signal });
+                const speciesResp = await axios.get(resp.data.species.url, {
+                    signal: controller.signal,
+                });
                 setInfo(resp.data);
                 setId(resp.data.species.url.substring(42, resp.data.species.url.length - 1));
+                setPokedexEntry(
+                    getEnglishPokedexEntry(speciesResp.data.flavor_text_entries),
+                );
+                setCryUrl(
+                    resp.data.cries?.latest
+                    ?? resp.data.cries?.legacy
+                    ?? '',
+                );
 
                 // 1/100 chance of shiny!
                 const shinyRoll = Math.floor(Math.random() * 100) === 0;
@@ -149,6 +194,40 @@ const PokemonStats: React.FC = () =>{
         return () => controller.abort();
     }, [name, retry]);
 
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio || !cryUrl || autoPlayedCryRef.current === cryUrl) return;
+
+        autoPlayedCryRef.current = cryUrl;
+        audio.currentTime = 0;
+        void audio.play().catch(error => {
+            if (error instanceof DOMException && error.name === 'NotAllowedError') {
+                return;
+            }
+            setCryError('This Pokémon cry could not be played.');
+        });
+
+        return () => {
+            audio.pause();
+            audio.currentTime = 0;
+        };
+    }, [cryUrl]);
+
+    const playCry = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        setCryError('');
+        audio.currentTime = 0;
+        void audio.play().catch(() => {
+            setCryError('This Pokémon cry could not be played.');
+        });
+    };
+
+    const totalStats = info?.stats.reduce(
+        (sum: number, stat: any) => sum + stat.base_stat,
+        0,
+    ) ?? 0;
     return(
         <>{info ?
         <StatsContainer>
@@ -160,66 +239,83 @@ const PokemonStats: React.FC = () =>{
                     rightLabel="View evolutions"
                 />
             </div>
+            <ToolPageHeader
+                eyebrow={`Pokédex #${id}`}
+                title={prettyName}
+                description={pokedexEntry || 'No Pokédex entry is available for this Pokémon.'}
+                wrapDescription
+            />
             <Row className="align-items-center">
-                <Col xs={12} className="mb-5">
-                    <Row className="justify-content-center">
-                        <Col xs="auto">
-                            <Title>{prettyName}</Title>
-                        </Col>
-                    </Row>
-                    <Row className="justify-content-center">
-                        <Col xs="auto">
-                            <Id>{id}</Id>
-                        </Col>
-                    </Row>
-                    <Row className="justify-content-center align-items-center mt-4">
+                <Col xs={12}>
+                    <Row className="justify-content-center align-items-center mt-2">
                         <Col xs={12} sm={12} md={6}>
+                            <PokemonTypes aria-label={`${prettyName} types`}>
+                                <PokemonTypeCard $color={getTypeColor(type1)}>
+                                    <PokemonTypeIcon src={typeIcons[type1]} alt="" />
+                                    <PokemonTypeText>
+                                        <PokemonTypeRole>Primary type</PokemonTypeRole>
+                                        <PokemonTypeName>{type1}</PokemonTypeName>
+                                    </PokemonTypeText>
+                                </PokemonTypeCard>
+                                {type2 !== 'None' && type2 !== '' &&
+                                <PokemonTypeCard $color={getTypeColor(type2)}>
+                                    <PokemonTypeIcon src={typeIcons[type2]} alt="" />
+                                    <PokemonTypeText>
+                                        <PokemonTypeRole>Secondary type</PokemonTypeRole>
+                                        <PokemonTypeName>{type2}</PokemonTypeName>
+                                    </PokemonTypeText>
+                                </PokemonTypeCard>}
+                            </PokemonTypes>
+                            {cryUrl && (
+                                <CryControls>
+                                    <HiddenAudio
+                                        ref={audioRef}
+                                        src={cryUrl}
+                                        preload="auto"
+                                        onPlay={() => setIsCryPlaying(true)}
+                                        onPause={() => setIsCryPlaying(false)}
+                                        onEnded={() => setIsCryPlaying(false)}
+                                        onError={() => {
+                                            setIsCryPlaying(false);
+                                            setCryError('This Pokémon cry could not be loaded.');
+                                        }}
+                                    />
+                                    <CryButton
+                                        type="button"
+                                        onClick={playCry}
+                                        aria-label={`${isCryPlaying ? 'Replay' : 'Play'} ${prettyName}'s cry`}
+                                    >
+                                        <FaPlay aria-hidden="true" />
+                                        {isCryPlaying ? 'Replay cry' : 'Play cry'}
+                                    </CryButton>
+                                    {cryError && <CryMessage role="status">{cryError}</CryMessage>}
+                                </CryControls>
+                            )}
                             <Row className="justify-content-center">
-                                <Col xs="auto">
-                                    <SubTitle style={{ color: typeColorMap[type1] || '#EFEBE9', borderColor: typeColorMap[type1] || '#EFEBE9' }}>Type 1: {type1}</SubTitle>
-                                </Col>
-                            </Row>
-                            {type2 !== 'None' && type2 !== '' &&
-                            <Row className="justify-content-center">
-                                <Col xs="auto">
-                                    <SubTitle style={{ color: typeColorMap[type2] || '#EFEBE9', borderColor: typeColorMap[type2] || '#EFEBE9' }}>Type 2: {type2}</SubTitle>
-                                </Col>
-                            </Row>}
-                            <Row className="justify-content-center mt-4">
                                 <StatBar name={"HP"} value={parseInt(JSON.stringify(info.stats[0].base_stat!))}/>
                             </Row>
-                            <Row className="justify-content-center mt-3">
+                            <Row className="justify-content-center mt-2">
                                 <StatBar name={"Attack"} value={parseInt(JSON.stringify(info.stats[1].base_stat))}/>
                             </Row>
-                            <Row className="justify-content-center mt-3">
+                            <Row className="justify-content-center mt-2">
                                 <StatBar name={"Defense"} value={parseInt(JSON.stringify(info.stats[2].base_stat))}/>
                             </Row>
-                            <Row className="justify-content-center mt-3">
+                            <Row className="justify-content-center mt-2">
                                 <StatBar name={"Sp. Attack"} value={parseInt(JSON.stringify(info.stats[3].base_stat))}/>
                             </Row>
-                            <Row className="justify-content-center mt-3">
+                            <Row className="justify-content-center mt-2">
                                 <StatBar name={"Sp. Defense"} value={parseInt(JSON.stringify(info.stats[4].base_stat))}/>
                             </Row>
-                            <Row className="justify-content-center mt-3">
+                            <Row className="justify-content-center mt-2">
                                 <StatBar name={"Speed"}  value={parseInt(JSON.stringify(info.stats[5].base_stat))}/>
                             </Row>
                             <Row className="justify-content-center mt-4">
                                 <Col>
                                     <Row className="justify-content-center">
                                         <Col xs="auto">
-                                            <div style={{
-                                                fontSize: '0.9rem',
-                                                fontWeight: 800,
-                                                letterSpacing: '0.08em',
-                                                textTransform: 'uppercase' as const,
-                                                color: '#fff',
-                                                padding: '0.5rem 1.2rem',
-                                                borderRadius: '8px',
-                                                background: 'rgba(255, 255, 255, 0.06)',
-                                                border: '1px solid rgba(220, 10, 45, 0.3)',
-                                            }}>
-                                                Total: {info.stats.reduce((sum: number, s: any) => sum + s.base_stat, 0)}
-                                            </div>
+                                            <StatTotal>
+                                                Total: {totalStats}
+                                            </StatTotal>
                                         </Col>
                                     </Row>
                                 </Col>

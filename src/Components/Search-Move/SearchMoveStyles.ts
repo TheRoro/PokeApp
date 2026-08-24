@@ -1,15 +1,12 @@
-import { Col } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
 
 const fadeInUp = keyframes`
   from {
     opacity: 0;
-    transform: translateY(20px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 `;
 
@@ -27,16 +24,6 @@ const rotate = keyframes`
   }
 `;
 
-const pulse = keyframes`
-  0%, 100% {
-    filter: drop-shadow(0 0 10px rgba(220, 10, 45, 0.3));
-  }
-
-  50% {
-    filter: drop-shadow(0 0 20px rgba(220, 10, 45, 0.5));
-  }
-`;
-
 export const Bidoof404Img = styled.img`
     height: auto;
     width: auto;
@@ -47,17 +34,15 @@ export const Bidoof404Img = styled.img`
 export const SearchContainer = styled.div`
     width: 100%;
     min-width: 0;
-    animation: ${fadeInUp} 0.7s ease forwards;
+    animation: ${fadeInUp} 180ms ease-out forwards;
 `
 
 export const Title = styled.h1`
     font-size: calc(20px + 1.8vw);
-    font-weight: 900;
+    font-weight: 800;
     text-align: center;
-    letter-spacing: 0.05em;
-    color: #fff;
-    text-transform: uppercase;
-    text-shadow: 0 0 10px rgba(220, 10, 45, 0.3);
+    letter-spacing: -0.035em;
+    color: #fffaf1;
 `
 
 export const Text = styled.p`
@@ -68,19 +53,23 @@ export const Text = styled.p`
     line-height: 1.7;
 `
 
-export const LoadingCol = styled(Col)`
-    height: 12%;
-    width: 12%;
-    min-width: 100px;
-    min-height: 100px;
-    animation: ${pulse} 1.8s ease-in-out infinite;
+export const MoveLoading = styled.div`
+    display: grid;
+    min-height: calc(100vh - 82px);
+    padding: 2rem;
+    place-items: center;
+`
+
+export const LoadingCol = styled.div`
+    width: clamp(88px, 8vw, 112px);
+    aspect-ratio: 1;
 `
 
 export const LoadingImg = styled.img`
     height: 100%;
     width: 100%;
     object-fit: cover;
-    animation: ${rotate} 1.1s linear infinite, ${pulse} 1.8s ease-in-out infinite;
+    animation: ${rotate} 1.1s linear infinite;
     max-width: 400px;
     max-height: 400px;
 `

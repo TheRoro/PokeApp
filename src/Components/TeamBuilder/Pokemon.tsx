@@ -21,9 +21,9 @@ import {
   SlotLabel,
   Suggestion,
   Suggestions,
-  TypeBadge,
   Types,
 } from './TeamBuilderStyles';
+import TypeBadge from '../Tools/TypeBadge';
 
 type PokemonResponse = {
   id: number;
@@ -242,9 +242,7 @@ const Pokemon: React.FC<Props> = ({
             {pokemon.types.map(type => {
               const displayType = formatPokemonName(type);
               return (
-                <TypeBadge className={displayType} key={type}>
-                  {displayType}
-                </TypeBadge>
+                <TypeBadge type={displayType} key={type} />
               );
             })}
           </Types>
