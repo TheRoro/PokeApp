@@ -10,7 +10,7 @@ export const StatRow = styled.div`
     grid-template-columns: 128px minmax(150px, 1fr);
     align-items: center;
     gap: 0.85rem;
-    width: min(100%, 440px);
+    width: min(100%, 500px);
 
     @media (max-width: 576px) {
         grid-template-columns: 105px minmax(120px, 1fr);
@@ -39,7 +39,7 @@ export const StatValue = styled.strong`
 
 export const StatTrack = styled.span`
     display: block;
-    height: 11px;
+    height: 18px;
     overflow: hidden;
     background: #24272c;
     border: 1px solid #4a4e55;

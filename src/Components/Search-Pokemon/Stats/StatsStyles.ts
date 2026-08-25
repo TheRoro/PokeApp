@@ -68,6 +68,44 @@ export const StatsContainer = styled(Container)`
     }
 `
 
+export const PokemonHeader = styled.header`
+    margin: 0 auto 1.25rem;
+    text-align: center;
+`
+
+export const PokemonIdentity = styled.div`
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+`
+
+export const PokemonName = styled.h1`
+    margin: 0;
+    color: #fffaf1;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 850;
+    letter-spacing: -0.04em;
+    line-height: 1;
+`
+
+export const PokemonNumber = styled.span`
+    display: inline-flex;
+    min-height: 32px;
+    padding: 0.3rem 0.6rem;
+    align-items: center;
+    justify-content: center;
+    color: #ff8799;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    background: #303339;
+    border: 1px solid #4a4e55;
+    border-radius: 10px;
+    transform: translateY(3px);
+`
+
 export const Title = styled.h1`
     font-size: calc(30px + 3vw);
     font-weight: 900;
@@ -124,9 +162,16 @@ export const Id = styled.h1`
 
 export const PokemonTypes = styled.div`
     display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.65rem;
-    width: min(100%, 310px);
+    width: min(100%, 460px);
     margin: 0 auto 1.5rem;
+
+    > :only-child {
+        grid-column: 1 / -1;
+        width: calc(50% - 0.325rem);
+        justify-self: center;
+    }
 `
 
 export const PokemonTypeCard = styled.div<{ $color: string }>`
@@ -171,18 +216,19 @@ export const CryControls = styled.div`
     display: grid;
     justify-items: center;
     gap: 0.5rem;
-    margin: -0.55rem auto 1.35rem;
+    margin: 0 auto;
 `
 
 export const CryButton = styled.button`
     display: inline-flex;
-    min-height: 40px;
-    padding: 0.45rem 0.9rem;
+    width: 150px;
+    min-height: 46px;
+    padding: 0.45rem 0.85rem;
     align-items: center;
     justify-content: center;
     gap: 0.45rem;
     color: #fff;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 800;
     background: #d72d38;
     border: 2px solid #ef5963;
@@ -224,11 +270,66 @@ export const HiddenAudio = styled.audio`
     display: none;
 `
 
+export const StatsColumn = styled(Col)`
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: 1.25rem;
+    min-height: 405px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+
+    @media screen and (max-width: 767px) {
+        min-height: 0;
+    }
+`
+
+export const ArtworkColumn = styled(Col)`
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: 1.25rem;
+    min-height: 405px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+
+    @media screen and (max-width: 767px) {
+        min-height: 0;
+        margin-top: 2rem;
+    }
+`
+
+export const ArtworkStack = styled.div`
+    display: contents;
+`
+
+export const StatsBody = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+`
+
+export const ArtworkBody = styled.div`
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+`
+
+export const ColumnFooter = styled.div`
+    display: flex;
+    min-height: 46px;
+    align-items: flex-start;
+    justify-content: center;
+`
+
 export const StatTotal = styled.div`
-    min-width: 150px;
-    padding: 0.75rem 1.25rem;
+    display: flex;
+    width: 150px;
+    min-height: 46px;
+    padding: 0.45rem 0.85rem;
+    align-items: center;
+    justify-content: center;
     color: #fffaf1;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -241,8 +342,8 @@ export const StatTotal = styled.div`
 export const LazyImage = styled(LazyLoadImage)`
     height: 100%;
     width: 100%;
-    max-width: 400px;
-    max-height: 400px;
+    max-width: 330px;
+    max-height: 330px;
     border-radius: 28px;
     padding: 1rem;
     background: radial-gradient(circle at center, rgba(255, 255, 255, 0.04) 0%, transparent 70%);

@@ -80,29 +80,35 @@ export const Text = styled.p`
 `
 
 export const FooterLink = styled.button`
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid #686d76;
+    background: #484c53;
+    box-shadow: 0 3px 0 #24272b;
     cursor: pointer;
     margin: 0;
     padding: 0.5rem 1.2rem;
     font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text-secondary, #b0b0c0);
+    font-weight: 800;
+    color: var(--text-primary, #fffaf1);
     border-radius: var(--button-radius);
-    transition: all .2s ease-in-out;
+    transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
     letter-spacing: 0.02em;
 
     &:hover {
-        color: #fff;
-        border-color: var(--pokedex-red, #DC0A2D);
-        background: rgba(220, 10, 45, 0.1);
+        color: var(--text-primary, #fffaf1);
+        background: #555a62;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 0 #24272b;
         text-decoration: none;
+    }
+
+    &:active {
+        transform: translateY(2px);
+        box-shadow: 0 1px 0 #24272b;
     }
 
     &:focus-visible {
         outline: 3px solid rgba(255, 222, 0, 0.75);
         outline-offset: 3px;
-        box-shadow: 0 0 0 3px rgba(220, 10, 45, 0.2);
     }
 `
 

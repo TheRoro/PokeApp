@@ -12,12 +12,15 @@ import { toPokemonApiSlug } from '../../Tools/pokemonNames';
 import ApiError from '../../Tools/ApiError/ApiError';
 import { describeApiError } from '../../Tools/ApiError/apiErrors';
 import { getTypeColor } from '../../Tools/TypeBadge';
-import { ToolPageHeader } from '../../Tools/ToolLayout';
 import typeIcons from '../../../Assets/type-icons';
 import { FaPlay } from 'react-icons/fa';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
 import {
+    ArtworkColumn,
+    ArtworkBody,
+    ArtworkStack,
+    ColumnFooter,
     CryButton,
     CryControls,
     CryMessage,
@@ -32,7 +35,13 @@ import {
     PokemonTypeRole,
     PokemonTypes,
     PokemonTypeText,
+    PokemonHeader,
+    PokemonIdentity,
+    PokemonName,
+    PokemonNumber,
     StatTotal,
+    StatsBody,
+    StatsColumn,
     StatsContainer,
 } from './StatsStyles';
 
@@ -43,17 +52,6 @@ type infoType = {
         latest?: string | null,
         legacy?: string | null,
     }
-};
-
-const getEnglishPokedexEntry = (entries: any[]) => {
-    const entry = [...entries]
-        .reverse()
-        .find(item => item.language.name === 'en');
-
-    return entry?.flavor_text
-        ?.replace(/[\n\f\r]+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim() ?? '';
 };
 
 const loadingIndicator = <Loading role="status" aria-label="Loading Pokémon">
@@ -78,7 +76,6 @@ const PokemonStats: React.FC = () =>{
     const [info, setInfo] = React.useState<infoType>();
     const [loading, setLoading] = React.useState(loadingIndicator);
     const [id, setId] = React.useState<string>();
-    const [pokedexEntry, setPokedexEntry] = React.useState('');
     const { name = '' } = useParams<'name'>();
     const [prettyName, setPrettyName] = React.useState(name);
     const [retry, setRetry] = React.useState(0);
@@ -116,7 +113,6 @@ const PokemonStats: React.FC = () =>{
         const controller = new AbortController();
         setInfo(undefined);
         setType2('None');
-        setPokedexEntry('');
         setCryUrl('');
         setCryError('');
         setIsCryPlaying(false);
@@ -131,14 +127,8 @@ const PokemonStats: React.FC = () =>{
             try {
                 const apiUrl = 'https://pokeapi.co/api/v2/pokemon/' + toPokemonApiSlug(name) + '/';
                 const resp = await axios.get(apiUrl, { signal: controller.signal });
-                const speciesResp = await axios.get(resp.data.species.url, {
-                    signal: controller.signal,
-                });
                 setInfo(resp.data);
                 setId(resp.data.species.url.substring(42, resp.data.species.url.length - 1));
-                setPokedexEntry(
-                    getEnglishPokedexEntry(speciesResp.data.flavor_text_entries),
-                );
                 setCryUrl(
                     resp.data.cries?.latest
                     ?? resp.data.cries?.legacy
@@ -239,95 +229,89 @@ const PokemonStats: React.FC = () =>{
                     rightLabel="View evolutions"
                 />
             </div>
-            <ToolPageHeader
-                eyebrow={`Pokédex #${id}`}
-                title={prettyName}
-                description={pokedexEntry || 'No Pokédex entry is available for this Pokémon.'}
-                wrapDescription
-            />
+            <PokemonHeader>
+                <PokemonIdentity>
+                    <PokemonName>{prettyName}</PokemonName>
+                    <PokemonNumber>#{id}</PokemonNumber>
+                </PokemonIdentity>
+            </PokemonHeader>
             <Row className="align-items-center">
                 <Col xs={12}>
-                    <Row className="justify-content-center align-items-center mt-2">
-                        <Col xs={12} sm={12} md={6}>
-                            <PokemonTypes aria-label={`${prettyName} types`}>
-                                <PokemonTypeCard $color={getTypeColor(type1)}>
-                                    <PokemonTypeIcon src={typeIcons[type1]} alt="" />
-                                    <PokemonTypeText>
-                                        <PokemonTypeRole>Primary type</PokemonTypeRole>
-                                        <PokemonTypeName>{type1}</PokemonTypeName>
-                                    </PokemonTypeText>
-                                </PokemonTypeCard>
-                                {type2 !== 'None' && type2 !== '' &&
-                                <PokemonTypeCard $color={getTypeColor(type2)}>
-                                    <PokemonTypeIcon src={typeIcons[type2]} alt="" />
-                                    <PokemonTypeText>
-                                        <PokemonTypeRole>Secondary type</PokemonTypeRole>
-                                        <PokemonTypeName>{type2}</PokemonTypeName>
-                                    </PokemonTypeText>
-                                </PokemonTypeCard>}
-                            </PokemonTypes>
-                            {cryUrl && (
-                                <CryControls>
-                                    <HiddenAudio
-                                        ref={audioRef}
-                                        src={cryUrl}
-                                        preload="auto"
-                                        onPlay={() => setIsCryPlaying(true)}
-                                        onPause={() => setIsCryPlaying(false)}
-                                        onEnded={() => setIsCryPlaying(false)}
-                                        onError={() => {
-                                            setIsCryPlaying(false);
-                                            setCryError('This Pokémon cry could not be loaded.');
-                                        }}
-                                    />
-                                    <CryButton
-                                        type="button"
-                                        onClick={playCry}
-                                        aria-label={`${isCryPlaying ? 'Replay' : 'Play'} ${prettyName}'s cry`}
-                                    >
-                                        <FaPlay aria-hidden="true" />
-                                        {isCryPlaying ? 'Replay cry' : 'Play cry'}
-                                    </CryButton>
-                                    {cryError && <CryMessage role="status">{cryError}</CryMessage>}
-                                </CryControls>
-                            )}
-                            <Row className="justify-content-center">
-                                <StatBar name={"HP"} value={parseInt(JSON.stringify(info.stats[0].base_stat!))}/>
-                            </Row>
-                            <Row className="justify-content-center mt-2">
-                                <StatBar name={"Attack"} value={parseInt(JSON.stringify(info.stats[1].base_stat))}/>
-                            </Row>
-                            <Row className="justify-content-center mt-2">
-                                <StatBar name={"Defense"} value={parseInt(JSON.stringify(info.stats[2].base_stat))}/>
-                            </Row>
-                            <Row className="justify-content-center mt-2">
-                                <StatBar name={"Sp. Attack"} value={parseInt(JSON.stringify(info.stats[3].base_stat))}/>
-                            </Row>
-                            <Row className="justify-content-center mt-2">
-                                <StatBar name={"Sp. Defense"} value={parseInt(JSON.stringify(info.stats[4].base_stat))}/>
-                            </Row>
-                            <Row className="justify-content-center mt-2">
-                                <StatBar name={"Speed"}  value={parseInt(JSON.stringify(info.stats[5].base_stat))}/>
-                            </Row>
-                            <Row className="justify-content-center mt-4">
-                                <Col>
-                                    <Row className="justify-content-center">
-                                        <Col xs="auto">
-                                            <StatTotal>
-                                                Total: {totalStats}
-                                            </StatTotal>
-                                        </Col>
-                                    </Row>
-                                </Col>
-                            </Row>
-                        </Col>
-                        <Col xs="auto" sm={12} md={6} className="mt-5 mt-md-0">
-                            <Row className="justify-content-center">
-                                <Col xs="auto">
-                                    {img}
-                                </Col>
-                            </Row>
-                        </Col>
+                    <Row className="justify-content-center align-items-stretch mt-2">
+                        <StatsColumn xs={12} sm={12} md={6}>
+                            <StatsBody>
+                                <PokemonTypes aria-label={`${prettyName} types`}>
+                                    <PokemonTypeCard $color={getTypeColor(type1)}>
+                                        <PokemonTypeIcon src={typeIcons[type1]} alt="" />
+                                        <PokemonTypeText>
+                                            <PokemonTypeRole>Primary type</PokemonTypeRole>
+                                            <PokemonTypeName>{type1}</PokemonTypeName>
+                                        </PokemonTypeText>
+                                    </PokemonTypeCard>
+                                    {type2 !== 'None' && type2 !== '' &&
+                                    <PokemonTypeCard $color={getTypeColor(type2)}>
+                                        <PokemonTypeIcon src={typeIcons[type2]} alt="" />
+                                        <PokemonTypeText>
+                                            <PokemonTypeRole>Secondary type</PokemonTypeRole>
+                                            <PokemonTypeName>{type2}</PokemonTypeName>
+                                        </PokemonTypeText>
+                                    </PokemonTypeCard>}
+                                </PokemonTypes>
+                                <Row className="justify-content-center">
+                                    <StatBar name={"HP"} value={parseInt(JSON.stringify(info.stats[0].base_stat!))}/>
+                                </Row>
+                                <Row className="justify-content-center mt-3">
+                                    <StatBar name={"Attack"} value={parseInt(JSON.stringify(info.stats[1].base_stat))}/>
+                                </Row>
+                                <Row className="justify-content-center mt-3">
+                                    <StatBar name={"Defense"} value={parseInt(JSON.stringify(info.stats[2].base_stat))}/>
+                                </Row>
+                                <Row className="justify-content-center mt-3">
+                                    <StatBar name={"Sp. Attack"} value={parseInt(JSON.stringify(info.stats[3].base_stat))}/>
+                                </Row>
+                                <Row className="justify-content-center mt-3">
+                                    <StatBar name={"Sp. Defense"} value={parseInt(JSON.stringify(info.stats[4].base_stat))}/>
+                                </Row>
+                                <Row className="justify-content-center mt-3">
+                                    <StatBar name={"Speed"}  value={parseInt(JSON.stringify(info.stats[5].base_stat))}/>
+                                </Row>
+                            </StatsBody>
+                            <ColumnFooter>
+                                <StatTotal>Total: {totalStats}</StatTotal>
+                            </ColumnFooter>
+                        </StatsColumn>
+                        <ArtworkColumn xs={12} md={6}>
+                            <ArtworkStack>
+                                <ArtworkBody>{img}</ArtworkBody>
+                                <ColumnFooter>
+                                    {cryUrl && (
+                                        <CryControls>
+                                            <HiddenAudio
+                                                ref={audioRef}
+                                                src={cryUrl}
+                                                preload="auto"
+                                                onPlay={() => setIsCryPlaying(true)}
+                                                onPause={() => setIsCryPlaying(false)}
+                                                onEnded={() => setIsCryPlaying(false)}
+                                                onError={() => {
+                                                    setIsCryPlaying(false);
+                                                    setCryError('This Pokémon cry could not be loaded.');
+                                                }}
+                                            />
+                                            <CryButton
+                                                type="button"
+                                                onClick={playCry}
+                                                aria-label={`${isCryPlaying ? 'Replay' : 'Play'} ${prettyName}'s cry`}
+                                            >
+                                                <FaPlay aria-hidden="true" />
+                                                {isCryPlaying ? 'Replay cry' : 'Play cry'}
+                                            </CryButton>
+                                            {cryError && <CryMessage role="status">{cryError}</CryMessage>}
+                                        </CryControls>
+                                    )}
+                                </ColumnFooter>
+                            </ArtworkStack>
+                        </ArtworkColumn>
                     </Row>
                 </Col>
             </Row>
