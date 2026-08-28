@@ -1,4 +1,5 @@
 import {
+  analyzeOffensiveCoverage,
   analyzeTeam,
   getDefensiveMultiplier,
   TeamPokemon,
@@ -43,6 +44,25 @@ describe('team defensive analysis', () => {
       weak: 2,
       resistant: 0,
       immune: 1,
+    });
+  });
+
+  test('summarizes offensive STAB coverage across unique team types', () => {
+    const coverage = analyzeOffensiveCoverage([
+      teamMember(6, 'Charizard', ['fire', 'flying']),
+      teamMember(59, 'Arcanine', ['fire']),
+      teamMember(25, 'Pikachu', ['electric']),
+    ]);
+
+    expect(coverage.find(item => item.type === 'Fire')).toEqual({
+      type: 'Fire',
+      members: 2,
+      strongAgainst: ['Bug', 'Grass', 'Ice', 'Steel'],
+    });
+    expect(coverage.find(item => item.type === 'Electric')).toEqual({
+      type: 'Electric',
+      members: 1,
+      strongAgainst: ['Flying', 'Water'],
     });
   });
 });

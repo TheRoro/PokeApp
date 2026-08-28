@@ -1,6 +1,7 @@
 import TypeChart from '../../Assets/typeChart';
 import TypeList from '../../Assets/typeList';
 import TypeMap from '../../Assets/typeMap';
+import { CompetitivePokemonSet } from './competitiveSet';
 
 export type TeamPokemon = {
   id: number;
@@ -8,6 +9,8 @@ export type TeamPokemon = {
   displayName: string;
   imageUrl: string;
   types: string[];
+  baseStats?: Record<string, number>;
+  competitiveSet?: CompetitivePokemonSet;
 };
 
 export type TeamTypeSummary = {
@@ -15,6 +18,12 @@ export type TeamTypeSummary = {
   weak: number;
   resistant: number;
   immune: number;
+};
+
+export type OffensiveTypeSummary = {
+  type: string;
+  members: number;
+  strongAgainst: string[];
 };
 
 function formatType(type: string): string {
@@ -55,4 +64,25 @@ export function analyzeTeam(team: TeamPokemon[]): TeamTypeSummary[] {
       immune: multipliers.filter(multiplier => multiplier === 0).length,
     };
   });
+}
+
+export function analyzeOffensiveCoverage(
+  team: TeamPokemon[],
+): OffensiveTypeSummary[] {
+  return TypeList.map(type => {
+    const attackIndex = TypeMap.get(type);
+    if (attackIndex === undefined) {
+      throw new Error(`Unknown attacking type: ${type}`);
+    }
+
+    return {
+      type,
+      members: team.filter(pokemon =>
+        pokemon.types.some(memberType => formatType(memberType) === type),
+      ).length,
+      strongAgainst: TypeList.filter(
+        (_, defenseIndex) => TypeChart[attackIndex][defenseIndex] > 2,
+      ),
+    };
+  }).filter(item => item.members > 0);
 }

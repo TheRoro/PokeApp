@@ -1,71 +1,130 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import axios from 'axios';
+import { MemoryRouter } from 'react-router-dom';
 import TeamBuilder from './TeamBuilder';
+import { fetchTeamPokemon } from './teamPokemonApi';
+import { TEAM_STORAGE_KEY } from './teamPersistence';
+import { TeamPokemon } from './teamAnalysis';
+import { generateBalancedTeam } from './balancedTeamGenerator';
+import { loadTeamFilterCatalog } from './teamFilterCatalog';
 
-vi.mock('axios', () => ({
-  default: {
-    get: vi.fn(),
-    isAxiosError: vi.fn(() => false),
-    isCancel: vi.fn(() => false),
-  },
+vi.mock('./teamPokemonApi', () => ({
+  fetchTeamPokemon: vi.fn(),
 }));
 
-const mockedGet = vi.mocked(axios.get);
+vi.mock('./balancedTeamGenerator', () => ({
+  generateBalancedTeam: vi.fn(),
+}));
 
-function pokemonResponse(
-  id: number,
-  name: string,
-  type: string,
-) {
+vi.mock('./teamFilterCatalog', () => ({
+  loadTeamFilterCatalog: vi.fn(),
+}));
+
+const mockedFetchTeamPokemon = vi.mocked(fetchTeamPokemon);
+const mockedGenerateBalancedTeam = vi.mocked(generateBalancedTeam);
+const mockedLoadTeamFilterCatalog = vi.mocked(loadTeamFilterCatalog);
+const writeText = vi.fn().mockResolvedValue(undefined);
+
+function pokemon(id: number, name: string, types: string[]): TeamPokemon {
   return {
-    data: {
-      id,
-      name,
-      sprites: {
-        front_default: `${name}-small.png`,
-        other: {
-          'official-artwork': {
-            front_default: `${name}.png`,
-          },
-        },
-      },
-      types: [{ type: { name: type } }],
-    },
+    id,
+    name,
+    displayName: name[0].toUpperCase() + name.slice(1),
+    imageUrl: `${name}.png`,
+    types,
   };
 }
 
-beforeEach(() => mockedGet.mockReset());
+function renderBuilder() {
+  return render(
+    <MemoryRouter>
+      <TeamBuilder />
+    </MemoryRouter>,
+  );
+}
 
-test('builds a unique team and reports defensive coverage', async () => {
+async function addPokemon(name: string) {
   const user = userEvent.setup();
-  mockedGet.mockResolvedValue(pokemonResponse(25, 'pikachu', 'electric'));
-  render(<TeamBuilder />);
-
-  await user.type(screen.getByLabelText('Pokémon 1'), 'Pikachu');
+  const input = screen.getByRole('combobox', { name: 'Team Pokémon search' });
+  await user.type(input, name);
   await user.keyboard('{Enter}');
+}
 
-  expect(await screen.findByRole('heading', { name: 'Pikachu' })).toBeInTheDocument();
-  expect(screen.getByRole('heading', { name: 'Defensive coverage' })).toBeInTheDocument();
+beforeEach(() => {
+  mockedFetchTeamPokemon.mockReset();
+  mockedGenerateBalancedTeam.mockReset();
+  mockedLoadTeamFilterCatalog.mockReset();
+  mockedLoadTeamFilterCatalog.mockImplementation(
+    () => new Promise(() => undefined),
+  );
+  localStorage.clear();
+  window.history.replaceState({}, '', '/teambuilder');
+  vi.stubGlobal('confirm', vi.fn(() => true));
+  Object.defineProperty(navigator, 'clipboard', {
+    configurable: true,
+    value: { writeText },
+  });
+  writeText.mockClear();
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+test('uses one picker, prevents duplicates, and updates team analysis', async () => {
+  mockedFetchTeamPokemon.mockResolvedValue(
+    pokemon(25, 'pikachu', ['electric']),
+  );
+  renderBuilder();
+
   expect(
-    screen.getByLabelText('Ground: 1 weak member'),
+    screen.getAllByRole('combobox', { name: 'Team Pokémon search' }),
+  ).toHaveLength(1);
+
+  await addPokemon('Pikachu');
+
+  expect(
+    await screen.findByRole('heading', { name: 'Pikachu' }),
   ).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Team coverage' })).toBeInTheDocument();
+  expect(screen.getByText('1 / 6')).toBeInTheDocument();
 
-  await user.type(screen.getByLabelText('Pokémon 2'), '25');
-  await user.keyboard('{Enter}');
-
+  await addPokemon('25');
   expect(
     await screen.findByText('Pikachu is already on your team.'),
   ).toBeInTheDocument();
   expect(screen.getAllByRole('heading', { name: 'Pikachu' })).toHaveLength(1);
 });
 
-test('selects autocomplete suggestions with the keyboard', async () => {
-  const user = userEvent.setup();
-  mockedGet.mockResolvedValue(pokemonResponse(5, 'charmeleon', 'fire'));
-  render(<TeamBuilder />);
+test('selects an empty slot and loads the new member into it', async () => {
+  mockedFetchTeamPokemon.mockResolvedValue(
+    pokemon(4, 'charmander', ['fire']),
+  );
+  renderBuilder();
 
-  const input = screen.getByLabelText('Pokémon 1');
+  await userEvent.click(
+    within(screen.getByLabelText('Team slot 3')).getByRole('button', {
+      name: 'Select team slot 3',
+    }),
+  );
+  expect(screen.getByText('Add to slot 3')).toBeInTheDocument();
+  await addPokemon('Charmander');
+
+  expect(
+    within(screen.getByLabelText('Team slot 3')).getByRole('heading', {
+      name: 'Charmander',
+    }),
+  ).toBeInTheDocument();
+});
+
+test('selects autocomplete suggestions with the keyboard', async () => {
+  mockedFetchTeamPokemon.mockResolvedValue(
+    pokemon(5, 'charmeleon', ['fire']),
+  );
+  renderBuilder();
+
+  const user = userEvent.setup();
+  const input = screen.getByRole('combobox', { name: 'Team Pokémon search' });
   await user.type(input, 'char');
   expect(screen.getByRole('listbox')).toBeInTheDocument();
   expect(screen.getByRole('option', { name: 'Charmander' })).toHaveAttribute(
@@ -78,161 +137,345 @@ test('selects autocomplete suggestions with the keyboard', async () => {
   expect(
     await screen.findByRole('heading', { name: 'Charmeleon' }),
   ).toBeInTheDocument();
-  expect(mockedGet).toHaveBeenCalledWith(
-    'https://pokeapi.co/api/v2/pokemon/charmeleon/',
-    expect.objectContaining({ signal: expect.any(AbortSignal) }),
+  expect(mockedFetchTeamPokemon).toHaveBeenCalledWith(
+    'Charmeleon',
+    expect.any(AbortSignal),
   );
 });
 
-test('compacts remaining Pokémon to the left after removal', async () => {
-  const user = userEvent.setup();
-  mockedGet
-    .mockResolvedValueOnce(pokemonResponse(25, 'pikachu', 'electric'))
-    .mockResolvedValueOnce(pokemonResponse(4, 'charmander', 'fire'));
-  render(<TeamBuilder />);
+test('reorders team members with accessible controls', async () => {
+  mockedFetchTeamPokemon
+    .mockResolvedValueOnce(pokemon(25, 'pikachu', ['electric']))
+    .mockResolvedValueOnce(pokemon(4, 'charmander', ['fire']));
+  renderBuilder();
 
-  await user.type(screen.getByLabelText('Pokémon 1'), 'Pikachu');
-  await user.keyboard('{Enter}');
-  expect(await screen.findByRole('heading', { name: 'Pikachu' })).toBeInTheDocument();
-  await user.type(screen.getByLabelText('Pokémon 2'), 'Charmander');
-  await user.keyboard('{Enter}');
+  await addPokemon('Pikachu');
+  await addPokemon('Charmander');
+  await userEvent.click(
+    screen.getByRole('button', { name: 'Move Charmander left' }),
+  );
+
   expect(
-    await screen.findByRole('heading', { name: 'Charmander' }),
+    within(screen.getByLabelText('Team slot 1')).getByRole('heading', {
+      name: 'Charmander',
+    }),
   ).toBeInTheDocument();
-
-  await user.click(screen.getAllByRole('button', { name: 'Remove' })[0]);
-
-  await waitFor(() =>
-    expect(screen.queryByRole('heading', { name: 'Pikachu' })).not.toBeInTheDocument(),
-  );
-  expect(screen.getByLabelText('Pokémon 1')).toHaveValue('Charmander');
-  expect(screen.getByLabelText('Pokémon 2')).toHaveValue('');
+  expect(
+    within(screen.getByLabelText('Team slot 2')).getByRole('heading', {
+      name: 'Pikachu',
+    }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText('Charmander moved to team slot 1.'),
+  ).toBeInTheDocument();
 });
 
-test('keeps concurrent additions when they finish out of order', async () => {
+test('removes a member without changing the remaining team order', async () => {
+  mockedFetchTeamPokemon
+    .mockResolvedValueOnce(pokemon(25, 'pikachu', ['electric']))
+    .mockResolvedValueOnce(pokemon(4, 'charmander', ['fire']));
+  renderBuilder();
+
   const user = userEvent.setup();
-  let resolvePikachu: (value: ReturnType<typeof pokemonResponse>) => void =
-    () => undefined;
-  let resolveCharmander: (value: ReturnType<typeof pokemonResponse>) => void =
-    () => undefined;
-  mockedGet
+  await user.selectOptions(
+    screen.getByRole('combobox', { name: 'Team generation mode' }),
+    'vgc',
+  );
+  await addPokemon('Pikachu');
+  await addPokemon('Charmander');
+  await user.click(
+    screen.getByRole('button', { name: 'Remove Pikachu' }),
+  );
+
+  expect(screen.getByRole('button', { name: /save team/i })).toBeDisabled();
+  expect(screen.getByRole('button', { name: /share team/i })).toBeDisabled();
+  expect(screen.getByRole('button', { name: /load saved/i })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Load full team' })).toBeDisabled();
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('heading', { name: 'Pikachu' }),
+    ).not.toBeInTheDocument(),
+  );
+  expect(
+    within(screen.getByLabelText('Team slot 2')).getByRole('heading', {
+      name: 'Charmander',
+    }),
+  ).toBeInTheDocument();
+});
+
+test('saves and shares the current team', async () => {
+  mockedFetchTeamPokemon.mockResolvedValue(
+    pokemon(25, 'pikachu', ['electric']),
+  );
+  renderBuilder();
+  await addPokemon('Pikachu');
+
+  await userEvent.click(screen.getByRole('button', { name: /save team/i }));
+  expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(
+    '[{"name":"pikachu"}]',
+  );
+
+  const clipboardWrite = vi.spyOn(navigator.clipboard, 'writeText');
+  await userEvent.click(screen.getByRole('button', { name: /share team/i }));
+  expect(clipboardWrite).toHaveBeenCalledWith(
+    expect.stringContaining('team=pikachu'),
+  );
+  expect(
+    screen.getByText('Share link copied to your clipboard.'),
+  ).toBeInTheDocument();
+});
+
+test('loads a team from a shared URL', async () => {
+  window.history.replaceState({}, '', '/teambuilder?team=pikachu,charizard');
+  mockedFetchTeamPokemon
+    .mockResolvedValueOnce(pokemon(25, 'pikachu', ['electric']))
+    .mockResolvedValueOnce(pokemon(6, 'charizard', ['fire', 'flying']));
+
+  renderBuilder();
+
+  expect(
+    await screen.findByRole('heading', { name: 'Pikachu' }),
+  ).toBeInTheDocument();
+  expect(
+    await screen.findByRole('heading', { name: 'Charizard' }),
+  ).toBeInTheDocument();
+});
+
+test('resets a populated team without a confirmation prompt', async () => {
+  mockedFetchTeamPokemon.mockResolvedValueOnce(
+    pokemon(25, 'pikachu', ['electric']),
+  );
+  renderBuilder();
+
+  await addPokemon('Pikachu');
+  await userEvent.click(screen.getByRole('button', { name: /reset team/i }));
+
+  expect(window.confirm).not.toHaveBeenCalled();
+  await waitFor(() =>
+    expect(
+      screen.queryByRole('heading', { name: 'Pikachu' }),
+    ).not.toBeInTheDocument(),
+  );
+  expect(screen.getByText('0 / 6')).toBeInTheDocument();
+});
+
+test('deduplicates aliases loaded from a shared URL by Pokémon id', async () => {
+  window.history.replaceState({}, '', '/teambuilder?team=pikachu,25');
+  mockedFetchTeamPokemon.mockResolvedValue(
+    pokemon(25, 'pikachu', ['electric']),
+  );
+
+  renderBuilder();
+
+  expect(
+    await screen.findByRole('heading', { name: 'Pikachu' }),
+  ).toBeInTheDocument();
+  expect(screen.getAllByRole('heading', { name: 'Pikachu' })).toHaveLength(1);
+  expect(screen.getByText(/1 duplicate omitted/)).toBeInTheDocument();
+});
+
+test('ignores a picker request that resolves after reset', async () => {
+  let resolveCharmander: (value: TeamPokemon) => void = () => undefined;
+  mockedFetchTeamPokemon
+    .mockResolvedValueOnce(pokemon(25, 'pikachu', ['electric']))
     .mockReturnValueOnce(
-      new Promise<ReturnType<typeof pokemonResponse>>(resolve => {
-        resolvePikachu = resolve;
-      }),
-    )
-    .mockReturnValueOnce(
-      new Promise<ReturnType<typeof pokemonResponse>>(resolve => {
+      new Promise<TeamPokemon>(resolve => {
         resolveCharmander = resolve;
       }),
     );
-  render(<TeamBuilder />);
+  renderBuilder();
 
-  await user.type(screen.getByLabelText('Pokémon 1'), '25');
-  await user.keyboard('{Enter}');
-  await user.type(screen.getByLabelText('Pokémon 2'), '4');
-  await user.keyboard('{Enter}');
-
-  await act(async () => {
-    resolveCharmander(pokemonResponse(4, 'charmander', 'fire'));
-  });
-  expect(
-    await screen.findByRole('heading', { name: 'Charmander' }),
-  ).toBeInTheDocument();
-  await act(async () => {
-    resolvePikachu(pokemonResponse(25, 'pikachu', 'electric'));
-  });
-
-  expect(await screen.findByRole('heading', { name: 'Pikachu' })).toBeInTheDocument();
-  expect(screen.getAllByRole('button', { name: 'Remove' })).toHaveLength(2);
-});
-
-test('completes multiple removals started during the same animation', async () => {
+  await addPokemon('Pikachu');
   const user = userEvent.setup();
-  mockedGet
-    .mockResolvedValueOnce(pokemonResponse(25, 'pikachu', 'electric'))
-    .mockResolvedValueOnce(pokemonResponse(4, 'charmander', 'fire'))
-    .mockResolvedValueOnce(pokemonResponse(7, 'squirtle', 'water'));
-  render(<TeamBuilder />);
-
-  for (const [slot, id] of [['Pokémon 1', '25'], ['Pokémon 2', '4'], ['Pokémon 3', '7']]) {
-    await user.type(screen.getByLabelText(slot), id);
-    await user.keyboard('{Enter}');
-  }
-  expect(await screen.findByRole('heading', { name: 'Squirtle' })).toBeInTheDocument();
-
-  const removeButtons = screen.getAllByRole('button', { name: 'Remove' });
-  await user.click(removeButtons[0]);
-  await user.click(removeButtons[1]);
-
-  await waitFor(() =>
-    expect(screen.getAllByRole('button', { name: 'Remove' })).toHaveLength(1),
+  await user.type(
+    screen.getByRole('combobox', { name: 'Team Pokémon search' }),
+    'Charmander',
   );
-  expect(screen.getByRole('heading', { name: 'Squirtle' })).toBeInTheDocument();
-  expect(screen.getByLabelText('Pokémon 1')).toHaveValue('Squirtle');
+  await user.keyboard('{Enter}');
+  await user.click(screen.getByRole('button', { name: /reset team/i }));
+
+  resolveCharmander(pokemon(4, 'charmander', ['fire']));
+  await waitFor(() => expect(screen.getByText('0 / 6')).toBeInTheDocument());
+  expect(
+    screen.queryByRole('heading', { name: 'Charmander' }),
+  ).not.toBeInTheDocument();
 });
 
-test('accepts new additions after reset interrupts a removal', async () => {
+test('generates a balanced team from a selected game Pokédex', async () => {
+  const generatedTeam = [
+    pokemon(3, 'venusaur', ['grass', 'poison']),
+    pokemon(6, 'charizard', ['fire', 'flying']),
+    pokemon(9, 'blastoise', ['water']),
+    pokemon(25, 'pikachu', ['electric']),
+    pokemon(65, 'alakazam', ['psychic']),
+    pokemon(68, 'machamp', ['fighting']),
+  ].map((member, index) => ({
+    ...member,
+    isLegendary: false,
+    isStarter: index === 0,
+    speciesName: member.name,
+  }));
+  mockedGenerateBalancedTeam.mockResolvedValue(generatedTeam);
+  mockedFetchTeamPokemon.mockResolvedValue(
+    pokemon(133, 'eevee', ['normal']),
+  );
+  mockedLoadTeamFilterCatalog.mockResolvedValue({
+    all: { label: 'All Pokémon', value: 'all' },
+    generations: [
+      { label: 'Generation I', value: 'generation-i' },
+    ],
+    regions: [{ label: 'Kanto', value: 'kanto' }],
+    games: [{ label: 'Red', value: 'red' }],
+  });
+  renderBuilder();
+
   const user = userEvent.setup();
-  mockedGet
-    .mockResolvedValueOnce(pokemonResponse(25, 'pikachu', 'electric'))
-    .mockResolvedValueOnce(pokemonResponse(4, 'charmander', 'fire'));
-  render(<TeamBuilder />);
-
-  await user.type(screen.getByLabelText('Pokémon 1'), '25');
-  await user.keyboard('{Enter}');
-  expect(await screen.findByRole('heading', { name: 'Pikachu' })).toBeInTheDocument();
-
-  await user.click(screen.getByRole('button', { name: 'Remove' }));
-  await user.click(screen.getByRole('button', { name: 'Reset team' }));
+  await addPokemon('Eevee');
+  await user.selectOptions(
+    screen.getByRole('combobox', { name: 'Random team scope' }),
+    'game',
+  );
   await waitFor(() =>
     expect(
-      screen.queryByRole('heading', { name: 'Defensive coverage' }),
-    ).not.toBeInTheDocument(),
+      screen.getByRole('combobox', { name: 'Random team selection' }),
+    ).toHaveValue('red'),
   );
+  await user.click(screen.getByRole('button', { name: 'Generate team' }));
 
-  await user.type(screen.getByLabelText('Pokémon 1'), '4');
-  await user.keyboard('{Enter}');
+  expect(window.confirm).not.toHaveBeenCalled();
+  expect(mockedGenerateBalancedTeam).toHaveBeenCalledWith(
+    expect.objectContaining({
+      mode: 'adventure',
+      scope: { kind: 'game', value: 'red' },
+      signal: expect.any(AbortSignal),
+    }),
+  );
   expect(
-    await screen.findByRole('heading', { name: 'Charmander' }),
+    await screen.findByRole('heading', { name: 'Venusaur' }),
+  ).toBeInTheDocument();
+  expect(screen.getByText('6 / 6')).toBeInTheDocument();
+});
+
+test('maps General and Competitive controls to their generation modes', async () => {
+  const generatedTeam = [
+    pokemon(59, 'arcanine', ['fire']),
+    pokemon(121, 'starmie', ['water', 'psychic']),
+    pokemon(68, 'machamp', ['fighting']),
+    pokemon(65, 'alakazam', ['psychic']),
+    pokemon(76, 'golem', ['rock', 'ground']),
+    pokemon(149, 'dragonite', ['dragon', 'flying']),
+  ].map(member => ({
+    ...member,
+    isLegendary: false,
+    isStarter: false,
+    speciesName: member.name,
+  }));
+  mockedGenerateBalancedTeam.mockResolvedValue(generatedTeam);
+  mockedLoadTeamFilterCatalog.mockResolvedValue({
+    all: { label: 'All Pokémon', value: 'all' },
+    generations: [
+      { label: 'Generation I', value: 'generation-i' },
+    ],
+    regions: [{ label: 'Kanto', value: 'kanto' }],
+    games: [{ label: 'Red', value: 'red' }],
+  });
+  renderBuilder();
+
+  const user = userEvent.setup();
+  await user.selectOptions(
+    screen.getByRole('combobox', { name: 'Team generation mode' }),
+    'general',
+  );
+  expect(
+    screen.queryByRole('combobox', { name: 'Historical VGC team' }),
+  ).not.toBeInTheDocument();
+  await user.selectOptions(
+    screen.getByRole('combobox', { name: 'Random team scope' }),
+    'generation',
+  );
+  await waitFor(() =>
+    expect(
+      screen.getByRole('combobox', { name: 'Random team selection' }),
+    ).toHaveValue('generation-i'),
+  );
+  await user.click(screen.getByRole('button', { name: 'Generate team' }));
+
+  expect(mockedGenerateBalancedTeam).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      mode: 'general',
+      scope: { kind: 'generation', value: 'generation-i' },
+    }),
+  );
+  expect(
+    await screen.findByText('Balanced team generated. Generate again for a new result.'),
+  ).toBeInTheDocument();
+
+  await user.selectOptions(
+    screen.getByRole('combobox', { name: 'Team generation mode' }),
+    'vgc',
+  );
+  expect(
+    await screen.findByRole('combobox', { name: 'Historical VGC team' }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(/Exact regulation legality is not guaranteed/i),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('combobox', { name: 'Random team scope' }),
+  ).toBeDisabled();
+  await user.click(screen.getByRole('button', { name: 'Generate team' }));
+
+  expect(mockedGenerateBalancedTeam).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      mode: 'vgc',
+      scope: { kind: 'all' },
+    }),
+  );
+  expect(
+    await screen.findByText(/not a current regulation legality check/i),
   ).toBeInTheDocument();
 });
 
-test('reset clears drafts and ignores searches that finish afterward', async () => {
-  const user = userEvent.setup();
-  let resolveCharmander: (value: ReturnType<typeof pokemonResponse>) => void =
-    () => undefined;
-  const pendingCharmander = new Promise<ReturnType<typeof pokemonResponse>>(
-    resolve => {
-      resolveCharmander = resolve;
-    },
-  );
-  mockedGet
-    .mockResolvedValueOnce(pokemonResponse(25, 'pikachu', 'electric'))
-    .mockReturnValueOnce(pendingCharmander);
-  render(<TeamBuilder />);
-
-  await user.type(screen.getByLabelText('Pokémon 1'), 'Pikachu');
-  await user.keyboard('{Enter}');
-  expect(await screen.findByRole('heading', { name: 'Pikachu' })).toBeInTheDocument();
-
-  await user.type(screen.getByLabelText('Pokémon 2'), 'Charmander');
-  await user.keyboard('{Enter}');
-  await user.click(screen.getByRole('button', { name: 'Reset team' }));
-
-  await act(async () => {
-    resolveCharmander(pokemonResponse(4, 'charmander', 'fire'));
-    await pendingCharmander;
+test('loads a historical VGC team with complete competitive sets', async () => {
+  let pokemonId = 1000;
+  mockedFetchTeamPokemon.mockImplementation(async name => {
+    pokemonId += 1;
+    return pokemon(pokemonId, name, ['electric']);
   });
+  renderBuilder();
 
-  expect(screen.queryByRole('heading', { name: 'Charmander' })).not.toBeInTheDocument();
-  await waitFor(() =>
-    expect(
-      screen.queryByRole('heading', { name: 'Defensive coverage' }),
-    ).not.toBeInTheDocument(),
+  expect(
+    screen.queryByRole('button', { name: 'Load full team' }),
+  ).not.toBeInTheDocument();
+  await userEvent.selectOptions(
+    screen.getByRole('combobox', { name: 'Team generation mode' }),
+    'vgc',
+  );
+  await userEvent.selectOptions(
+    await screen.findByRole('combobox', { name: 'Historical VGC team' }),
+    'luca-ceribelli-worlds-2024',
+  );
+  await userEvent.click(
+    screen.getByRole('button', { name: 'Load full team' }),
+  );
+
+  expect(mockedFetchTeamPokemon).toHaveBeenCalledTimes(6);
+  expect(mockedFetchTeamPokemon).toHaveBeenCalledWith(
+    'ogerpon-hearthflame-mask',
+    expect.any(AbortSignal),
   );
   expect(
-    screen.getAllByPlaceholderText('Name or Pokédex #').every(input =>
-      (input as HTMLInputElement).value === ''),
-  ).toBe(true);
+    await screen.findByRole('heading', { name: 'Miraidon' }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText('Choice Specs · Hadron Engine'),
+  ).toBeInTheDocument();
+
+  await userEvent.click(screen.getByText('Choice Specs · Hadron Engine'));
+  expect(screen.getByText('Electro Drift')).toBeInTheDocument();
+  expect(screen.getByText('44 HP / 4 Def / 244 SpA / 12 SpD / 204 Spe')).toBeInTheDocument();
+  expect(
+    screen.getByText("Luca Ceribelli's 2024 VGC team loaded."),
+  ).toBeInTheDocument();
+  expect(window.confirm).not.toHaveBeenCalled();
 });
