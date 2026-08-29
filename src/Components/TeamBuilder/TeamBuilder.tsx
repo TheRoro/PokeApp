@@ -8,8 +8,9 @@ import {
 import Pokemon from './Pokemon';
 import TeamPicker from './TeamPicker';
 import RandomTeamGenerator from './RandomTeamGenerator';
+import type { TeamGeneratorContext } from './RandomTeamGenerator';
 import ShowdownTeamTransfer from './ShowdownTeamTransfer';
-import { TeamGeneratorMode } from './balancedTeamGenerator';
+import type { TeamGeneratorMode } from './balancedTeamGenerator';
 import {
   analyzeOffensiveCoverage,
   analyzeTeam,
@@ -31,14 +32,10 @@ import {
   SummaryBadge,
   SummaryCount,
   SummaryIcon,
-  SummaryLabel,
   SummaryMetric,
-  SummaryStat,
   SummaryText,
   SummaryType,
-  SummaryValue,
   TeamGrid,
-  TeamSummaryBar,
   TypeList,
   UtilityButton,
 } from './TeamBuilderStyles';
@@ -54,6 +51,11 @@ import {
   TEAM_STORAGE_KEY,
 } from './teamPersistence';
 import type { VgcTeamPreset } from './vgcTeamPresets';
+import {
+  ADVENTURE_GAME_NAMES,
+  adventureRegionForGame,
+} from './adventureStarters';
+import { toPokemonApiSlug } from '../Tools/pokemonNames';
 
 const VgcTeamPresetLoader = React.lazy(
   () => import('./VgcTeamPresetLoader'),
@@ -64,8 +66,38 @@ type TeamSlot = {
   pokemon: TeamPokemon | null;
 };
 
+type AdventureScope = Extract<
+  TeamGeneratorContext['scope'],
+  { kind: 'game' | 'region' }
+>;
+
 const createEmptyTeam = (): TeamSlot[] =>
   Array.from({ length: 6 }, (_, id) => ({ id, pokemon: null }));
+
+function inferAdventureScope(team: readonly TeamPokemon[]): AdventureScope | null {
+  const versions = [
+    ...new Set(
+      team
+        .map(member => member.adventureInfo?.version)
+        .filter((version): version is string => Boolean(version))
+        .map(toPokemonApiSlug)
+        .filter(version => ADVENTURE_GAME_NAMES.has(version)),
+    ),
+  ];
+  if (versions.length === 0) return null;
+  if (versions.length === 1) return { kind: 'game', value: versions[0] };
+
+  const regions = [
+    ...new Set(
+      versions
+        .map(adventureRegionForGame)
+        .filter((region): region is string => Boolean(region)),
+    ),
+  ];
+  return regions.length === 1
+    ? { kind: 'region', value: regions[0] }
+    : null;
+}
 
 type SummaryListProps = {
   count: (item: TeamTypeSummary) => number;
@@ -116,10 +148,17 @@ const TeamBuilder: React.FC = () => {
   const [status, setStatus] = useState('');
   const [hydrating, setHydrating] = useState(true);
   const [loadingTeam, setLoadingTeam] = useState(false);
+  const [addingPokemon, setAddingPokemon] = useState(false);
   const [generatingTeam, setGeneratingTeam] = useState(false);
   const [generatorMode, setGeneratorMode] =
     useState<TeamGeneratorMode>('adventure');
   const [teamRevision, setTeamRevision] = useState(0);
+  const [generatorContext, setGeneratorContext] =
+    useState<TeamGeneratorContext>({
+      mode: 'adventure',
+      scope: { kind: 'game', value: 'red' },
+    });
+  const pickerInputRef = useRef<HTMLInputElement>(null);
   const slotsRef = useRef(slots);
   const resettingRef = useRef(false);
   const removingSlotIdsRef = useRef<Set<number>>(new Set());
@@ -247,6 +286,7 @@ const TeamBuilder: React.FC = () => {
       const members = await Promise.all(
         entries.map(async entry => ({
           ...(await fetchTeamPokemon(entry.name, controller.signal)),
+          adventureInfo: entry.adventureInfo,
           competitiveSet: entry.competitiveSet,
         })),
       );
@@ -296,7 +336,10 @@ const TeamBuilder: React.FC = () => {
     window.history.replaceState(window.history.state, '', nextUrl);
   }, [hydrating, team]);
 
-  const setPokemon = (pokemon: TeamPokemon): string | null => {
+  const setPokemon = async (
+    pokemon: TeamPokemon,
+    signal: AbortSignal,
+  ): Promise<string | null> => {
     if (resettingRef.current) return null;
     if (slotsRef.current.some(slot => slot.pokemon?.id === pokemon.id)) {
       return `${pokemon.displayName} is already on your team.`;
@@ -307,13 +350,44 @@ const TeamBuilder: React.FC = () => {
       slotsRef.current.find(slot => !slot.pokemon);
     if (!targetSlot) return 'Your team already has six Pokémon.';
 
+    let teamMember = pokemon;
+    if (
+      generatorContext.mode === 'adventure' &&
+      (generatorContext.scope.kind === 'game' ||
+        generatorContext.scope.kind === 'region')
+    ) {
+      const adventureScope =
+        inferAdventureScope(
+          slotsRef.current
+            .map(slot => slot.pokemon)
+            .filter((member): member is TeamPokemon => member !== null),
+        ) ?? generatorContext.scope;
+      if (!adventureScope.value.trim()) {
+        return 'Choose an Adventure game or region before adding a Pokémon.';
+      }
+      setStatus(`Loading Adventure details for ${pokemon.displayName}…`);
+      const { loadAdventureEncounterInfo } = await import(
+        './adventureEncounter'
+      );
+      const adventureInfo = await loadAdventureEncounterInfo({
+        pokemonName: pokemon.name,
+        scope: adventureScope,
+        signal,
+      });
+      if (signal.aborted) return null;
+      teamMember = { ...pokemon, adventureInfo };
+    }
+
+    if (slotsRef.current.some(slot => slot.pokemon?.id === pokemon.id)) {
+      return `${pokemon.displayName} is already on your team.`;
+    }
     const nextSlots = slotsRef.current.map(slot =>
-      slot.id === targetSlot.id ? { ...slot, pokemon } : slot,
+      slot.id === targetSlot.id ? { ...slot, pokemon: teamMember } : slot,
     );
     commitSlots(nextSlots);
     setSelectedSlotId(nextSlots.find(slot => !slot.pokemon)?.id ?? 0);
     setStatus(`${pokemon.displayName} joined the team.`);
-    animateAddition(pokemon.id);
+    animateAddition(teamMember.id);
     return null;
   };
 
@@ -414,15 +488,6 @@ const TeamBuilder: React.FC = () => {
     );
   };
 
-  const confirmRemovePokemon = (slot: TeamSlot) => {
-    if (
-      slot.pokemon &&
-      window.confirm(`Remove ${slot.pokemon.displayName} from the team?`)
-    ) {
-      removePokemon(slot.id);
-    }
-  };
-
   const shareTeam = async () => {
     const url = window.location.href;
     try {
@@ -441,32 +506,20 @@ const TeamBuilder: React.FC = () => {
         description="Build, balance, save, and share a six-Pokémon team."
       />
 
-      <TeamSummaryBar aria-label="Team summary">
-        <SummaryStat>
-          <SummaryValue>{team.length} / 6</SummaryValue>
-          <SummaryLabel>Team members</SummaryLabel>
-        </SummaryStat>
-        <SummaryStat>
-          <SummaryValue>{sharedWeaknesses[0]?.type ?? 'None yet'}</SummaryValue>
-          <SummaryLabel>Top shared weakness</SummaryLabel>
-        </SummaryStat>
-        <SummaryStat>
-          <SummaryValue>{uncoveredThreats.length}</SummaryValue>
-          <SummaryLabel>Uncovered threats</SummaryLabel>
-        </SummaryStat>
-        <SummaryStat>
-          <SummaryValue>{offensiveCoverage.length}</SummaryValue>
-          <SummaryLabel>STAB attack types</SummaryLabel>
-        </SummaryStat>
-      </TeamSummaryBar>
-
       <RandomTeamGenerator
-        disabled={loadingTeam || resetting || removingSlotIds.size > 0}
+        disabled={
+          addingPokemon ||
+          loadingTeam ||
+          resetting ||
+          removingSlotIds.size > 0
+        }
+        teamSize={team.length}
         teamRevision={teamRevision}
         onBusyChange={busy => {
           setGeneratingTeam(busy);
           if (busy) setPickerGeneration(current => current + 1);
         }}
+        onContextChange={setGeneratorContext}
         onGenerated={generatedTeam => {
           replaceTeam(generatedTeam);
           setStatus('A balanced six-Pokémon team was generated.');
@@ -496,10 +549,14 @@ const TeamBuilder: React.FC = () => {
           resetting ||
           team.length === 6
         }
+        inputRef={pickerInputRef}
         key={pickerGeneration}
+        onBusyChange={setAddingPokemon}
         slotNumber={
           slots.findIndex(slot => slot.id === selectedSlotId) + 1 || team.length + 1
         }
+        teamComplete={team.length === 6}
+        teamEmpty={team.length === 0}
         onLoaded={setPokemon}
       />
 
@@ -513,7 +570,9 @@ const TeamBuilder: React.FC = () => {
             canMoveRight={
               slot.pokemon !== null && index < slots.length - 1
             }
-            disabled={loadingTeam || generatingTeam || resetting}
+            disabled={
+              addingPokemon || loadingTeam || generatingTeam || resetting
+            }
             exiting={
               slot.pokemon !== null &&
               (resetting || removingSlotIds.has(slot.id))
@@ -524,8 +583,11 @@ const TeamBuilder: React.FC = () => {
             selected={slot.pokemon === null && slot.id === selectedSlotId}
             onMoveLeft={() => movePokemon(slot.id, -1)}
             onMoveRight={() => movePokemon(slot.id, 1)}
-            onRemove={() => confirmRemovePokemon(slot)}
-            onSelect={() => setSelectedSlotId(slot.id)}
+            onRemove={() => removePokemon(slot.id)}
+            onSelect={() => {
+              setSelectedSlotId(slot.id);
+              pickerInputRef.current?.focus();
+            }}
           />
         ))}
       </TeamGrid>
@@ -533,6 +595,7 @@ const TeamBuilder: React.FC = () => {
       <ShowdownTeamTransfer
         disabled={
           hydrating ||
+          addingPokemon ||
           loadingTeam ||
           generatingTeam ||
           resetting ||
@@ -547,6 +610,7 @@ const TeamBuilder: React.FC = () => {
           type="button"
           disabled={
             team.length === 0 ||
+            addingPokemon ||
             loadingTeam ||
             generatingTeam ||
             resetting ||
@@ -560,6 +624,7 @@ const TeamBuilder: React.FC = () => {
           type="button"
           disabled={
             team.length === 0 ||
+            addingPokemon ||
             loadingTeam ||
             generatingTeam ||
             resetting ||
@@ -572,6 +637,7 @@ const TeamBuilder: React.FC = () => {
         <UtilityButton
           type="button"
           disabled={
+            addingPokemon ||
             loadingTeam ||
             generatingTeam ||
             resetting ||
@@ -585,7 +651,10 @@ const TeamBuilder: React.FC = () => {
           $danger
           type="button"
           disabled={
-            team.length === 0 || resetting || loadingTeam || generatingTeam
+            team.length === 0 ||
+            resetting ||
+            loadingTeam ||
+            generatingTeam
           }
           onClick={resetTeam}
         >

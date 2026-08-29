@@ -5,6 +5,11 @@ import {
   finalStarterSpecies,
 } from './adventureStarters';
 import {
+  buildAdventureEncounterInfo,
+  EncounterResponse,
+  EvolutionNode,
+} from './adventureEncounter';
+import {
   analyzeOffensiveCoverage,
   analyzeTeam,
   TeamPokemon,
@@ -103,20 +108,9 @@ type PokemonSpeciesResponse = {
   }>;
 };
 
-type EvolutionNode = {
-  evolves_to: EvolutionNode[];
-  species: NamedApiResource;
-};
-
 type EvolutionChainResponse = {
   chain: EvolutionNode;
 };
-
-type EncounterResponse = Array<{
-  version_details: Array<{
-    version: NamedApiResource;
-  }>;
-}>;
 
 type GameAvailability = {
   selectedVersion: string;
@@ -409,6 +403,7 @@ async function loadDefaultVariety(
   species: NamedApiResource,
   apiClient: PokeApiClient,
   evolutionChains: Map<string, Promise<EvolutionChainResponse>>,
+  chainsBySpecies: Map<string, EvolutionNode>,
   encounterCache: Map<string, Promise<EncounterResponse>>,
   mode: TeamGeneratorMode,
   allowedStarterRoots: ReadonlySet<string>,
@@ -435,6 +430,7 @@ async function loadDefaultVariety(
     evolutionChains.set(speciesData.evolution_chain.url, evolutionChain);
   }
   const chain = await evolutionChain;
+  chainsBySpecies.set(speciesData.name, chain.chain);
   throwIfAborted(signal);
   if (!isFinalEvolution(chain.chain, speciesData.name)) return null;
   const isStarter = allowedStarterRoots.has(chain.chain.species.name);
@@ -761,6 +757,7 @@ export async function generateBalancedTeam(
   })();
   const failures: unknown[] = [];
   const evolutionChains = new Map<string, Promise<EvolutionChainResponse>>();
+  const chainsBySpecies = new Map<string, EvolutionNode>();
   const encounterCache = new Map<string, Promise<EncounterResponse>>();
   const loaded = await mapWithConcurrency(
     sampledSpecies,
@@ -771,6 +768,7 @@ export async function generateBalancedTeam(
           species,
           apiClient,
           evolutionChains,
+          chainsBySpecies,
           encounterCache,
           mode,
           allowedStarterRoots,
@@ -797,5 +795,37 @@ export async function generateBalancedTeam(
     );
   }
 
-  return selectBalancedTeam(candidates, mode, random, selectionWindow);
+  const team = selectBalancedTeam(candidates, mode, random, selectionWindow);
+  if (
+    mode !== 'adventure' ||
+    (scope.kind !== 'game' && scope.kind !== 'region')
+  ) {
+    return team;
+  }
+
+  return mapWithConcurrency(
+    team,
+    concurrency,
+    async member => {
+      const chain = chainsBySpecies.get(member.speciesName);
+      if (!chain) {
+        throw new BalancedTeamGenerationError(
+          `Evolution information could not be loaded for ${member.displayName}.`,
+        );
+      }
+      return {
+        ...member,
+        adventureInfo: await buildAdventureEncounterInfo({
+          apiClient,
+          chain,
+          encounterCache,
+          isStarter: member.isStarter,
+          scope,
+          signal,
+          targetSpecies: member.speciesName,
+        }),
+      };
+    },
+    signal,
+  );
 }

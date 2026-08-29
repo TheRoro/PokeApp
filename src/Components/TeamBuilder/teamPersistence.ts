@@ -1,5 +1,9 @@
 import { toPokemonApiSlug } from '../Tools/pokemonNames';
 import {
+  AdventureEncounterInfo,
+  normalizeAdventureEncounterInfo,
+} from './adventureEncounterInfo';
+import {
   CompetitivePokemonSet,
   normalizeCompetitiveSet,
 } from './competitiveSet';
@@ -8,6 +12,7 @@ import { TeamPokemon } from './teamAnalysis';
 export const TEAM_STORAGE_KEY = 'pokeapp-team';
 
 export type PersistedTeamMember = {
+  adventureInfo?: AdventureEncounterInfo;
   competitiveSet?: CompetitivePokemonSet;
   name: string;
 };
@@ -46,7 +51,17 @@ function normalizePersistedMembers(
             (value as Record<string, unknown>).competitiveSet,
           )
         : undefined;
-    members.push({ name, competitiveSet });
+    const adventureInfo =
+      typeof value === 'object' && value !== null
+        ? normalizeAdventureEncounterInfo(
+            (value as Record<string, unknown>).adventureInfo,
+          )
+        : undefined;
+    members.push({
+      name,
+      ...(adventureInfo ? { adventureInfo } : {}),
+      ...(competitiveSet ? { competitiveSet } : {}),
+    });
     if (members.length === 6) break;
   }
 
@@ -58,27 +73,33 @@ export function parseTeamSearch(search: string): PersistedTeamMember[] {
   const members = normalizePersistedMembers(
     (params.get('team') ?? '').split(','),
   );
-  const encodedSets = params.get('sets');
-  if (!encodedSets) return members;
 
-  try {
-    const parsedSets = JSON.parse(encodedSets);
-    if (
-      !parsedSets ||
-      typeof parsedSets !== 'object' ||
-      Array.isArray(parsedSets)
-    ) {
-      return members;
+  const parseRecord = (key: string): Record<string, unknown> => {
+    const encoded = params.get(key);
+    if (!encoded) return {};
+    try {
+      const value = JSON.parse(encoded);
+      return value && typeof value === 'object' && !Array.isArray(value)
+        ? (value as Record<string, unknown>)
+        : {};
+    } catch {
+      return {};
     }
-    return members.map(member => ({
+  };
+  const parsedSets = parseRecord('sets');
+  const parsedAdventure = parseRecord('adventure');
+
+  return members.map(member => {
+    const adventureInfo = normalizeAdventureEncounterInfo(
+      parsedAdventure[member.name],
+    );
+    const competitiveSet = normalizeCompetitiveSet(parsedSets[member.name]);
+    return {
       ...member,
-      competitiveSet: normalizeCompetitiveSet(
-        (parsedSets as Record<string, unknown>)[member.name],
-      ),
-    }));
-  } catch {
-    return members;
-  }
+      ...(adventureInfo ? { adventureInfo } : {}),
+      ...(competitiveSet ? { competitiveSet } : {}),
+    };
+  });
 }
 
 export function createTeamSearch(team: readonly TeamPokemon[]): string {
@@ -86,6 +107,7 @@ export function createTeamSearch(team: readonly TeamPokemon[]): string {
   const members = normalizePersistedMembers(
     team.map(member => ({
       name: member.name,
+      adventureInfo: member.adventureInfo,
       competitiveSet: member.competitiveSet,
     })),
   );
@@ -102,6 +124,16 @@ export function createTeamSearch(team: readonly TeamPokemon[]): string {
   if (Object.keys(sets).length > 0) {
     params.set('sets', JSON.stringify(sets));
   }
+  const adventure = Object.fromEntries(
+    members.flatMap(member =>
+      member.adventureInfo
+        ? [[member.name, member.adventureInfo] as const]
+        : [],
+    ),
+  );
+  if (Object.keys(adventure).length > 0) {
+    params.set('adventure', JSON.stringify(adventure));
+  }
   const query = params.toString();
   return query ? `?${query}` : '';
 }
@@ -111,6 +143,7 @@ export function serializeTeam(team: readonly TeamPokemon[]): string {
     normalizePersistedMembers(
       team.map(member => ({
         name: member.name,
+        adventureInfo: member.adventureInfo,
         competitiveSet: member.competitiveSet,
       })),
     ),

@@ -22,6 +22,12 @@ const removePokemon = keyframes`
   }
 `;
 
+const spin = keyframes`
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
 export const TeamGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -42,45 +48,6 @@ export const TeamGrid = styled.div`
   @media (max-width: 560px) {
     grid-template-columns: 1fr;
   }
-`;
-
-export const TeamSummaryBar = styled.section`
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.65rem;
-  max-width: 1180px;
-  margin: 0 auto 1rem;
-
-  @media (max-width: 700px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-`;
-
-export const SummaryStat = styled.div`
-  min-width: 0;
-  padding: 0.7rem 0.85rem;
-  background: #303339;
-  border: 1px solid #4a4e55;
-  border-radius: 14px;
-`;
-
-export const SummaryValue = styled.strong`
-  display: block;
-  overflow: hidden;
-  color: var(--text-primary);
-  font-size: 1rem;
-  font-weight: 850;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-export const SummaryLabel = styled.span`
-  display: block;
-  color: var(--text-secondary);
-  font-size: 0.68rem;
-  font-weight: 750;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
 `;
 
 export const BuilderToolbar = styled.div`
@@ -225,32 +192,109 @@ export const ShowdownMessage = styled.p<{ $error: boolean }>`
 `;
 
 export const GeneratorPanel = styled.section`
+  position: relative;
   max-width: 1180px;
   margin: 0 auto 1.25rem;
-  padding: 1rem;
-  background: #303339;
-  border: 1px solid #4a4e55;
+  padding: 1.1rem 1.15rem 1rem;
+  overflow: hidden;
+  background: #252b36;
+  border: 1px solid #505b70;
   border-radius: 18px;
-  box-shadow: 0 4px 0 #1f2226;
+  box-shadow:
+    0 4px 0 #171b22,
+    0 14px 30px rgba(0, 0, 0, 0.2);
+
+  &::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    content: '';
+    background: #64738c;
+  }
 `;
 
 export const GeneratorHeader = styled.div`
-  margin-bottom: 0.8rem;
+  position: relative;
+  display: flex;
+  margin-bottom: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  @media (max-width: 560px) {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+`;
+
+export const GeneratorTitle = styled.div`
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+
+  > span {
+    min-width: 0;
+  }
+
+  strong,
+  small {
+    display: block;
+  }
 
   strong {
-    display: block;
     color: var(--text-primary);
-    font-size: 1rem;
+    font-size: 1.08rem;
     font-weight: 850;
   }
 
-  span {
-    color: var(--text-secondary);
+  small {
+    color: #c2c8d3;
     font-size: 0.78rem;
+    line-height: 1.45;
+  }
+`;
+
+export const GeneratorIcon = styled.span`
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  color: #f4f5f7;
+  background: #364052;
+  border: 1px solid #687994;
+  border-radius: 13px;
+  box-shadow: 0 4px 0 #1b2029;
+`;
+
+export const GeneratorBadge = styled.span`
+  display: flex;
+  min-width: 92px;
+  padding: 0.45rem 0.65rem;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #c0c8d5;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  background: #2d3441;
+  border: 1px solid #59667d;
+  border-radius: 12px;
+
+  strong {
+    color: #fffaf1;
+    font-size: 0.9rem;
+    letter-spacing: normal;
   }
 `;
 
 export const GeneratorControls = styled.div`
+  position: relative;
   display: grid;
   grid-template-columns:
     minmax(135px, 0.65fr)
@@ -270,7 +314,7 @@ export const ControlField = styled.label`
   min-width: 0;
   flex-direction: column;
   gap: 0.3rem;
-  color: var(--text-secondary);
+  color: #c7ceda;
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.07em;
@@ -282,14 +326,18 @@ export const ControlSelect = styled.select`
   min-height: 44px;
   padding: 0.55rem 2rem 0.55rem 0.7rem;
   color: var(--text-primary);
-  background: #2a2d32;
-  border: 2px solid #4a4e55;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: none;
+  background: #2d3441;
+  border: 2px solid #59667d;
   border-radius: 14px;
 
   &:focus-visible {
-    outline: 3px solid rgba(215, 45, 56, 0.14);
+    outline: 3px solid rgba(128, 151, 190, 0.22);
     outline-offset: 1px;
-    border-color: #d72d38;
+    border-color: #8097be;
   }
 `;
 
@@ -300,10 +348,26 @@ export const PresetPanel = styled.section`
   max-width: 1180px;
   margin: 0 auto 1.25rem;
   padding: 1rem;
-  background: #303339;
-  border: 1px solid #4a4e55;
+  background: #25353b;
+  border: 1px solid #425e66;
   border-radius: 18px;
-  box-shadow: 0 4px 0 #1f2226;
+  box-shadow:
+    0 4px 0 #172327,
+    0 14px 28px rgba(0, 0, 0, 0.18);
+
+  ${ControlField} {
+    color: #bdcdd0;
+  }
+
+  ${ControlSelect} {
+    background: #1f2d32;
+    border-color: #405b63;
+
+    &:focus-visible {
+      outline-color: rgba(115, 162, 170, 0.22);
+      border-color: #73a2aa;
+    }
+  }
 
   > div:first-child {
     align-self: center;
@@ -321,7 +385,7 @@ export const PresetPanel = styled.section`
   }
 
   > div:first-child span {
-    color: var(--text-secondary);
+    color: #bdcdd0;
     font-size: 0.78rem;
     line-height: 1.45;
   }
@@ -349,8 +413,8 @@ export const PresetMeta = styled.div`
 export const PresetMetaItem = styled.div`
   min-width: 0;
   padding: 0.6rem 0.7rem;
-  background: #292c31;
-  border: 1px solid #454950;
+  background: #1f2d32;
+  border: 1px solid #405b63;
   border-radius: 12px;
 
   span,
@@ -360,7 +424,7 @@ export const PresetMetaItem = styled.div`
 
   span {
     margin-bottom: 0.15rem;
-    color: var(--text-secondary);
+    color: #b9c9cd;
     font-size: 0.62rem;
     font-weight: 800;
     letter-spacing: 0.06em;
@@ -423,11 +487,11 @@ export const SlotCard = styled.section<{
   min-height: 292px;
   padding: 1rem;
   overflow: hidden;
-  border: 1px solid ${({ $selected }) => ($selected ? '#d72d38' : '#4a4e55')};
+  border: 1px solid ${({ $selected }) => ($selected ? '#7d848e' : '#4c525b')};
   border-radius: 18px;
-  background: #303339;
+  background: #1f2227;
   box-shadow:
-    0 4px 0 #1f2226,
+    0 4px 0 #15171a,
     0 14px 28px rgba(0, 0, 0, 0.16);
 
   &::before {
@@ -437,7 +501,7 @@ export const SlotCard = styled.section<{
     width: ${({ $selected }) => ($selected ? '100%' : '58px')};
     height: 5px;
     content: '';
-    background: #d72d38;
+    background: #626973;
     border-radius: 0 0 8px 0;
     transition: width 0.2s ease;
   }
@@ -461,28 +525,93 @@ export const SlotCard = styled.section<{
 export const SlotLabel = styled.span`
   display: block;
   margin-bottom: 0.4rem;
-  color: var(--text-secondary);
+  color: #c2c6cd;
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 `;
 
-export const PickerPanel = styled.section`
+export const PickerPanel = styled.section<{ $complete: boolean }>`
   display: grid;
-  grid-template-columns: minmax(190px, 0.7fr) minmax(320px, 1.3fr);
+  grid-template-columns: ${({ $complete }) =>
+    $complete ? 'minmax(0, 1fr) auto' : 'minmax(190px, 0.7fr) minmax(320px, 1.3fr)'};
   gap: 1rem;
   max-width: 1180px;
   margin: 0 auto 1.25rem;
-  padding: 1rem;
-  align-items: end;
-  background: #303339;
-  border: 1px solid #4a4e55;
+  padding: ${({ $complete }) => ($complete ? '0.8rem 1rem' : '1rem')};
+  align-items: center;
+  background: ${({ $complete }) => ($complete ? '#263730' : '#3a3324')};
+  border: 1px solid ${({ $complete }) => ($complete ? '#4f7061' : '#75623c')};
   border-radius: 18px;
-  box-shadow: 0 4px 0 #1f2226;
+  box-shadow: 0 4px 0 ${({ $complete }) => ($complete ? '#17231d' : '#211c13')};
 
   @media (max-width: 700px) {
     grid-template-columns: 1fr;
+  }
+`;
+
+export const PickerCompleteContent = styled.div`
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+
+  > span:nth-child(2),
+  strong,
+  small {
+    display: block;
+  }
+
+  strong {
+    color: #f2f7f4;
+    font-size: 1rem;
+    font-weight: 850;
+  }
+
+  small {
+    color: #bed0c7;
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+`;
+
+export const PickerCompleteIcon = styled.span`
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  place-items: center;
+  color: #dff5e8;
+  background: #355146;
+  border: 1px solid #5f8574;
+  border-radius: 13px;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+export const PickerCompleteBadge = styled.span`
+  display: flex;
+  min-width: 84px;
+  padding: 0.4rem 0.65rem;
+  align-items: center;
+  flex-direction: column;
+  color: #b9cdc3;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  background: #203029;
+  border: 1px solid #486858;
+  border-radius: 12px;
+
+  strong {
+    color: #f2f7f4;
+    font-size: 0.88rem;
+    letter-spacing: normal;
   }
 `;
 
@@ -492,14 +621,14 @@ export const PickerHeader = styled.div`
   flex-direction: column;
 
   strong {
-    color: var(--text-primary);
+    color: #fff3d7;
     font-size: 1rem;
     font-weight: 850;
   }
 `;
 
 export const PickerHint = styled.span`
-  color: var(--text-secondary);
+  color: #d8c9a7;
   font-size: 0.78rem;
   line-height: 1.45;
 `;
@@ -527,14 +656,14 @@ export const SearchInput = styled.input`
   min-height: 44px;
   padding: 0.65rem 0.75rem;
   color: var(--text-primary);
-  background: #2a2d32;
-  border: 2px solid #4a4e55;
+  background: #2d281e;
+  border: 2px solid #78643c;
   border-radius: 14px;
 
   &:focus-visible {
-    outline: 3px solid rgba(215, 45, 56, 0.14);
+    outline: 3px solid rgba(229, 185, 86, 0.18);
     outline-offset: 1px;
-    border-color: #d72d38;
+    border-color: #d9ad4e;
   }
 `;
 
@@ -548,8 +677,8 @@ export const Suggestions = styled.ul`
   margin: 0;
   padding: 0.3rem;
   overflow-y: auto;
-  background: #202328;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #2d281e;
+  border: 1px solid #78643c;
   border-radius: 11px;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
   list-style: none;
@@ -561,12 +690,12 @@ export const Suggestion = styled.li<{ $active: boolean }>`
   color: #fff;
   text-align: left;
   background: ${({ $active }) =>
-    $active ? 'rgba(220, 10, 45, 0.35)' : 'transparent'};
+    $active ? 'rgba(217, 173, 78, 0.24)' : 'transparent'};
   border-radius: 8px;
   cursor: pointer;
 
   &:hover {
-    background: rgba(220, 10, 45, 0.35);
+    background: rgba(217, 173, 78, 0.24);
   }
 `;
 
@@ -579,8 +708,8 @@ export const NoSuggestions = styled.div`
   padding: 0.65rem;
   color: var(--text-secondary);
   font-size: 0.85rem;
-  background: #202328;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #2d281e;
+  border: 1px solid #78643c;
   border-radius: 11px;
 `;
 
@@ -618,10 +747,30 @@ export const GenerateButton = styled(SearchButton)`
 `;
 
 export const GeneratorMessage = styled.p`
+  position: relative;
   min-height: 1.25rem;
   margin: 0.7rem 0 0;
-  color: var(--text-secondary);
+  color: #c2c6cd;
   font-size: 0.76rem;
+
+  &:empty {
+    display: none;
+  }
+`;
+
+export const LoadingSpinner = styled.span`
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 0.9rem;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: ${spin} 0.7s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: 1.6s;
+  }
 `;
 
 export const PokemonImage = styled.img`
@@ -689,8 +838,8 @@ export const TeamTypeBadge = styled.span<{ $color: string }>`
   padding: 0.35rem 0.5rem;
   align-items: center;
   gap: 0.45rem;
-  background: #383c42;
-  border: 1px solid #4a4e55;
+  background: #272b31;
+  border: 1px solid #454b54;
   border-left: 4px solid ${({ $color }) => $color};
   border-radius: 10px;
 `;
@@ -712,8 +861,8 @@ export const CompetitiveDetails = styled.details`
   margin-top: 0.75rem;
   padding: 0.55rem 0.6rem;
   color: var(--text-primary);
-  background: #292c31;
-  border: 1px solid #454950;
+  background: #272b31;
+  border: 1px solid #454b54;
   border-radius: 12px;
 `;
 
@@ -775,7 +924,7 @@ export const CompetitiveMoves = styled.ul`
     color: #fffaf1;
     font-size: 0.68rem;
     font-weight: 750;
-    background: #383c42;
+    background: #202328;
     border-radius: 8px;
   }
 `;
@@ -796,8 +945,8 @@ export const EmptySlotButton = styled.button<{ $selected: boolean }>`
   gap: 0.45rem;
   color: ${({ $selected }) => ($selected ? '#fffaf1' : 'var(--text-secondary)')};
   background: ${({ $selected }) =>
-    $selected ? 'rgba(215, 45, 56, 0.1)' : '#2a2d32'};
-  border: 2px dashed ${({ $selected }) => ($selected ? '#d72d38' : '#4a4e55')};
+    $selected ? '#34383f' : '#272b31'};
+  border: 2px dashed ${({ $selected }) => ($selected ? '#7d848e' : '#4c525b')};
   border-radius: 14px;
   cursor: pointer;
   transition:
@@ -809,7 +958,7 @@ export const EmptySlotButton = styled.button<{ $selected: boolean }>`
   svg {
     width: 1.5rem;
     height: 1.5rem;
-    color: #ff8799;
+    color: #a4a9b1;
   }
 
   strong {
@@ -825,8 +974,8 @@ export const EmptySlotButton = styled.button<{ $selected: boolean }>`
 
   &:hover {
     color: var(--text-primary);
-    background: #33373d;
-    border-color: #686d76;
+    background: #34383f;
+    border-color: #747b85;
     transform: translateY(-1px);
   }
 
@@ -837,10 +986,14 @@ export const EmptySlotButton = styled.button<{ $selected: boolean }>`
 `;
 
 export const ErrorText = styled.p`
-  min-height: 1.5rem;
-  margin: 0.5rem 0 0;
+  grid-column: 2;
+  margin: -0.35rem 0 0;
   color: #ff8799;
   font-size: 0.85rem;
+
+  @media (max-width: 700px) {
+    grid-column: 1;
+  }
 `;
 
 export const CardControls = styled.div`
@@ -859,8 +1012,8 @@ export const CardIconButton = styled.button<{ $danger?: boolean }>`
   padding: 0;
   place-items: center;
   color: ${({ $danger }) => ($danger ? '#ff9aa7' : 'var(--text-secondary)')};
-  background: #2a2d32;
-  border: 1px solid #4a4e55;
+  background: #272b31;
+  border: 1px solid #454b54;
   border-radius: 10px;
   cursor: pointer;
   transition:
@@ -893,11 +1046,11 @@ export const Analysis = styled.section`
   margin: 2rem auto 0;
   padding: 1.5rem;
   overflow: hidden;
-  background: #303339;
-  border: 1px solid #4a4e55;
+  background: #302735;
+  border: 1px solid #604f68;
   border-radius: 22px;
   box-shadow:
-    0 4px 0 #1f2226,
+    0 4px 0 #201923,
     0 14px 28px rgba(0, 0, 0, 0.16);
 
   &::before {
@@ -907,7 +1060,7 @@ export const Analysis = styled.section`
     width: 72px;
     height: 5px;
     content: '';
-    background: #d72d38;
+    background: #9370a0;
     border-radius: 0 0 8px 0;
   }
 `;
@@ -917,7 +1070,7 @@ export const AnalysisTitle = styled.h2`
   align-items: center;
   gap: 0.7rem;
   margin: 0 0 0.35rem;
-  color: #e7e3dd;
+  color: #f1e9f3;
   font-size: 1.2rem;
   font-weight: 800;
 
@@ -925,14 +1078,14 @@ export const AnalysisTitle = styled.h2`
     width: 28px;
     height: 4px;
     content: '';
-    background: #d72d38;
+    background: #9370a0;
     border-radius: 999px;
-    box-shadow: 0 2px 0 #831921;
+    box-shadow: 0 2px 0 #533b5b;
   }
 `;
 
 export const AnalysisHint = styled.p`
-  color: var(--text-secondary);
+  color: #cabfd0;
 `;
 
 export const CoverageRow = styled.section`
@@ -940,7 +1093,7 @@ export const CoverageRow = styled.section`
   grid-template-columns: minmax(170px, 230px) 1fr;
   gap: 1.5rem;
   padding: 1.5rem 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(207, 185, 216, 0.16);
 
   @media (max-width: 700px) {
     grid-template-columns: 1fr;
@@ -968,7 +1121,7 @@ export const CoverageGroup = styled.div`
 
 export const CoverageLabel = styled.h4`
   margin: 0 0 0.65rem;
-  color: var(--text-secondary);
+  color: #cabfd0;
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -994,8 +1147,8 @@ export const SummaryBadge = styled.li`
   min-height: 50px;
   padding: 0.45rem 0.55rem;
   overflow: hidden;
-  background: #383c42;
-  border: 1px solid #4a4e55;
+  background: #3a3040;
+  border: 1px solid #594b60;
   border-left: 4px solid currentColor;
   border-radius: 14px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
@@ -1010,8 +1163,8 @@ export const SummaryCount = styled.strong`
   font-size: 0.85rem;
   font-weight: 800;
   line-height: 1;
-  background: #2a2d32;
-  border: 1px solid #4a4e55;
+  background: #291f2e;
+  border: 1px solid #594b60;
   border-radius: 10px;
 `;
 
@@ -1034,7 +1187,7 @@ export const SummaryType = styled.strong`
 `;
 
 export const SummaryMetric = styled.span`
-  color: var(--text-secondary);
+  color: #c3b5c9;
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -1042,6 +1195,6 @@ export const SummaryMetric = styled.span`
 
 export const EmptySummary = styled.p`
   margin: 0;
-  color: var(--text-secondary);
+  color: #c3b5c9;
   font-size: 0.9rem;
 `;

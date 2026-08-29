@@ -426,8 +426,22 @@ describe('balanced random team generation', () => {
         name === 'growlithe'
           ? [
               {
+                location_area: resource(
+                  'kanto-route-7-area',
+                  'location-area/kanto-route-7',
+                ),
                 version_details: [
-                  { version: resource('firered') },
+                  {
+                    version: resource('firered'),
+                    encounter_details: [
+                      {
+                        chance: 20,
+                        min_level: 18,
+                        max_level: 20,
+                        method: resource('walk'),
+                      },
+                    ],
+                  },
                 ],
               },
             ]
@@ -461,6 +475,14 @@ describe('balanced random team generation', () => {
     expect(team.filter(member => member.isStarter)).toHaveLength(1);
     expect(team.map(member => member.name)).toContain('growlithe');
     expect(team.map(member => member.name)).not.toContain('vulpix');
+    expect(
+      team.find(member => member.name === 'growlithe')?.adventureInfo,
+    ).toMatchObject({
+      encounterMethod: 'Walking',
+      levelRange: 'Levels 18 to 20',
+      location: 'Kanto Route 7 Area',
+      version: 'Firered',
+    });
     expect(apiClient.get).not.toHaveBeenCalledWith(
       'vulpix-pokemon-url',
       undefined,

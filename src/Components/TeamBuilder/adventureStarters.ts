@@ -105,6 +105,10 @@ export const ADVENTURE_GAME_NAMES = new Set([
   ...Object.keys(GAME_STARTER_OVERRIDES),
 ]);
 
+export function adventureRegionForGame(value: string): string | undefined {
+  return GAME_REGIONS[value.trim().toLowerCase()];
+}
+
 export function adventureStarterRoots(
   kind: 'game' | 'region',
   value: string,

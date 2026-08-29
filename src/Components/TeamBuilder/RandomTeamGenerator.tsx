@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  generateBalancedTeam,
+import { FaMagic } from 'react-icons/fa';
+import type {
   GeneratedTeamPokemon,
   TeamGeneratorMode,
 } from './balancedTeamGenerator';
@@ -14,20 +14,31 @@ import {
   ControlField,
   ControlSelect,
   GenerateButton,
+  GeneratorBadge,
   GeneratorControls,
   GeneratorHeader,
+  GeneratorIcon,
   GeneratorMessage,
   GeneratorPanel,
+  GeneratorTitle,
+  LoadingSpinner,
 } from './TeamBuilderStyles';
 
 type PoolKind = TeamGenerationScope['kind'];
 
 type Props = {
   disabled: boolean;
+  teamSize: number;
   teamRevision: number;
   onBusyChange: (busy: boolean) => void;
+  onContextChange: (context: TeamGeneratorContext) => void;
   onGenerated: (team: GeneratedTeamPokemon[]) => void;
   onModeChange: (mode: TeamGeneratorMode) => void;
+};
+
+export type TeamGeneratorContext = {
+  mode: TeamGeneratorMode;
+  scope: TeamGenerationScope;
 };
 
 function optionsForPool(
@@ -47,15 +58,17 @@ function defaultPool(mode: TeamGeneratorMode): PoolKind {
 
 const RandomTeamGenerator: React.FC<Props> = ({
   disabled,
+  teamSize,
   teamRevision,
   onBusyChange,
+  onContextChange,
   onGenerated,
   onModeChange,
 }) => {
   const [catalog, setCatalog] = useState<TeamFilterCatalog | null>(null);
   const [mode, setMode] = useState<TeamGeneratorMode>('adventure');
   const [poolKind, setPoolKind] = useState<PoolKind>('game');
-  const [scopeValue, setScopeValue] = useState('');
+  const [scopeValue, setScopeValue] = useState('red');
   const [loadingCatalog, setLoadingCatalog] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [message, setMessage] = useState('');
@@ -65,10 +78,21 @@ const RandomTeamGenerator: React.FC<Props> = ({
     () => optionsForPool(catalog, poolKind),
     [catalog, poolKind],
   );
+  const activeScope = useMemo<TeamGenerationScope>(
+    () =>
+      poolKind === 'all'
+        ? { kind: 'all' }
+        : { kind: poolKind, value: scopeValue },
+    [poolKind, scopeValue],
+  );
 
   useEffect(() => {
     revisionRef.current = teamRevision;
   }, [teamRevision]);
+
+  useEffect(() => {
+    onContextChange({ mode, scope: activeScope });
+  }, [activeScope, mode, onContextChange]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -98,10 +122,11 @@ const RandomTeamGenerator: React.FC<Props> = ({
       setScopeValue('');
       return;
     }
+    if (!catalog) return;
     if (!options.some(option => option.value === scopeValue)) {
       setScopeValue(options[0]?.value ?? '');
     }
-  }, [options, poolKind, scopeValue]);
+  }, [catalog, options, poolKind, scopeValue]);
 
   const changeMode = (nextMode: TeamGeneratorMode) => {
     setMode(nextMode);
@@ -112,10 +137,7 @@ const RandomTeamGenerator: React.FC<Props> = ({
   };
 
   const generate = async () => {
-    const scope: TeamGenerationScope =
-      poolKind === 'all'
-        ? { kind: 'all' }
-        : { kind: poolKind, value: scopeValue };
+    const scope = activeScope;
     generationControllerRef.current?.abort();
     const controller = new AbortController();
     generationControllerRef.current = controller;
@@ -129,6 +151,9 @@ const RandomTeamGenerator: React.FC<Props> = ({
     );
 
     try {
+      const { generateBalancedTeam } = await import(
+        './balancedTeamGenerator'
+      );
       const team = await generateBalancedTeam({
         mode,
         scope,
@@ -162,7 +187,7 @@ const RandomTeamGenerator: React.FC<Props> = ({
 
   const description =
     mode === 'adventure'
-      ? 'Creates an in-game journey team with exactly one starter, local availability, and no legendary or mythical encounters.'
+      ? 'Creates an in-game journey team with exactly one starter, local availability, encounter guidance, and no legendary or mythical encounters.'
       : mode === 'general'
         ? 'Creates a fully evolved team from all generations or one generation. Legendary and mythical Pokémon can appear.'
         : 'Creates a competitive doubles roster using stat, role, typing, and matchup heuristics. Exact regulation legality is not guaranteed.';
@@ -170,8 +195,19 @@ const RandomTeamGenerator: React.FC<Props> = ({
   return (
     <GeneratorPanel>
       <GeneratorHeader>
-        <strong>Team generator</strong>
-        <span>{description}</span>
+        <GeneratorTitle>
+          <GeneratorIcon>
+            <FaMagic aria-hidden="true" />
+          </GeneratorIcon>
+          <span>
+            <strong>Team generator</strong>
+            <small>{description}</small>
+          </span>
+        </GeneratorTitle>
+        <GeneratorBadge>
+          <strong>{teamSize} / 6</strong>
+          <span>roster</span>
+        </GeneratorBadge>
       </GeneratorHeader>
       <GeneratorControls>
         <ControlField>
@@ -248,7 +284,13 @@ const RandomTeamGenerator: React.FC<Props> = ({
           }
           onClick={() => void generate()}
         >
-          {generating ? 'Building team…' : 'Generate team'}
+          {generating ? (
+            <>
+              <LoadingSpinner aria-hidden="true" /> Building team…
+            </>
+          ) : (
+            'Generate team'
+          )}
         </GenerateButton>
       </GeneratorControls>
       <GeneratorMessage role="status">{message}</GeneratorMessage>

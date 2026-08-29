@@ -25,6 +25,24 @@ const competitivePikachu: TeamPokemon = {
   },
 };
 
+const adventureCharizard: TeamPokemon = {
+  id: 6,
+  name: 'charizard',
+  displayName: 'Charizard',
+  imageUrl: 'charizard.png',
+  types: ['fire', 'flying'],
+  adventureInfo: {
+    encounterMethod: 'Starter gift',
+    evolutionMethod:
+      'Charmander → Charmeleon (level 16) → Charizard (level 36)',
+    levelRange: 'Usually level 5',
+    location: 'Starter selection',
+    sourcePokemon: 'Charmander',
+    tradeRequired: false,
+    version: 'FireRed',
+  },
+};
+
 describe('team persistence', () => {
   test('normalizes, deduplicates, and caps teams at six members', () => {
     expect(
@@ -85,6 +103,22 @@ describe('team persistence', () => {
       {
         name: 'pikachu',
         competitiveSet: competitivePikachu.competitiveSet,
+      },
+    ]);
+  });
+
+  test('round trips Adventure encounter information through saves and shares', () => {
+    const search = createTeamSearch([adventureCharizard]);
+    expect(parseTeamSearch(search)).toEqual([
+      {
+        name: 'charizard',
+        adventureInfo: adventureCharizard.adventureInfo,
+      },
+    ]);
+    expect(parseSavedTeam(serializeTeam([adventureCharizard]))).toEqual([
+      {
+        name: 'charizard',
+        adventureInfo: adventureCharizard.adventureInfo,
       },
     ]);
   });

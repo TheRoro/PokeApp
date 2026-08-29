@@ -1,7 +1,8 @@
 import TypeChart from '../../Assets/typeChart';
 import TypeList from '../../Assets/typeList';
 import TypeMap from '../../Assets/typeMap';
-import { CompetitivePokemonSet } from './competitiveSet';
+import type { CompetitivePokemonSet } from './competitiveSet';
+import type { AdventureEncounterInfo } from './adventureEncounterInfo';
 
 export type TeamPokemon = {
   id: number;
@@ -10,6 +11,7 @@ export type TeamPokemon = {
   imageUrl: string;
   types: string[];
   baseStats?: Record<string, number>;
+  adventureInfo?: AdventureEncounterInfo;
   competitiveSet?: CompetitivePokemonSet;
 };
 

@@ -116,6 +116,45 @@ const Pokemon: React.FC<Props> = ({
             );
           })}
         </Types>
+        {pokemon.adventureInfo && (
+          <CompetitiveDetails>
+            <CompetitiveSummary>Adventure encounter</CompetitiveSummary>
+            <CompetitiveMeta>
+              <CompetitiveMetaItem>
+                <span>Obtain</span>
+                <strong>{pokemon.adventureInfo.sourcePokemon}</strong>
+              </CompetitiveMetaItem>
+              <CompetitiveMetaItem>
+                <span>Version</span>
+                <strong>{pokemon.adventureInfo.version}</strong>
+              </CompetitiveMetaItem>
+              <CompetitiveMetaItem>
+                <span>Location</span>
+                <strong>{pokemon.adventureInfo.location}</strong>
+              </CompetitiveMetaItem>
+              <CompetitiveMetaItem>
+                <span>Expected level</span>
+                <strong>{pokemon.adventureInfo.levelRange}</strong>
+              </CompetitiveMetaItem>
+              <CompetitiveMetaItem>
+                <span>Method</span>
+                <strong>{pokemon.adventureInfo.encounterMethod}</strong>
+              </CompetitiveMetaItem>
+              <CompetitiveMetaItem>
+                <span>Evolution trade</span>
+                <strong>
+                  {pokemon.adventureInfo.tradeRequired
+                    ? 'Required'
+                    : 'Not required'}
+                </strong>
+              </CompetitiveMetaItem>
+            </CompetitiveMeta>
+            <CompetitiveMetaItem>
+              <span>Evolution path</span>
+              <strong>{pokemon.adventureInfo.evolutionMethod}</strong>
+            </CompetitiveMetaItem>
+          </CompetitiveDetails>
+        )}
         {pokemon.competitiveSet && (
           <CompetitiveDetails>
             <CompetitiveSummary>

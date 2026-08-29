@@ -7,6 +7,7 @@ import { TEAM_STORAGE_KEY } from './teamPersistence';
 import { TeamPokemon } from './teamAnalysis';
 import { generateBalancedTeam } from './balancedTeamGenerator';
 import { loadTeamFilterCatalog } from './teamFilterCatalog';
+import { loadAdventureEncounterInfo } from './adventureEncounter';
 
 vi.mock('./teamPokemonApi', () => ({
   fetchTeamPokemon: vi.fn(),
@@ -20,9 +21,21 @@ vi.mock('./teamFilterCatalog', () => ({
   loadTeamFilterCatalog: vi.fn(),
 }));
 
+vi.mock('./adventureEncounter', async importOriginal => {
+  const actual =
+    await importOriginal<typeof import('./adventureEncounter')>();
+  return {
+    ...actual,
+    loadAdventureEncounterInfo: vi.fn(),
+  };
+});
+
 const mockedFetchTeamPokemon = vi.mocked(fetchTeamPokemon);
 const mockedGenerateBalancedTeam = vi.mocked(generateBalancedTeam);
 const mockedLoadTeamFilterCatalog = vi.mocked(loadTeamFilterCatalog);
+const mockedLoadAdventureEncounterInfo = vi.mocked(
+  loadAdventureEncounterInfo,
+);
 const writeText = vi.fn().mockResolvedValue(undefined);
 
 function pokemon(id: number, name: string, types: string[]): TeamPokemon {
@@ -54,6 +67,16 @@ beforeEach(() => {
   mockedFetchTeamPokemon.mockReset();
   mockedGenerateBalancedTeam.mockReset();
   mockedLoadTeamFilterCatalog.mockReset();
+  mockedLoadAdventureEncounterInfo.mockReset();
+  mockedLoadAdventureEncounterInfo.mockResolvedValue({
+    encounterMethod: 'Walking',
+    evolutionMethod: 'No evolution required',
+    levelRange: 'Level 10',
+    location: 'Route 1',
+    sourcePokemon: 'Pikachu',
+    tradeRequired: false,
+    version: 'Red',
+  });
   mockedLoadTeamFilterCatalog.mockImplementation(
     () => new Promise(() => undefined),
   );
@@ -80,6 +103,11 @@ test('uses one picker, prevents duplicates, and updates team analysis', async ()
   expect(
     screen.getAllByRole('combobox', { name: 'Team Pokémon search' }),
   ).toHaveLength(1);
+  expect(screen.getByText('Choose your first Pokémon')).toBeInTheDocument();
+  expect(
+    screen.getByText('Search by name or Pokédex number to start your team.'),
+  ).toBeInTheDocument();
+  expect(screen.queryByLabelText('Team summary')).not.toBeInTheDocument();
 
   await addPokemon('Pikachu');
 
@@ -107,7 +135,10 @@ test('selects an empty slot and loads the new member into it', async () => {
       name: 'Select team slot 3',
     }),
   );
-  expect(screen.getByText('Add to slot 3')).toBeInTheDocument();
+  expect(screen.getByText('Choose your first Pokémon')).toBeInTheDocument();
+  expect(
+    screen.getByRole('combobox', { name: 'Team Pokémon search' }),
+  ).toHaveFocus();
   await addPokemon('Charmander');
 
   expect(
@@ -115,6 +146,7 @@ test('selects an empty slot and loads the new member into it', async () => {
       name: 'Charmander',
     }),
   ).toBeInTheDocument();
+  expect(screen.getByText('Add to slot 1')).toBeInTheDocument();
 });
 
 test('selects autocomplete suggestions with the keyboard', async () => {
@@ -187,6 +219,7 @@ test('removes a member without changing the remaining team order', async () => {
     screen.getByRole('button', { name: 'Remove Pikachu' }),
   );
 
+  expect(window.confirm).not.toHaveBeenCalled();
   expect(screen.getByRole('button', { name: /save team/i })).toBeDisabled();
   expect(screen.getByRole('button', { name: /share team/i })).toBeDisabled();
   expect(screen.getByRole('button', { name: /load saved/i })).toBeDisabled();
@@ -211,9 +244,15 @@ test('saves and shares the current team', async () => {
   await addPokemon('Pikachu');
 
   await userEvent.click(screen.getByRole('button', { name: /save team/i }));
-  expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(
-    '[{"name":"pikachu"}]',
-  );
+  expect(JSON.parse(localStorage.getItem(TEAM_STORAGE_KEY) ?? '[]')).toEqual([
+    {
+      name: 'pikachu',
+      adventureInfo: expect.objectContaining({
+        location: 'Route 1',
+        version: 'Red',
+      }),
+    },
+  ]);
 
   const clipboardWrite = vi.spyOn(navigator.clipboard, 'writeText');
   await userEvent.click(screen.getByRole('button', { name: /share team/i }));
@@ -311,6 +350,20 @@ test('generates a balanced team from a selected game Pokédex', async () => {
     pokemon(68, 'machamp', ['fighting']),
   ].map((member, index) => ({
     ...member,
+    ...(index === 0
+      ? {
+          adventureInfo: {
+            encounterMethod: 'Starter gift',
+            evolutionMethod:
+              'Bulbasaur -> Ivysaur (level 16) -> Venusaur (level 32)',
+            levelRange: 'Usually level 5',
+            location: 'Starter selection',
+            sourcePokemon: 'Bulbasaur',
+            tradeRequired: false,
+            version: 'Red',
+          },
+        }
+      : {}),
     isLegendary: false,
     isStarter: index === 0,
     speciesName: member.name,
@@ -353,7 +406,19 @@ test('generates a balanced team from a selected game Pokédex', async () => {
   expect(
     await screen.findByRole('heading', { name: 'Venusaur' }),
   ).toBeInTheDocument();
-  expect(screen.getByText('6 / 6')).toBeInTheDocument();
+  expect(screen.getAllByText('6 / 6')).toHaveLength(2);
+  expect(screen.getByText('Your team is complete')).toBeInTheDocument();
+  expect(
+    screen.queryByRole('combobox', { name: 'Team Pokémon search' }),
+  ).not.toBeInTheDocument();
+  await user.click(screen.getByText('Adventure encounter'));
+  expect(screen.getByText('Starter selection')).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      'Bulbasaur -> Ivysaur (level 16) -> Venusaur (level 32)',
+    ),
+  ).toBeInTheDocument();
+  expect(screen.getByText('Not required')).toBeInTheDocument();
 });
 
 test('maps General and Competitive controls to their generation modes', async () => {
@@ -558,4 +623,122 @@ test('keeps the Showdown text synchronized with the current roster', async () =>
 
   await user.click(screen.getByRole('button', { name: 'Remove Pikachu' }));
   await waitFor(() => expect(showdownText).toHaveValue('Charmander'));
+});
+
+test('loads Adventure encounter details for a manually added Pokémon', async () => {
+  let resolveEncounter:
+    | ((value: Awaited<ReturnType<typeof loadAdventureEncounterInfo>>) => void)
+    | undefined;
+  mockedLoadTeamFilterCatalog.mockResolvedValue({
+    all: { label: 'All Pokémon', value: 'all' },
+    generations: [],
+    regions: [{ label: 'Kanto', value: 'kanto' }],
+    games: [{ label: 'Red', value: 'red' }],
+  });
+  mockedFetchTeamPokemon.mockResolvedValue(
+    pokemon(398, 'staraptor', ['normal', 'flying']),
+  );
+  mockedLoadAdventureEncounterInfo.mockReturnValue(
+    new Promise(resolve => {
+      resolveEncounter = resolve;
+    }),
+  );
+  renderBuilder();
+
+  await waitFor(() =>
+    expect(
+      screen.getByRole('combobox', { name: 'Random team selection' }),
+    ).toHaveValue('red'),
+  );
+  const user = userEvent.setup();
+  await user.type(
+    screen.getByRole('combobox', { name: 'Team Pokémon search' }),
+    'Staraptor',
+  );
+  await user.keyboard('{Enter}');
+
+  expect(
+    screen.getByRole('button', { name: /loading/i }),
+  ).toBeDisabled();
+  expect(mockedLoadAdventureEncounterInfo).toHaveBeenCalledWith(
+    expect.objectContaining({
+      pokemonName: 'staraptor',
+      scope: { kind: 'game', value: 'red' },
+      signal: expect.any(AbortSignal),
+    }),
+  );
+
+  resolveEncounter?.({
+    encounterMethod: 'Walking',
+    evolutionMethod:
+      'Starly -> Staravia (level 14) -> Staraptor (level 34)',
+    levelRange: 'Levels 2 to 4',
+    location: 'Route 201',
+    sourcePokemon: 'Starly',
+    tradeRequired: false,
+    version: 'Diamond',
+  });
+
+  expect(
+    await screen.findByRole('heading', { name: 'Staraptor' }),
+  ).toBeInTheDocument();
+  await user.click(screen.getByText('Adventure encounter'));
+  expect(screen.getByText('Route 201')).toBeInTheDocument();
+  expect(screen.getByText('Starly')).toBeInTheDocument();
+});
+
+test('uses the existing Adventure team version for a manual addition', async () => {
+  localStorage.setItem(
+    TEAM_STORAGE_KEY,
+    JSON.stringify([
+      {
+        name: 'luxray',
+        adventureInfo: {
+          encounterMethod: 'Walking',
+          evolutionMethod: 'Shinx -> Luxio (level 15) -> Luxray (level 30)',
+          levelRange: 'Levels 3 to 4',
+          location: 'Route 202',
+          sourcePokemon: 'Shinx',
+          tradeRequired: false,
+          version: 'Diamond',
+        },
+      },
+    ]),
+  );
+  mockedLoadTeamFilterCatalog.mockResolvedValue({
+    all: { label: 'All Pokémon', value: 'all' },
+    generations: [],
+    regions: [{ label: 'Kanto', value: 'kanto' }],
+    games: [{ label: 'Red', value: 'red' }],
+  });
+  mockedFetchTeamPokemon.mockImplementation(async value =>
+    value === 'luxray'
+      ? pokemon(405, 'luxray', ['electric'])
+      : pokemon(398, 'staraptor', ['normal', 'flying']),
+  );
+  mockedLoadAdventureEncounterInfo.mockResolvedValue({
+    encounterMethod: 'Walking',
+    evolutionMethod:
+      'Starly -> Staravia (level 14) -> Staraptor (level 34)',
+    levelRange: 'Levels 2 to 4',
+    location: 'Route 201',
+    sourcePokemon: 'Starly',
+    tradeRequired: false,
+    version: 'Diamond',
+  });
+  renderBuilder();
+
+  expect(
+    await screen.findByRole('heading', { name: 'Luxray' }),
+  ).toBeInTheDocument();
+  await addPokemon('Staraptor');
+
+  expect(mockedLoadAdventureEncounterInfo).toHaveBeenCalledWith(
+    expect.objectContaining({
+      pokemonName: 'staraptor',
+      scope: { kind: 'game', value: 'diamond' },
+    }),
+  );
+  await userEvent.setup().click(screen.getAllByText('Adventure encounter')[1]);
+  expect(screen.getByText('Route 201')).toBeInTheDocument();
 });

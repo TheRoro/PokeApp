@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
+import { FaCheck } from 'react-icons/fa';
 import PokemonList from '../Tools/PokemonList';
 import { formatPokemonName } from '../Tools/pokemonNames';
 import { describeApiError } from '../Tools/ApiError/apiErrors';
@@ -14,6 +15,10 @@ import {
   PickerHeader,
   PickerHint,
   PickerPanel,
+  PickerCompleteBadge,
+  PickerCompleteContent,
+  PickerCompleteIcon,
+  LoadingSpinner,
   SearchButton,
   SearchInput,
   Suggestion,
@@ -22,11 +27,26 @@ import {
 
 type Props = {
   disabled: boolean;
+  inputRef: React.RefObject<HTMLInputElement>;
+  onBusyChange: (busy: boolean) => void;
   slotNumber: number;
-  onLoaded: (pokemon: TeamPokemon) => string | null;
+  teamComplete: boolean;
+  teamEmpty: boolean;
+  onLoaded: (
+    pokemon: TeamPokemon,
+    signal: AbortSignal,
+  ) => Promise<string | null> | string | null;
 };
 
-const TeamPicker: React.FC<Props> = ({ disabled, slotNumber, onLoaded }) => {
+const TeamPicker: React.FC<Props> = ({
+  disabled,
+  inputRef,
+  onBusyChange,
+  slotNumber,
+  teamComplete,
+  teamEmpty,
+  onLoaded,
+}) => {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -47,8 +67,9 @@ const TeamPicker: React.FC<Props> = ({ disabled, slotNumber, onLoaded }) => {
   useEffect(
     () => () => {
       controllerRef.current?.abort();
+      onBusyChange(false);
     },
-    [],
+    [onBusyChange],
   );
 
   const loadPokemon = async (value: string) => {
@@ -62,19 +83,21 @@ const TeamPicker: React.FC<Props> = ({ disabled, slotNumber, onLoaded }) => {
     const controller = new AbortController();
     controllerRef.current = controller;
     setLoading(true);
+    onBusyChange(true);
     setError('');
 
     try {
       const pokemon = await fetchTeamPokemon(value, controller.signal);
       if (controller.signal.aborted) return;
-      const validationError = onLoaded(pokemon);
+      const validationError = await onLoaded(pokemon, controller.signal);
+      if (controller.signal.aborted) return;
       if (validationError) {
         setError(validationError);
         return;
       }
       setQuery('');
     } catch (requestError) {
-      if (axios.isCancel(requestError)) return;
+      if (controller.signal.aborted || axios.isCancel(requestError)) return;
       if (
         requestError instanceof Error &&
         requestError.message === 'Enter a Pokémon name or Pokédex number.'
@@ -85,7 +108,10 @@ const TeamPicker: React.FC<Props> = ({ disabled, slotNumber, onLoaded }) => {
       const apiError = describeApiError(requestError, 'Pokémon');
       setError(`${apiError.title}. ${apiError.message}`);
     } finally {
-      if (!controller.signal.aborted) setLoading(false);
+      if (!controller.signal.aborted) {
+        setLoading(false);
+        onBusyChange(false);
+      }
     }
   };
 
@@ -123,70 +149,112 @@ const TeamPicker: React.FC<Props> = ({ disabled, slotNumber, onLoaded }) => {
   };
 
   return (
-    <PickerPanel>
-      <PickerHeader>
-        <strong>{disabled ? 'Your team is complete' : `Add to slot ${slotNumber}`}</strong>
-        <PickerHint>
-          {disabled
-            ? 'Remove a member to add another Pokémon.'
-            : 'Search once, then choose any empty team slot.'}
-        </PickerHint>
-      </PickerHeader>
-      <PickerForm onSubmit={submit}>
-        <InputContainer>
-          <SearchInput
-            aria-label="Team Pokémon search"
-            value={query}
-            onChange={event => {
-              setQuery(event.target.value);
-              setError('');
-              setActiveSuggestion(0);
-              setShowSuggestions(true);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-            onKeyDown={handleKeyDown}
-            onBlur={() => setShowSuggestions(false)}
-            placeholder="Name or Pokédex #"
-            autoComplete="off"
-            disabled={disabled}
-            role="combobox"
-            aria-autocomplete="list"
-            aria-expanded={showSuggestions && suggestions.length > 0}
-            aria-controls={
-              showSuggestions && suggestions.length > 0 ? listboxId : undefined
-            }
-            aria-activedescendant={
-              showSuggestions && suggestions.length > 0
-                ? `${listboxId}-${activeSuggestion}`
-                : undefined
-            }
-          />
-          {showSuggestions && canSuggest && suggestions.length > 0 && (
-            <Suggestions id={listboxId} role="listbox">
-              {suggestions.map((suggestion, suggestionIndex) => (
-                <Suggestion
-                  id={`${listboxId}-${suggestionIndex}`}
-                  role="option"
-                  aria-selected={suggestionIndex === activeSuggestion}
-                  key={suggestion}
-                  $active={suggestionIndex === activeSuggestion}
-                  onMouseDown={event => event.preventDefault()}
-                  onClick={() => selectSuggestion(suggestion)}
-                >
-                  {formatPokemonName(suggestion)}
-                </Suggestion>
-              ))}
-            </Suggestions>
-          )}
-          {showSuggestions && canSuggest && suggestions.length === 0 && (
-            <NoSuggestions>No matching Pokémon</NoSuggestions>
-          )}
-        </InputContainer>
-        <SearchButton type="submit" disabled={disabled || loading}>
-          {loading ? 'Loading…' : 'Add Pokémon'}
-        </SearchButton>
-      </PickerForm>
-      <ErrorText role={error ? 'alert' : undefined}>{error}</ErrorText>
+    <PickerPanel $complete={teamComplete}>
+      {teamComplete ? (
+        <>
+          <PickerCompleteContent>
+            <PickerCompleteIcon>
+              <FaCheck aria-hidden="true" />
+            </PickerCompleteIcon>
+            <span>
+              <strong>Your team is complete</strong>
+              <small>
+                All six slots are filled. Remove a member to make another
+                selection.
+              </small>
+            </span>
+          </PickerCompleteContent>
+          <PickerCompleteBadge>
+            <strong>6 / 6</strong>
+            <span>roster</span>
+          </PickerCompleteBadge>
+        </>
+      ) : (
+        <>
+          <PickerHeader>
+            <strong>
+              {disabled
+                ? 'Team update in progress'
+                : teamEmpty
+                  ? 'Choose your first Pokémon'
+                  : `Add to slot ${slotNumber}`}
+            </strong>
+            <PickerHint>
+              {loading
+                ? 'Loading Pokémon and Adventure encounter details.'
+                : disabled
+                  ? 'The picker will return when the current update finishes.'
+                  : teamEmpty
+                    ? 'Search by name or Pokédex number to start your team.'
+                    : 'Search once, then choose any empty team slot.'}
+            </PickerHint>
+          </PickerHeader>
+          <PickerForm onSubmit={submit}>
+            <InputContainer>
+              <SearchInput
+                ref={inputRef}
+                aria-label="Team Pokémon search"
+                value={query}
+                onChange={event => {
+                  setQuery(event.target.value);
+                  setError('');
+                  setActiveSuggestion(0);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onKeyDown={handleKeyDown}
+                onBlur={() => setShowSuggestions(false)}
+                placeholder="Name or Pokédex #"
+                autoComplete="off"
+                disabled={disabled}
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded={showSuggestions && suggestions.length > 0}
+                aria-controls={
+                  showSuggestions && suggestions.length > 0
+                    ? listboxId
+                    : undefined
+                }
+                aria-activedescendant={
+                  showSuggestions && suggestions.length > 0
+                    ? `${listboxId}-${activeSuggestion}`
+                    : undefined
+                }
+              />
+              {showSuggestions && canSuggest && suggestions.length > 0 && (
+                <Suggestions id={listboxId} role="listbox">
+                  {suggestions.map((suggestion, suggestionIndex) => (
+                    <Suggestion
+                      id={`${listboxId}-${suggestionIndex}`}
+                      role="option"
+                      aria-selected={suggestionIndex === activeSuggestion}
+                      key={suggestion}
+                      $active={suggestionIndex === activeSuggestion}
+                      onMouseDown={event => event.preventDefault()}
+                      onClick={() => selectSuggestion(suggestion)}
+                    >
+                      {formatPokemonName(suggestion)}
+                    </Suggestion>
+                  ))}
+                </Suggestions>
+              )}
+              {showSuggestions && canSuggest && suggestions.length === 0 && (
+                <NoSuggestions>No matching Pokémon</NoSuggestions>
+              )}
+            </InputContainer>
+            <SearchButton type="submit" disabled={disabled || loading}>
+              {loading ? (
+                <>
+                  <LoadingSpinner aria-hidden="true" /> Loading…
+                </>
+              ) : (
+                'Add Pokémon'
+              )}
+            </SearchButton>
+          </PickerForm>
+          {error && <ErrorText role="alert">{error}</ErrorText>}
+        </>
+      )}
     </PickerPanel>
   );
 };
