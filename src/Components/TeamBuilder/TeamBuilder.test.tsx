@@ -479,3 +479,83 @@ test('loads a historical VGC team with complete competitive sets', async () => {
   ).toBeInTheDocument();
   expect(window.confirm).not.toHaveBeenCalled();
 });
+
+test('imports and exports Pokémon Showdown teams without a replacement prompt', async () => {
+  mockedFetchTeamPokemon
+    .mockResolvedValueOnce(pokemon(25, 'pikachu', ['electric']))
+    .mockResolvedValueOnce(pokemon(6, 'charizard', ['fire', 'flying']));
+  renderBuilder();
+
+  const user = userEvent.setup();
+  await user.click(
+    screen.getByText('Pokémon Showdown import and export'),
+  );
+  await user.type(
+    screen.getByRole('textbox', { name: 'Showdown team text' }),
+    `Pikachu @ Light Ball
+Ability: Static
+Level: 50
+EVs: 4 HP / 252 SpA / 252 Spe
+Timid Nature
+- Thunderbolt
+- Volt Switch
+- Fake Out
+- Protect
+
+Charizard @ Life Orb
+Ability: Solar Power
+Level: 50
+EVs: 4 Def / 252 SpA / 252 Spe
+Timid Nature
+- Heat Wave
+- Air Slash
+- Solar Beam
+- Protect`,
+  );
+  await user.click(screen.getByRole('button', { name: 'Import team' }));
+
+  expect(window.confirm).not.toHaveBeenCalled();
+  expect(
+    await screen.findByRole('heading', { name: 'Pikachu' }),
+  ).toBeInTheDocument();
+  expect(
+    await screen.findByRole('heading', { name: 'Charizard' }),
+  ).toBeInTheDocument();
+  expect(screen.getByText('Light Ball · Static')).toBeInTheDocument();
+
+  const clipboardWrite = vi.spyOn(navigator.clipboard, 'writeText');
+  const copyExport = screen.getByRole('button', { name: 'Copy export' });
+  await waitFor(() => expect(copyExport).toBeEnabled());
+  await user.click(copyExport);
+  expect(clipboardWrite).toHaveBeenCalledWith(
+    expect.stringContaining('Pikachu @ Light Ball'),
+  );
+  expect(clipboardWrite).toHaveBeenCalledWith(
+    expect.stringContaining('- Heat Wave'),
+  );
+});
+
+test('keeps the Showdown text synchronized with the current roster', async () => {
+  mockedFetchTeamPokemon
+    .mockResolvedValueOnce(pokemon(25, 'pikachu', ['electric']))
+    .mockResolvedValueOnce(pokemon(4, 'charmander', ['fire']));
+  renderBuilder();
+
+  const user = userEvent.setup();
+  await addPokemon('Pikachu');
+  await user.click(
+    screen.getByText('Pokémon Showdown import and export'),
+  );
+  const showdownText = screen.getByRole('textbox', {
+    name: 'Showdown team text',
+  });
+  expect(showdownText).toHaveValue('Pikachu');
+
+  await addPokemon('Charmander');
+  await waitFor(() =>
+    expect(showdownText).toHaveValue('Pikachu\n\nCharmander'),
+  );
+
+  await user.click(screen.getByRole('button', { name: 'Remove Pikachu' }));
+  await waitFor(() => expect(showdownText).toHaveValue('Charmander'));
+});

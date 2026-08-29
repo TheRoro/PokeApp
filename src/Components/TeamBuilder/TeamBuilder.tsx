@@ -8,6 +8,7 @@ import {
 import Pokemon from './Pokemon';
 import TeamPicker from './TeamPicker';
 import RandomTeamGenerator from './RandomTeamGenerator';
+import ShowdownTeamTransfer from './ShowdownTeamTransfer';
 import { TeamGeneratorMode } from './balancedTeamGenerator';
 import {
   analyzeOffensiveCoverage,
@@ -528,6 +529,18 @@ const TeamBuilder: React.FC = () => {
           />
         ))}
       </TeamGrid>
+
+      <ShowdownTeamTransfer
+        disabled={
+          hydrating ||
+          loadingTeam ||
+          generatingTeam ||
+          resetting ||
+          removingSlotIds.size > 0
+        }
+        team={team}
+        onImport={members => void loadTeam(members, 'Showdown')}
+      />
 
       <BuilderToolbar>
         <UtilityButton
