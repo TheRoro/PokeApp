@@ -317,15 +317,13 @@ const TeamBuilder: React.FC = () => {
 
   useEffect(() => {
     const sharedNames = parseTeamSearch(window.location.search);
-    const savedNames = parseSavedTeam(localStorage.getItem(TEAM_STORAGE_KEY));
-    const initialNames = sharedNames.length > 0 ? sharedNames : savedNames;
 
-    if (initialNames.length === 0) {
+    if (sharedNames.length === 0) {
       setHydrating(false);
       return;
     }
 
-    void loadTeam(initialNames, sharedNames.length > 0 ? 'shared' : 'saved')
+    void loadTeam(sharedNames, 'shared')
       .finally(() => setHydrating(false));
   }, []);
 
@@ -444,6 +442,11 @@ const TeamBuilder: React.FC = () => {
 
     removalTimersRef.current.forEach(clearTimeout);
     removalTimersRef.current.clear();
+    window.history.replaceState(
+      window.history.state,
+      '',
+      `${window.location.pathname}${window.location.hash}`,
+    );
     resettingRef.current = true;
     setResetting(true);
     setPickerGeneration(current => current + 1);
@@ -541,24 +544,25 @@ const TeamBuilder: React.FC = () => {
         </React.Suspense>
       )}
 
-      <TeamPicker
-        disabled={
-          hydrating ||
-          loadingTeam ||
-          generatingTeam ||
-          resetting ||
-          team.length === 6
-        }
-        inputRef={pickerInputRef}
-        key={pickerGeneration}
-        onBusyChange={setAddingPokemon}
-        slotNumber={
-          slots.findIndex(slot => slot.id === selectedSlotId) + 1 || team.length + 1
-        }
-        teamComplete={team.length === 6}
-        teamEmpty={team.length === 0}
-        onLoaded={setPokemon}
-      />
+      {team.length < 6 && (
+        <TeamPicker
+          disabled={
+            hydrating ||
+            loadingTeam ||
+            generatingTeam ||
+            resetting
+          }
+          inputRef={pickerInputRef}
+          key={pickerGeneration}
+          onBusyChange={setAddingPokemon}
+          slotNumber={
+            slots.findIndex(slot => slot.id === selectedSlotId) + 1 ||
+            team.length + 1
+          }
+          teamEmpty={team.length === 0}
+          onLoaded={setPokemon}
+        />
+      )}
 
       <TeamGrid>
         {slots.map((slot, index) => (

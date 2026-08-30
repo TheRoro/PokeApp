@@ -264,6 +264,30 @@ test('saves and shares the current team', async () => {
   ).toBeInTheDocument();
 });
 
+test('loads a saved team only when requested', async () => {
+  localStorage.setItem(
+    TEAM_STORAGE_KEY,
+    JSON.stringify([{ name: 'pikachu' }]),
+  );
+  mockedFetchTeamPokemon.mockResolvedValue(
+    pokemon(25, 'pikachu', ['electric']),
+  );
+  renderBuilder();
+
+  expect(screen.getByText('0 / 6')).toBeInTheDocument();
+  expect(
+    screen.queryByRole('heading', { name: 'Pikachu' }),
+  ).not.toBeInTheDocument();
+
+  const loadButton = screen.getByRole('button', { name: /load saved/i });
+  await waitFor(() => expect(loadButton).toBeEnabled());
+  await userEvent.click(loadButton);
+
+  expect(
+    await screen.findByRole('heading', { name: 'Pikachu' }),
+  ).toBeInTheDocument();
+});
+
 test('loads a team from a shared URL', async () => {
   window.history.replaceState({}, '', '/teambuilder?team=pikachu,charizard');
   mockedFetchTeamPokemon
@@ -296,6 +320,29 @@ test('resets a populated team without a confirmation prompt', async () => {
     ).not.toBeInTheDocument(),
   );
   expect(screen.getByText('0 / 6')).toBeInTheDocument();
+});
+
+test('keeps a reset team empty when leaving before the exit animation finishes', async () => {
+  window.history.replaceState({}, '', '/teambuilder?team=pikachu');
+  mockedFetchTeamPokemon.mockResolvedValue(
+    pokemon(25, 'pikachu', ['electric']),
+  );
+  const firstRender = renderBuilder();
+
+  expect(
+    await screen.findByRole('heading', { name: 'Pikachu' }),
+  ).toBeInTheDocument();
+  await waitFor(() => expect(window.location.search).toContain('team=pikachu'));
+
+  await userEvent.click(screen.getByRole('button', { name: /reset team/i }));
+  expect(window.location.search).toBe('');
+  firstRender.unmount();
+
+  renderBuilder();
+  expect(await screen.findByText('0 / 6')).toBeInTheDocument();
+  expect(
+    screen.queryByRole('heading', { name: 'Pikachu' }),
+  ).not.toBeInTheDocument();
 });
 
 test('deduplicates aliases loaded from a shared URL by Pokémon id', async () => {
@@ -406,8 +453,8 @@ test('generates a balanced team from a selected game Pokédex', async () => {
   expect(
     await screen.findByRole('heading', { name: 'Venusaur' }),
   ).toBeInTheDocument();
-  expect(screen.getAllByText('6 / 6')).toHaveLength(2);
-  expect(screen.getByText('Your team is complete')).toBeInTheDocument();
+  expect(screen.getByText('6 / 6')).toBeInTheDocument();
+  expect(screen.queryByText('Your team is complete')).not.toBeInTheDocument();
   expect(
     screen.queryByRole('combobox', { name: 'Team Pokémon search' }),
   ).not.toBeInTheDocument();
@@ -471,9 +518,13 @@ test('maps General and Competitive controls to their generation modes', async ()
       scope: { kind: 'generation', value: 'generation-i' },
     }),
   );
-  expect(
-    await screen.findByText('Balanced team generated. Generate again for a new result.'),
-  ).toBeInTheDocument();
+  await waitFor(() =>
+    expect(
+      screen.queryByText(
+        'Balanced team generated. Generate again for a new result.',
+      ),
+    ).not.toBeInTheDocument(),
+  );
 
   await user.selectOptions(
     screen.getByRole('combobox', { name: 'Team generation mode' }),
@@ -497,8 +548,8 @@ test('maps General and Competitive controls to their generation modes', async ()
     }),
   );
   expect(
-    await screen.findByText(/not a current regulation legality check/i),
-  ).toBeInTheDocument();
+    screen.queryByText(/not a current regulation legality check/i),
+  ).not.toBeInTheDocument();
 });
 
 test('loads a historical VGC team with complete competitive sets', async () => {
@@ -728,6 +779,9 @@ test('uses the existing Adventure team version for a manual addition', async () 
   });
   renderBuilder();
 
+  const loadButton = screen.getByRole('button', { name: /load saved/i });
+  await waitFor(() => expect(loadButton).toBeEnabled());
+  await userEvent.click(loadButton);
   expect(
     await screen.findByRole('heading', { name: 'Luxray' }),
   ).toBeInTheDocument();

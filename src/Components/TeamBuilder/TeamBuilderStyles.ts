@@ -31,7 +31,7 @@ const spin = keyframes`
 export const TeamGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 0.8rem;
   max-width: 1180px;
   margin: 0 auto;
 
@@ -194,8 +194,8 @@ export const ShowdownMessage = styled.p<{ $error: boolean }>`
 export const GeneratorPanel = styled.section`
   position: relative;
   max-width: 1180px;
-  margin: 0 auto 1.25rem;
-  padding: 1.1rem 1.15rem 1rem;
+  margin: 0 auto 1rem;
+  padding: 0.9rem 1rem 0.85rem;
   overflow: hidden;
   background: #252b36;
   border: 1px solid #505b70;
@@ -218,7 +218,7 @@ export const GeneratorPanel = styled.section`
 export const GeneratorHeader = styled.div`
   position: relative;
   display: flex;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
@@ -233,7 +233,7 @@ export const GeneratorTitle = styled.div`
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
 
   > span {
     min-width: 0;
@@ -259,21 +259,21 @@ export const GeneratorTitle = styled.div`
 
 export const GeneratorIcon = styled.span`
   display: grid;
-  width: 42px;
-  height: 42px;
-  flex: 0 0 42px;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
   place-items: center;
   color: #f4f5f7;
   background: #364052;
   border: 1px solid #687994;
-  border-radius: 13px;
-  box-shadow: 0 4px 0 #1b2029;
+  border-radius: 11px;
+  box-shadow: 0 3px 0 #1b2029;
 `;
 
 export const GeneratorBadge = styled.span`
   display: flex;
-  min-width: 92px;
-  padding: 0.45rem 0.65rem;
+  min-width: 84px;
+  padding: 0.35rem 0.55rem;
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -301,7 +301,7 @@ export const GeneratorControls = styled.div`
     minmax(145px, 0.7fr)
     minmax(190px, 1.25fr)
     auto;
-  gap: 0.65rem;
+  gap: 0.55rem;
   align-items: end;
 
   @media (max-width: 700px) {
@@ -322,15 +322,20 @@ export const ControlField = styled.label`
 `;
 
 export const ControlSelect = styled.select`
+  appearance: none;
   width: 100%;
-  min-height: 44px;
-  padding: 0.55rem 2rem 0.55rem 0.7rem;
+  min-height: 40px;
+  padding: 0.45rem 2rem 0.45rem 0.65rem;
   color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: normal;
   text-transform: none;
-  background: #2d3441;
+  background-color: #2d3441;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23c7ceda' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  background-size: 12px 8px;
   border: 2px solid #59667d;
   border-radius: 14px;
 
@@ -339,15 +344,21 @@ export const ControlSelect = styled.select`
     outline-offset: 1px;
     border-color: #8097be;
   }
+
+  @media (max-width: 700px) {
+    min-height: 44px;
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+  }
 `;
 
 export const PresetPanel = styled.section`
   display: grid;
   grid-template-columns: minmax(190px, 0.65fr) minmax(250px, 1fr);
-  gap: 0.85rem 1rem;
+  gap: 0.65rem 0.8rem;
   max-width: 1180px;
-  margin: 0 auto 1.25rem;
-  padding: 1rem;
+  margin: 0 auto 1rem;
+  padding: 0.85rem;
   background: #25353b;
   border: 1px solid #425e66;
   border-radius: 18px;
@@ -360,7 +371,7 @@ export const PresetPanel = styled.section`
   }
 
   ${ControlSelect} {
-    background: #1f2d32;
+    background-color: #1f2d32;
     border-color: #405b63;
 
     &:focus-visible {
@@ -399,7 +410,7 @@ export const PresetMeta = styled.div`
   display: grid;
   grid-column: 1 / -1;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.55rem;
+  gap: 0.45rem;
 
   @media (max-width: 900px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -412,7 +423,7 @@ export const PresetMeta = styled.div`
 
 export const PresetMetaItem = styled.div`
   min-width: 0;
-  padding: 0.6rem 0.7rem;
+  padding: 0.48rem 0.6rem;
   background: #1f2d32;
   border: 1px solid #405b63;
   border-radius: 12px;
@@ -484,11 +495,11 @@ export const SlotCard = styled.section<{
   $selected: boolean;
 }>`
   position: relative;
-  min-height: 292px;
-  padding: 1rem;
+  min-height: 260px;
+  padding: 0.85rem;
   overflow: hidden;
   border: 1px solid ${({ $selected }) => ($selected ? '#7d848e' : '#4c525b')};
-  border-radius: 18px;
+  border-radius: 16px;
   background: #1f2227;
   box-shadow:
     0 4px 0 #15171a,
@@ -524,7 +535,7 @@ export const SlotCard = styled.section<{
 
 export const SlotLabel = styled.span`
   display: block;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.25rem;
   color: #c2c6cd;
   font-size: 0.75rem;
   font-weight: 800;
@@ -532,86 +543,21 @@ export const SlotLabel = styled.span`
   text-transform: uppercase;
 `;
 
-export const PickerPanel = styled.section<{ $complete: boolean }>`
+export const PickerPanel = styled.section`
   display: grid;
-  grid-template-columns: ${({ $complete }) =>
-    $complete ? 'minmax(0, 1fr) auto' : 'minmax(190px, 0.7fr) minmax(320px, 1.3fr)'};
+  grid-template-columns: minmax(190px, 0.7fr) minmax(320px, 1.3fr);
   gap: 1rem;
   max-width: 1180px;
   margin: 0 auto 1.25rem;
-  padding: ${({ $complete }) => ($complete ? '0.8rem 1rem' : '1rem')};
+  padding: 1rem;
   align-items: center;
-  background: ${({ $complete }) => ($complete ? '#263730' : '#3a3324')};
-  border: 1px solid ${({ $complete }) => ($complete ? '#4f7061' : '#75623c')};
+  background: #3a3324;
+  border: 1px solid #75623c;
   border-radius: 18px;
-  box-shadow: 0 4px 0 ${({ $complete }) => ($complete ? '#17231d' : '#211c13')};
+  box-shadow: 0 4px 0 #211c13;
 
   @media (max-width: 700px) {
     grid-template-columns: 1fr;
-  }
-`;
-
-export const PickerCompleteContent = styled.div`
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 0.75rem;
-
-  > span:nth-child(2),
-  strong,
-  small {
-    display: block;
-  }
-
-  strong {
-    color: #f2f7f4;
-    font-size: 1rem;
-    font-weight: 850;
-  }
-
-  small {
-    color: #bed0c7;
-    font-size: 0.78rem;
-    line-height: 1.45;
-  }
-`;
-
-export const PickerCompleteIcon = styled.span`
-  display: grid;
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
-  place-items: center;
-  color: #dff5e8;
-  background: #355146;
-  border: 1px solid #5f8574;
-  border-radius: 13px;
-
-  svg {
-    width: 18px;
-    height: 18px;
-  }
-`;
-
-export const PickerCompleteBadge = styled.span`
-  display: flex;
-  min-width: 84px;
-  padding: 0.4rem 0.65rem;
-  align-items: center;
-  flex-direction: column;
-  color: #b9cdc3;
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  background: #203029;
-  border: 1px solid #486858;
-  border-radius: 12px;
-
-  strong {
-    color: #f2f7f4;
-    font-size: 0.88rem;
-    letter-spacing: normal;
   }
 `;
 
@@ -775,8 +721,8 @@ export const LoadingSpinner = styled.span`
 
 export const PokemonImage = styled.img`
   display: block;
-  width: min(100%, 155px);
-  height: 155px;
+  width: min(100%, 136px);
+  height: 136px;
   margin: 0 auto;
   object-fit: contain;
   transition: transform 0.18s ease;
@@ -785,7 +731,7 @@ export const PokemonImage = styled.img`
 export const PokemonImageLink = styled.a`
   display: block;
   width: fit-content;
-  margin: 0.2rem auto 0;
+  margin: 0.1rem auto 0;
   border-radius: 14px;
 
   &:hover ${PokemonImage} {
@@ -799,8 +745,8 @@ export const PokemonImageLink = styled.a`
 `;
 
 export const PokemonName = styled.h2`
-  margin: 0.1rem 0 0.45rem;
-  font-size: 1.25rem;
+  margin: 0.05rem 0 0.35rem;
+  font-size: 1.15rem;
   text-align: center;
 `;
 
@@ -820,24 +766,24 @@ export const PokemonNameLink = styled.a`
 
 export const Types = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 118px));
+  grid-template-columns: repeat(2, minmax(0, 102px));
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
 
   > :only-child {
     grid-column: 1 / -1;
-    width: 118px;
+    width: 102px;
     justify-self: center;
   }
 `;
 
 export const TeamTypeBadge = styled.span<{ $color: string }>`
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
-  min-height: 42px;
-  padding: 0.35rem 0.5rem;
+  grid-template-columns: 22px minmax(0, 1fr);
+  min-height: 34px;
+  padding: 0.25rem 0.4rem;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.35rem;
   background: #272b31;
   border: 1px solid #454b54;
   border-left: 4px solid ${({ $color }) => $color};
@@ -845,21 +791,21 @@ export const TeamTypeBadge = styled.span<{ $color: string }>`
 `;
 
 export const TeamTypeIcon = styled.img`
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
 `;
 
 export const TeamTypeName = styled.strong`
   overflow: hidden;
   color: #fffaf1;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 850;
   text-overflow: ellipsis;
 `;
 
 export const CompetitiveDetails = styled.details`
-  margin-top: 0.75rem;
-  padding: 0.55rem 0.6rem;
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.55rem;
   color: var(--text-primary);
   background: #272b31;
   border: 1px solid #454b54;
@@ -931,7 +877,7 @@ export const CompetitiveMoves = styled.ul`
 
 export const EmptySlot = styled.p`
   display: flex;
-  min-height: 235px;
+  min-height: 207px;
   margin: 0;
 `;
 
@@ -999,8 +945,8 @@ export const ErrorText = styled.p`
 export const CardControls = styled.div`
   position: absolute;
   z-index: 2;
-  top: 0.65rem;
-  right: 0.65rem;
+  top: 0.55rem;
+  right: 0.55rem;
   display: flex;
   gap: 0.35rem;
 `;

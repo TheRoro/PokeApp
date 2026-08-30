@@ -165,11 +165,7 @@ const RandomTeamGenerator: React.FC<Props> = ({
         return;
       }
       onGenerated(team);
-      setMessage(
-        mode === 'vgc'
-          ? 'Competitive team generated. This is a team-building heuristic, not a current regulation legality check.'
-          : 'Balanced team generated. Generate again for a new result.',
-      );
+      setMessage('');
     } catch (error) {
       if (controller.signal.aborted) return;
       setMessage(
