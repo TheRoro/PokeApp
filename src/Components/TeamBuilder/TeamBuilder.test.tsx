@@ -73,6 +73,14 @@ beforeEach(() => {
   mockedGenerateBalancedTeam.mockReset();
   mockedResolvePokemonSpeciesPool.mockReset();
   mockedResolvePokemonSpeciesPool.mockResolvedValue([
+    { name: 'bulbasaur', url: 'pokemon-species/bulbasaur' },
+    { name: 'charizard', url: 'pokemon-species/charizard' },
+    { name: 'charmander', url: 'pokemon-species/charmander' },
+    { name: 'charmeleon', url: 'pokemon-species/charmeleon' },
+    { name: 'eevee', url: 'pokemon-species/eevee' },
+    { name: 'machamp', url: 'pokemon-species/machamp' },
+    { name: 'pikachu', url: 'pokemon-species/pikachu' },
+    { name: 'staraptor', url: 'pokemon-species/staraptor' },
     { name: 'swampert', url: 'pokemon-species/swampert' },
     { name: 'gastrodon', url: 'pokemon-species/gastrodon' },
     { name: 'mamoswine', url: 'pokemon-species/mamoswine' },
@@ -252,6 +260,33 @@ test('allows only one selected game starter in an Adventure team', async () => {
   ).not.toBeInTheDocument();
 });
 
+test('rejects trade dependent additions when the Adventure restriction is enabled', async () => {
+  mockedFetchTeamPokemon.mockResolvedValue(
+    pokemon(68, 'machamp', ['fighting']),
+  );
+  mockedLoadAdventureEncounterInfo.mockResolvedValue({
+    encounterMethod: 'Walking',
+    evolutionMethod: 'Machop -> Machoke (level 28) -> Machamp (trade)',
+    levelRange: 'Level 16',
+    location: 'Rock Tunnel',
+    sourcePokemon: 'Machop',
+    tradeRequired: true,
+    version: 'Red',
+  });
+  renderBuilder();
+
+  await addPokemon('Machamp');
+
+  expect(
+    await screen.findByText(
+      'Machamp requires a trade and is excluded by the current Adventure restrictions.',
+    ),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('heading', { name: 'Machamp' }),
+  ).not.toBeInTheDocument();
+});
+
 test('warns when Scarlet encounter locations are unavailable upstream', async () => {
   mockedLoadTeamFilterCatalog.mockResolvedValue({
     all: { label: 'All Pokémon', value: 'all' },
@@ -262,10 +297,9 @@ test('warns when Scarlet encounter locations are unavailable upstream', async ()
   renderBuilder();
 
   expect(
-    await screen.findByText(/Scarlet and Violet data note:/i),
-  ).toBeInTheDocument();
-  expect(
-    screen.getByText(/Nothing is wrong with your team/i),
+    await screen.findByText(
+      'Encounter details are not available for Scarlet and Violet. Check the in-game Pokédex or map.',
+    ),
   ).toBeInTheDocument();
 });
 
@@ -281,11 +315,50 @@ test('warns when Legends Arceus encounter locations are unavailable upstream', a
   renderBuilder();
 
   expect(
-    await screen.findByText(/Legends: Arceus data note:/i),
+    await screen.findByText(
+      'Encounter details are not available for Legends: Arceus. Check the in-game Pokédex or map.',
+    ),
   ).toBeInTheDocument();
+});
+
+test('configures Adventure restrictions before generation', async () => {
+  mockedLoadTeamFilterCatalog.mockResolvedValue({
+    all: { label: 'All Pokémon', value: 'all' },
+    generations: [],
+    regions: [{ label: 'Kanto', value: 'kanto' }],
+    games: [{ label: 'Red', value: 'red' }],
+  });
+  mockedGenerateBalancedTeam.mockRejectedValue(new Error('Stop after options'));
+  renderBuilder();
+
+  const noTrades = await screen.findByRole('checkbox', {
+    name: /No trades/i,
+  });
+  const noVersionExclusives = screen.getByRole('checkbox', {
+    name: /No version exclusives/i,
+  });
+  const noDlc = screen.getByRole('checkbox', { name: /No DLC/i });
+  expect(noTrades).toBeChecked();
+  expect(noVersionExclusives).toBeChecked();
+  expect(noDlc).toBeChecked();
   expect(
-    screen.getByText(/Nothing is wrong with your team/i),
+    screen.getByText('Known postgame-only Pokémon are always excluded.'),
   ).toBeInTheDocument();
+
+  await userEvent.click(noTrades);
+  await userEvent.click(
+    screen.getByRole('button', { name: 'Generate team' }),
+  );
+
+  expect(mockedGenerateBalancedTeam).toHaveBeenCalledWith(
+    expect.objectContaining({
+      restrictions: {
+        noDlc: true,
+        noTrades: false,
+        noVersionExclusives: true,
+      },
+    }),
+  );
 });
 
 test('selects autocomplete suggestions with the keyboard', async () => {
@@ -585,6 +658,11 @@ test('generates a balanced team from a selected game Pokédex', async () => {
   expect(mockedGenerateBalancedTeam).toHaveBeenCalledWith(
     expect.objectContaining({
       mode: 'adventure',
+      restrictions: {
+        noDlc: true,
+        noTrades: true,
+        noVersionExclusives: true,
+      },
       scope: { kind: 'game', value: 'red' },
       signal: expect.any(AbortSignal),
     }),

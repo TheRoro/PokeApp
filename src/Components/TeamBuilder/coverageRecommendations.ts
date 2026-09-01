@@ -7,6 +7,7 @@ import {
   TeamPokemon,
 } from './teamAnalysis';
 import { isSpeciesAvailableInVersion } from './versionAvailability';
+import { isKnownVersionExclusive } from './versionAvailability';
 
 export type CoverageRecommendation = {
   name: string;
@@ -21,6 +22,7 @@ type Candidate = {
 
 type RecommendationOptions = {
   allowedSpecies?: ReadonlySet<string>;
+  excludeVersionExclusives?: boolean;
   limit?: number;
   version?: string;
 };
@@ -72,6 +74,7 @@ export function recommendCoveragePokemon(
 ): CoverageRecommendation[] {
   const {
     allowedSpecies,
+    excludeVersionExclusives = false,
     limit = 4,
     version,
   } = options;
@@ -97,6 +100,12 @@ export function recommendCoveragePokemon(
         allowedSpecies.has(candidate.species ?? candidate.name)) &&
       (!version ||
         isSpeciesAvailableInVersion(
+          candidate.species ?? candidate.name,
+          version,
+        )) &&
+      (!version ||
+        !excludeVersionExclusives ||
+        !isKnownVersionExclusive(
           candidate.species ?? candidate.name,
           version,
         )),

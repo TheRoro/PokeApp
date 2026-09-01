@@ -27,7 +27,14 @@ import {
   throwIfAborted,
 } from './pokeApiClient';
 import { TeamGenerationScope } from './teamFilterCatalog';
-import { isSpeciesAvailableInVersion } from './versionAvailability';
+import {
+  isKnownVersionExclusive,
+  isSpeciesAvailableInVersion,
+} from './versionAvailability';
+import {
+  AdventureRestrictions,
+  DEFAULT_ADVENTURE_RESTRICTIONS,
+} from './adventureRestrictions';
 
 const TEAM_SIZE = 6;
 const DEFAULT_CANDIDATE_COUNT = 30;
@@ -35,6 +42,16 @@ const MAX_CANDIDATE_COUNT = 60;
 const DEFAULT_CONCURRENCY = 6;
 const MAX_CONCURRENCY = 12;
 const DEFAULT_SELECTION_WINDOW = 3;
+const DLC_POKEDEXES = new Set([
+  'blueberry',
+  'crown-tundra',
+  'isle-of-armor',
+  'kitakami',
+]);
+const POSTGAME_POKEDEXES = new Set([
+  'blueberry',
+  'crown-tundra',
+]);
 const STARTER_ROOT_SPECIES = new Set([
   'bulbasaur',
   'charmander',
@@ -121,6 +138,20 @@ type GameAvailability = {
   siblingVersions: Set<string>;
 };
 
+function isPostgameEncounter(detail: {
+  condition_values?: NamedApiResource[];
+}): boolean {
+  return (detail.condition_values ?? []).some(condition => {
+    const name = condition.name.toLowerCase();
+    if (name.includes('before-hall-of-fame')) return false;
+    return (
+      name.includes('story-progress-hall-of-fame') ||
+      name.includes('story-progress-beat-red') ||
+      name.includes('postgame')
+    );
+  });
+}
+
 type PokemonResponse = {
   id: number;
   name: string;
@@ -159,6 +190,7 @@ export type BalanceScore = {
 export type ResolveTeamScopeOptions = {
   apiClient?: PokeApiClient;
   concurrency?: number;
+  includeDlc?: boolean;
   signal?: AbortSignal;
 };
 
@@ -166,6 +198,7 @@ export type GenerateBalancedTeamOptions = ResolveTeamScopeOptions & {
   candidateCount?: number;
   mode?: TeamGeneratorMode;
   random?: () => number;
+  restrictions?: AdventureRestrictions;
   scope: TeamGenerationScope;
   selectionWindow?: number;
 };
@@ -219,7 +252,15 @@ function uniqueSpecies(
   });
 }
 
-function chooseRegionPokedexes(region: RegionResponse): NamedApiResource[] {
+function chooseRegionPokedexes(
+  region: RegionResponse,
+  includeDlc: boolean | undefined,
+): NamedApiResource[] {
+  if (includeDlc) {
+    return region.pokedexes.filter(
+      pokedex => !POSTGAME_POKEDEXES.has(pokedex.name),
+    );
+  }
   const exact = region.pokedexes.filter(
     pokedex => pokedex.name === region.name,
   );
@@ -238,6 +279,18 @@ function chooseRegionPokedexes(region: RegionResponse): NamedApiResource[] {
   if (regionalSegments.length > 0) return regionalSegments;
 
   return region.pokedexes.slice(0, 1);
+}
+
+function chooseGamePokedexes(
+  pokedexes: readonly NamedApiResource[],
+  _versionName: string,
+  includeDlc: boolean | undefined,
+): NamedApiResource[] {
+  return pokedexes.filter(
+    pokedex =>
+      !POSTGAME_POKEDEXES.has(pokedex.name) &&
+      (includeDlc !== false || !DLC_POKEDEXES.has(pokedex.name)),
+  );
 }
 
 async function loadPokedexSpecies(
@@ -267,6 +320,7 @@ export async function resolvePokemonSpeciesPool(
   const {
     apiClient = defaultPokeApiClient,
     concurrency = DEFAULT_CONCURRENCY,
+    includeDlc,
     signal,
   } = options;
   const requestConcurrency = boundedInteger(
@@ -305,7 +359,7 @@ export async function resolvePokemonSpeciesPool(
       `region/${value}`,
       signal,
     );
-    const pokedexes = chooseRegionPokedexes(response);
+    const pokedexes = chooseRegionPokedexes(response, includeDlc);
     if (pokedexes.length === 0) {
       throw new BalancedTeamGenerationError(
         `No regional Pokédex is available for ${scope.value}.`,
@@ -327,13 +381,18 @@ export async function resolvePokemonSpeciesPool(
     version.version_group.url,
     signal,
   );
-  if (response.pokedexes.length === 0) {
+  const pokedexes = chooseGamePokedexes(
+    response.pokedexes,
+    scope.value.trim().toLowerCase(),
+    includeDlc,
+  );
+  if (pokedexes.length === 0) {
     throw new BalancedTeamGenerationError(
       `No regional Pokédex is available for ${scope.value}.`,
     );
   }
   return loadPokedexSpecies(
-    response.pokedexes,
+    pokedexes,
     apiClient,
     requestConcurrency,
     signal,
@@ -380,12 +439,15 @@ function evolutionSpeciesNames(node: EvolutionNode): string[] {
 
 async function isAvailableInGame(
   chain: EvolutionNode,
+  speciesName: string,
   game: GameAvailability,
   apiClient: PokeApiClient,
   encounterCache: Map<string, Promise<EncounterResponse>>,
+  excludeVersionExclusives: boolean,
   signal?: AbortSignal,
 ): Promise<boolean> {
-  let foundSiblingEncounter = false;
+  const encounteredVersions = new Set<string>();
+  const precreditsVersions = new Set<string>();
 
   for (const speciesName of evolutionSpeciesNames(chain)) {
     let encounters = encounterCache.get(speciesName);
@@ -398,16 +460,43 @@ async function isAvailableInGame(
     }
     const locations = await encounters;
     throwIfAborted(signal);
-    const versions = locations.flatMap(location =>
-      location.version_details.map(detail => detail.version.name),
+    locations.forEach(location =>
+      location.version_details.forEach(detail => {
+        encounteredVersions.add(detail.version.name);
+        const encounterDetails = detail.encounter_details ?? [];
+        if (
+          encounterDetails.length === 0 ||
+          encounterDetails.some(
+            encounter => !isPostgameEncounter(encounter),
+          )
+        ) {
+          precreditsVersions.add(detail.version.name);
+        }
+      }),
     );
-    if (versions.includes(game.selectedVersion)) return true;
-    if (versions.some(version => game.siblingVersions.has(version))) {
-      foundSiblingEncounter = true;
-    }
   }
 
-  return !foundSiblingEncounter;
+  const selectedEncountered = encounteredVersions.has(game.selectedVersion);
+  const selectedAvailable = precreditsVersions.has(game.selectedVersion);
+  if (selectedEncountered && !selectedAvailable) return false;
+  const availableInSibling = [...game.siblingVersions].some(version =>
+    precreditsVersions.has(version),
+  );
+  if (!selectedAvailable && availableInSibling) return false;
+  if (
+    excludeVersionExclusives &&
+    (isKnownVersionExclusive(
+      speciesName,
+      game.selectedVersion,
+    ) ||
+      (selectedAvailable &&
+        [...game.siblingVersions].some(
+          version => !encounteredVersions.has(version),
+        )))
+  ) {
+    return false;
+  }
+  return selectedAvailable || !availableInSibling;
 }
 
 async function loadDefaultVariety(
@@ -419,6 +508,7 @@ async function loadDefaultVariety(
   mode: TeamGeneratorMode,
   allowedStarterRoots: ReadonlySet<string>,
   allowedStarterSpecies: ReadonlySet<string>,
+  restrictions: AdventureRestrictions,
   scope: TeamGenerationScope,
   gameAvailability?: GameAvailability,
   signal?: AbortSignal,
@@ -480,9 +570,11 @@ async function loadDefaultVariety(
     !isStarter &&
     !(await isAvailableInGame(
       chain.chain,
+      speciesData.name,
       gameAvailability,
       apiClient,
       encounterCache,
+      restrictions.noVersionExclusives,
       signal,
     ))
   ) {
@@ -717,6 +809,7 @@ export async function generateBalancedTeam(
   const {
     apiClient = defaultPokeApiClient,
     random = Math.random,
+    restrictions = DEFAULT_ADVENTURE_RESTRICTIONS,
     scope,
     signal,
   } = options;
@@ -744,6 +837,7 @@ export async function generateBalancedTeam(
   const pool = await resolvePokemonSpeciesPool(scope, {
     apiClient,
     concurrency,
+    includeDlc: mode !== 'adventure' || !restrictions.noDlc,
     signal,
   });
   throwIfAborted(signal);
@@ -827,6 +921,7 @@ export async function generateBalancedTeam(
           mode,
           allowedStarterRoots,
           allowedStarterSpecies,
+          restrictions,
           scope,
           gameAvailability,
           signal,
@@ -851,16 +946,15 @@ export async function generateBalancedTeam(
     );
   }
 
-  const team = selectBalancedTeam(candidates, mode, random, selectionWindow);
   if (
     mode !== 'adventure' ||
     (scope.kind !== 'game' && scope.kind !== 'region')
   ) {
-    return team;
+    return selectBalancedTeam(candidates, mode, random, selectionWindow);
   }
 
-  return mapWithConcurrency(
-    team,
+  const adventureCandidates = await mapWithConcurrency(
+    candidates,
     concurrency,
     async member => {
       const chain = chainsBySpecies.get(member.speciesName);
@@ -869,19 +963,42 @@ export async function generateBalancedTeam(
           `Evolution information could not be loaded for ${member.displayName}.`,
         );
       }
+      const adventureInfo = await buildAdventureEncounterInfo({
+        apiClient,
+        chain,
+        encounterCache,
+        isStarter: member.isStarter,
+        scope,
+        signal,
+        targetSpecies: member.speciesName,
+      });
+      if (
+        restrictions.noTrades &&
+        adventureInfo.tradeRequired
+      ) {
+        return null;
+      }
       return {
         ...member,
-        adventureInfo: await buildAdventureEncounterInfo({
-          apiClient,
-          chain,
-          encounterCache,
-          isStarter: member.isStarter,
-          scope,
-          signal,
-          targetSpecies: member.speciesName,
-        }),
+        adventureInfo,
       };
     },
     signal,
+  );
+  const eligibleAdventureCandidates = adventureCandidates.filter(
+    (
+      candidate,
+    ): candidate is Exclude<typeof candidate, null> => candidate !== null,
+  );
+  if (eligibleAdventureCandidates.length < TEAM_SIZE) {
+    throw new BalancedTeamGenerationError(
+      `Only ${eligibleAdventureCandidates.length} Pokémon satisfy the selected Adventure restrictions; six are required.`,
+    );
+  }
+  return selectBalancedTeam(
+    eligibleAdventureCandidates,
+    mode,
+    random,
+    selectionWindow,
   );
 }

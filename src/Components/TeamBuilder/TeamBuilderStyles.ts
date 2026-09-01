@@ -352,6 +352,84 @@ export const ControlSelect = styled.select`
   }
 `;
 
+export const GeneratorRestrictions = styled.div`
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin: 0.55rem 0 0;
+  padding: 0.55rem 0 0;
+  border: 0;
+  border-top: 1px solid #3f495a;
+
+  @media (max-width: 820px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const GeneratorRestrictionsTitle = styled.div`
+  display: flex;
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin-bottom: 0;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: #e6e9ee;
+  font-size: 0.78rem;
+  font-weight: 850;
+
+  small {
+    color: #aeb7c5;
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: right;
+  }
+
+  @media (max-width: 820px) {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.15rem;
+
+    small {
+      text-align: left;
+    }
+  }
+`;
+
+export const GeneratorRestriction = styled.label`
+  display: flex;
+  min-width: 0;
+  min-height: 38px;
+  padding: 0.4rem 0.55rem;
+  align-items: center;
+  gap: 0.45rem;
+  color: #d8dde5;
+  background: #29313e;
+  border: 1px solid #4d5a70;
+  border-radius: 11px;
+  cursor: pointer;
+
+  input {
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    flex: 0 0 1rem;
+    accent-color: #d5a43c;
+  }
+
+  strong {
+    font-size: 0.75rem;
+  }
+
+  &:has(input:focus-visible) {
+    outline: 3px solid rgba(128, 151, 190, 0.22);
+    outline-offset: 1px;
+    border-color: #8097be;
+  }
+`;
+
 export const PresetPanel = styled.section`
   display: grid;
   grid-template-columns: minmax(190px, 0.65fr) minmax(250px, 1fr);

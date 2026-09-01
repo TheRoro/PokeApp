@@ -6,6 +6,9 @@ import { TeamPokemon } from './teamAnalysis';
 type PokemonResponse = {
   id: number;
   name: string;
+  species?: {
+    name: string;
+  };
   sprites: {
     front_default: string | null;
     other: {
@@ -25,6 +28,7 @@ export function mapTeamPokemon(data: PokemonResponse): TeamPokemon {
   return {
     id: data.id,
     name: data.name,
+    speciesName: data.species?.name ?? data.name,
     displayName: formatPokemonName(data.name),
     imageUrl:
       data.sprites.other['official-artwork'].front_default ??

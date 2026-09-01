@@ -60,3 +60,14 @@ export function isSpeciesAvailableInVersion(
   if (version === 'violet') return !SCARLET_EXCLUSIVES.has(species);
   return true;
 }
+
+export function isKnownVersionExclusive(
+  speciesName: string,
+  versionName: string,
+): boolean {
+  const species = speciesName.trim().toLowerCase();
+  const version = versionName.trim().toLowerCase();
+  if (version === 'scarlet') return SCARLET_EXCLUSIVES.has(species);
+  if (version === 'violet') return VIOLET_EXCLUSIVES.has(species);
+  return false;
+}

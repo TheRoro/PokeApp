@@ -274,8 +274,72 @@ describe('random team scope resolution', () => {
       resource('fennekin'),
       resource('froakie'),
     ]);
+    await expect(
+      resolvePokemonSpeciesPool(
+        { kind: 'game', value: 'x' },
+        { apiClient, includeDlc: false },
+      ),
+    ).resolves.toEqual([
+      resource('chespin'),
+      resource('fennekin'),
+      resource('froakie'),
+    ]);
     expect(apiClient.get).not.toHaveBeenCalledWith(
       'pokedex/updated-johto',
+      undefined,
+    );
+  });
+
+  test('keeps postgame expansion Pokédexes excluded even when DLC is allowed', async () => {
+    const apiClient = mockApiClient({
+      'version/sword': {
+        name: 'sword',
+        version_group: resource(
+          'sword-shield',
+          'version-group/sword-shield',
+        ),
+      },
+      'version-group/sword-shield': {
+        name: 'sword-shield',
+        versions: [
+          resource('sword', 'version/sword'),
+          resource('shield', 'version/shield'),
+        ],
+        pokedexes: [
+          resource('galar', 'pokedex/galar'),
+          resource('isle-of-armor', 'pokedex/isle-of-armor'),
+          resource('crown-tundra', 'pokedex/crown-tundra'),
+        ],
+      },
+      'pokedex/galar': {
+        pokemon_entries: [
+          { pokemon_species: resource('rookidee') },
+        ],
+      },
+      'pokedex/isle-of-armor': {
+        pokemon_entries: [
+          { pokemon_species: resource('kubfu') },
+        ],
+      },
+    });
+
+    await expect(
+      resolvePokemonSpeciesPool(
+        { kind: 'game', value: 'sword' },
+        { apiClient, includeDlc: false },
+      ),
+    ).resolves.toEqual([resource('rookidee')]);
+    await expect(
+      resolvePokemonSpeciesPool(
+        { kind: 'game', value: 'sword' },
+        { apiClient, includeDlc: true },
+      ),
+    ).resolves.toEqual([
+      resource('rookidee'),
+      resource('kubfu'),
+    ]);
+    expect(apiClient.get).not.toHaveBeenCalledWith(
+      'pokedex/crown-tundra',
       undefined,
     );
   });
@@ -539,6 +603,7 @@ describe('balanced random team generation', () => {
       'clefable',
       'primeape',
       'golem',
+      'chansey',
     ];
     const responses: Record<string, unknown> = {
       'version/firered': {
@@ -629,6 +694,24 @@ describe('balanced random team generation', () => {
                   ],
                 },
               ]
+            : name === 'chansey'
+              ? [
+                  {
+                    version_details: [
+                      {
+                        version: resource('firered'),
+                        encounter_details: [
+                          {
+                            condition_values: [
+                              resource('story-progress-hall-of-fame'),
+                            ],
+                            method: resource('walk'),
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ]
             : [];
       responses[`${name}-pokemon-url`] = pokemonResponse(
         index + 1,
@@ -643,6 +726,11 @@ describe('balanced random team generation', () => {
       apiClient,
       candidateCount: species.length,
       random: () => 0,
+      restrictions: {
+        noDlc: true,
+        noTrades: true,
+        noVersionExclusives: false,
+      },
       scope: { kind: 'game', value: 'firered' },
       selectionWindow: 1,
     });
@@ -651,6 +739,7 @@ describe('balanced random team generation', () => {
     expect(team.filter(member => member.isStarter)).toHaveLength(1);
     expect(team.map(member => member.name)).toContain('growlithe');
     expect(team.map(member => member.name)).not.toContain('vulpix');
+    expect(team.map(member => member.name)).not.toContain('chansey');
     expect(
       team.find(member => member.name === 'growlithe')?.adventureInfo,
     ).toMatchObject({
@@ -661,6 +750,10 @@ describe('balanced random team generation', () => {
     });
     expect(apiClient.get).not.toHaveBeenCalledWith(
       'vulpix-pokemon-url',
+      undefined,
+    );
+    expect(apiClient.get).not.toHaveBeenCalledWith(
+      'chansey-pokemon-url',
       undefined,
     );
   });

@@ -10,6 +10,7 @@ import TeamPicker from './TeamPicker';
 import RandomTeamGenerator from './RandomTeamGenerator';
 import type { TeamGeneratorContext } from './RandomTeamGenerator';
 import type { TeamGeneratorMode } from './balancedTeamGenerator';
+import { DEFAULT_ADVENTURE_RESTRICTIONS } from './adventureRestrictions';
 import {
   analyzeOffensiveCoverage,
   analyzeTeam,
@@ -164,6 +165,7 @@ const TeamBuilder: React.FC = () => {
   const [generatorContext, setGeneratorContext] =
     useState<TeamGeneratorContext>({
       mode: 'adventure',
+      restrictions: DEFAULT_ADVENTURE_RESTRICTIONS,
       scope: { kind: 'game', value: 'red' },
     });
   const pickerInputRef = useRef<HTMLInputElement>(null);
@@ -258,41 +260,64 @@ const TeamBuilder: React.FC = () => {
           import('./coverageRecommendations'),
           import('./balancedTeamGenerator').then(
             ({ resolvePokemonSpeciesPool }) =>
-              resolvePokemonSpeciesPool(adventureScope),
+              resolvePokemonSpeciesPool(adventureScope, {
+                includeDlc: !generatorContext.restrictions.noDlc,
+              }),
           ),
         ])
       : import('./coverageRecommendations').then(module => [module, null] as const);
 
     void recommendationRequest
-      .then(([{ recommendCoveragePokemon }, pool]) => {
-        if (active) {
-          const existingStarter = recommendationTeam.some(
-            member =>
-              member.adventureInfo?.encounterMethod === 'Starter gift',
+      .then(async ([{ recommendCoveragePokemon }, pool]) => {
+        const existingStarter = recommendationTeam.some(
+          member =>
+            member.adventureInfo?.encounterMethod === 'Starter gift',
+        );
+        const excludedStarters =
+          existingStarter && adventureScope
+            ? adventureStarterSpecies(
+                adventureScope.kind,
+                adventureScope.value,
+              )
+            : new Set<string>();
+        let recommendations = recommendCoveragePokemon(recommendationTeam, {
+          allowedSpecies: pool
+            ? new Set(
+                pool
+                  .map(species => species.name)
+                  .filter(species => !excludedStarters.has(species)),
+              )
+            : undefined,
+          excludeVersionExclusives:
+            generatorContext.restrictions.noVersionExclusives,
+          limit:
+            adventureScope && generatorContext.restrictions.noTrades
+              ? 12
+              : 4,
+          version:
+            adventureScope?.kind === 'game'
+              ? adventureScope.value
+              : undefined,
+        });
+        if (adventureScope && generatorContext.restrictions.noTrades) {
+          const { loadAdventureEncounterInfo } = await import(
+            './adventureEncounter'
           );
-          const excludedStarters =
-            existingStarter && adventureScope
-              ? adventureStarterSpecies(
-                  adventureScope.kind,
-                  adventureScope.value,
-                )
-              : new Set<string>();
-          setCoverageRecommendations(
-            recommendCoveragePokemon(recommendationTeam, {
-              allowedSpecies: pool
-                ? new Set(
-                    pool
-                      .map(species => species.name)
-                      .filter(species => !excludedStarters.has(species)),
-                  )
-                : undefined,
-              version:
-                adventureScope?.kind === 'game'
-                  ? adventureScope.value
-                  : undefined,
-            }),
+          const eligibility = await Promise.all(
+            recommendations.map(async recommendation => ({
+              recommendation,
+              info: await loadAdventureEncounterInfo({
+                pokemonName: recommendation.name,
+                scope: adventureScope,
+              }),
+            })),
           );
+          recommendations = eligibility
+            .filter(candidate => !candidate.info.tradeRequired)
+            .map(candidate => candidate.recommendation)
+            .slice(0, 4);
         }
+        if (active) setCoverageRecommendations(recommendations);
       })
       .catch(() => {
         if (active) setCoverageRecommendations([]);
@@ -468,6 +493,21 @@ const TeamBuilder: React.FC = () => {
       const { loadAdventureEncounterInfo } = await import(
         './adventureEncounter'
       );
+      const { resolvePokemonSpeciesPool } = await import(
+        './balancedTeamGenerator'
+      );
+      const allowedPool = await resolvePokemonSpeciesPool(adventureScope, {
+        includeDlc: !generatorContext.restrictions.noDlc,
+        signal,
+      });
+      if (
+        !allowedPool.some(
+          species =>
+            species.name === (pokemon.speciesName ?? pokemon.name),
+        )
+      ) {
+        return `${pokemon.displayName} is not available before the postgame with the current Adventure restrictions.`;
+      }
       const adventureInfo = await loadAdventureEncounterInfo({
         pokemonName: pokemon.name,
         scope: adventureScope,
@@ -483,6 +523,12 @@ const TeamBuilder: React.FC = () => {
         )
       ) {
         return 'Adventure teams can include only one starter from the selected game.';
+      }
+      if (
+        generatorContext.restrictions.noTrades &&
+        adventureInfo.tradeRequired
+      ) {
+        return `${pokemon.displayName} requires a trade and is excluded by the current Adventure restrictions.`;
       }
       teamMember = { ...pokemon, adventureInfo };
     }

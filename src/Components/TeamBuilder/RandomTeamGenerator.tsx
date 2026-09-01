@@ -5,6 +5,10 @@ import type {
   TeamGeneratorMode,
 } from './balancedTeamGenerator';
 import {
+  AdventureRestrictions,
+  DEFAULT_ADVENTURE_RESTRICTIONS,
+} from './adventureRestrictions';
+import {
   loadTeamFilterCatalog,
   TeamFilterCatalog,
   TeamFilterOption,
@@ -20,6 +24,9 @@ import {
   GeneratorIcon,
   GeneratorMessage,
   GeneratorPanel,
+  GeneratorRestriction,
+  GeneratorRestrictions,
+  GeneratorRestrictionsTitle,
   GeneratorTitle,
   LoadingSpinner,
 } from './TeamBuilderStyles';
@@ -38,6 +45,7 @@ type Props = {
 
 export type TeamGeneratorContext = {
   mode: TeamGeneratorMode;
+  restrictions: AdventureRestrictions;
   scope: TeamGenerationScope;
 };
 
@@ -72,6 +80,9 @@ const RandomTeamGenerator: React.FC<Props> = ({
   const [loadingCatalog, setLoadingCatalog] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [message, setMessage] = useState('');
+  const [restrictions, setRestrictions] = useState<AdventureRestrictions>(
+    DEFAULT_ADVENTURE_RESTRICTIONS,
+  );
   const generationControllerRef = useRef<AbortController>();
   const revisionRef = useRef(teamRevision);
   const options = useMemo(
@@ -91,8 +102,8 @@ const RandomTeamGenerator: React.FC<Props> = ({
   }, [teamRevision]);
 
   useEffect(() => {
-    onContextChange({ mode, scope: activeScope });
-  }, [activeScope, mode, onContextChange]);
+    onContextChange({ mode, restrictions, scope: activeScope });
+  }, [activeScope, mode, onContextChange, restrictions]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -156,6 +167,7 @@ const RandomTeamGenerator: React.FC<Props> = ({
       );
       const team = await generateBalancedTeam({
         mode,
+        restrictions,
         scope,
         signal: controller.signal,
       });
@@ -183,7 +195,7 @@ const RandomTeamGenerator: React.FC<Props> = ({
 
   const description =
     mode === 'adventure'
-      ? 'Creates an in-game journey team with exactly one starter, local availability, encounter guidance, and no legendary or mythical encounters.'
+      ? 'Creates a precredits-focused journey team with exactly one starter, local availability, encounter guidance, and no legendary or mythical encounters.'
       : mode === 'general'
         ? 'Creates a fully evolved team from all generations or one generation. Legendary and mythical Pokémon can appear.'
         : 'Creates a competitive doubles roster using stat, role, typing, and matchup heuristics. Exact regulation legality is not guaranteed.';
@@ -198,7 +210,7 @@ const RandomTeamGenerator: React.FC<Props> = ({
   const visibleMessage =
     message ||
     (encounterDataNotice
-      ? `${encounterDataNotice} data note: Nothing is wrong with your team. PokéAPI does not currently publish encounter locations or levels for this selection, so check the in game Pokédex or map for the exact area.`
+      ? `Encounter details are not available for ${encounterDataNotice}. Check the in-game Pokédex or map.`
       : '');
 
   return (
@@ -302,6 +314,56 @@ const RandomTeamGenerator: React.FC<Props> = ({
           )}
         </GenerateButton>
       </GeneratorControls>
+      {mode === 'adventure' && (
+        <GeneratorRestrictions
+          aria-label="Adventure restrictions"
+          role="group"
+        >
+          <GeneratorRestrictionsTitle>
+            <strong>Adventure restrictions</strong>
+            <small>Known postgame-only Pokémon are always excluded.</small>
+          </GeneratorRestrictionsTitle>
+          <GeneratorRestriction>
+            <input
+              type="checkbox"
+              checked={restrictions.noTrades}
+              onChange={event =>
+                setRestrictions(current => ({
+                  ...current,
+                  noTrades: event.target.checked,
+                }))
+              }
+            />
+            <strong>No trades</strong>
+          </GeneratorRestriction>
+          <GeneratorRestriction>
+            <input
+              type="checkbox"
+              checked={restrictions.noVersionExclusives}
+              onChange={event =>
+                setRestrictions(current => ({
+                  ...current,
+                  noVersionExclusives: event.target.checked,
+                }))
+              }
+            />
+            <strong>No version exclusives</strong>
+          </GeneratorRestriction>
+          <GeneratorRestriction>
+            <input
+              type="checkbox"
+              checked={restrictions.noDlc}
+              onChange={event =>
+                setRestrictions(current => ({
+                  ...current,
+                  noDlc: event.target.checked,
+                }))
+              }
+            />
+            <strong>No DLC</strong>
+          </GeneratorRestriction>
+        </GeneratorRestrictions>
+      )}
       <GeneratorMessage role="status">{visibleMessage}</GeneratorMessage>
     </GeneratorPanel>
   );

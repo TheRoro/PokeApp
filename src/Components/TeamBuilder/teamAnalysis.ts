@@ -7,6 +7,7 @@ import type { AdventureEncounterInfo } from './adventureEncounterInfo';
 export type TeamPokemon = {
   id: number;
   name: string;
+  speciesName?: string;
   displayName: string;
   imageUrl: string;
   types: string[];
