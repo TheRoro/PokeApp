@@ -72,6 +72,122 @@ const balancedStats = {
   speed: 80,
 };
 
+function adventureGameResponses(
+  game: string,
+  starterSpecies: string,
+  starterPokemon: string,
+): Record<string, unknown> {
+  const ordinarySpecies = [
+    'arcanine',
+    'starmie',
+    'machamp',
+    'alakazam',
+    'golem',
+  ];
+  const species = [starterSpecies, ...ordinarySpecies];
+  const responses: Record<string, unknown> = {
+    [`version/${game}`]: {
+      name: game,
+      version_group: resource(game, `version-group/${game}`),
+    },
+    [`version-group/${game}`]: {
+      name: game,
+      pokedexes: [resource(game, `pokedex/${game}`)],
+      versions: [resource(game, `version/${game}`)],
+    },
+    [`pokedex/${game}`]: {
+      pokemon_entries: species.map(name => ({
+        pokemon_species: resource(name),
+      })),
+    },
+  };
+
+  species.forEach((name, index) => {
+    const isStarter = name === starterSpecies;
+    const starterRoot =
+      starterSpecies === 'decidueye'
+        ? 'rowlet'
+        : starterSpecies === 'pikachu'
+          ? 'pichu'
+          : starterSpecies;
+    const starterMiddle =
+      starterSpecies === 'decidueye'
+        ? {
+            species: resource('dartrix'),
+            evolves_to: [
+              {
+                species: resource('decidueye'),
+                evolves_to: [],
+              },
+            ],
+          }
+        : starterSpecies === 'pikachu'
+          ? {
+              species: resource('pikachu'),
+              evolves_to: [
+                {
+                  species: resource('raichu'),
+                  evolves_to: [],
+                },
+              ],
+            }
+          : null;
+    const chain = isStarter
+      ? {
+          species: resource(starterRoot),
+          evolves_to: starterMiddle
+            ? [starterMiddle]
+            : [
+                {
+                  species: resource('vaporeon'),
+                  evolves_to: [],
+                },
+              ],
+        }
+      : {
+          species: resource(name),
+          evolves_to: [],
+        };
+    const defaultPokemon = `${name}-pokemon`;
+    responses[`${name}-url`] = {
+      evolution_chain: resource(name, `${name}-chain-url`),
+      is_legendary: false,
+      is_mythical: false,
+      name,
+      varieties: [
+        {
+          is_default: true,
+          pokemon: resource(name, defaultPokemon),
+        },
+        ...(starterPokemon === name
+          ? []
+          : [
+              {
+                is_default: false,
+                pokemon: resource(starterPokemon, `${starterPokemon}-url`),
+              },
+            ]),
+      ],
+    };
+    responses[`${name}-chain-url`] = { chain };
+    responses[
+      isStarter && starterPokemon !== name
+        ? `${starterPokemon}-url`
+        : defaultPokemon
+    ] = pokemonResponse(
+      index + 1,
+      isStarter ? starterPokemon : name,
+      ['normal'],
+      balancedStats,
+    );
+    if (!isStarter) {
+      responses[`pokemon/${name}/encounters`] = [];
+    }
+  });
+
+  return responses;
+}
+
 describe('random team scope resolution', () => {
   test('resolves all Pokémon and generation species without forms', async () => {
     const apiClient = mockApiClient({
@@ -166,6 +282,66 @@ describe('random team scope resolution', () => {
 });
 
 describe('balanced random team generation', () => {
+  test.each([
+    ['yellow', 'pikachu', 'pikachu'],
+    ['lets-go-pikachu', 'pikachu', 'pikachu-starter'],
+    ['lets-go-eevee', 'eevee', 'eevee-starter'],
+  ])(
+    'uses the non-evolving partner starter in %s',
+    async (game, starterSpecies, starterPokemon) => {
+      const team = await generateBalancedTeam({
+        apiClient: mockApiClient(
+          adventureGameResponses(game, starterSpecies, starterPokemon),
+        ),
+        candidateCount: 6,
+        mode: 'adventure',
+        random: () => 0,
+        scope: { kind: 'game', value: game },
+        selectionWindow: 1,
+      });
+
+      expect(team).toHaveLength(6);
+      expect(team.filter(member => member.isStarter)).toHaveLength(1);
+      expect(team.find(member => member.isStarter)).toMatchObject({
+        name: starterPokemon,
+        speciesName: starterSpecies,
+        adventureInfo: {
+          encounterMethod: 'Starter gift',
+          evolutionMethod: 'No evolution required',
+          sourcePokemon:
+            starterSpecies === 'eevee' ? 'Eevee' : 'Pikachu',
+        },
+      });
+    },
+  );
+
+  test('uses the Hisuian final form for a Legends Arceus starter', async () => {
+    const team = await generateBalancedTeam({
+      apiClient: mockApiClient(
+        adventureGameResponses(
+          'legends-arceus',
+          'decidueye',
+          'decidueye-hisui',
+        ),
+      ),
+      candidateCount: 6,
+      mode: 'adventure',
+      random: () => 0,
+      scope: { kind: 'game', value: 'legends-arceus' },
+      selectionWindow: 1,
+    });
+
+    expect(team.filter(member => member.isStarter)).toHaveLength(1);
+    expect(team.find(member => member.isStarter)).toMatchObject({
+      name: 'decidueye-hisui',
+      displayName: 'Hisuian Decidueye',
+      speciesName: 'decidueye',
+      adventureInfo: {
+        encounterMethod: 'Starter gift',
+      },
+    });
+  });
+
   test('returns six unique default species with stats using bounded concurrency', async () => {
     const species = [
       ['bulbasaur', 'grass'],

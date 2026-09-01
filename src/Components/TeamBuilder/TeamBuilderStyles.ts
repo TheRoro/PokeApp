@@ -590,6 +590,77 @@ export const PickerForm = styled.form`
   }
 `;
 
+export const RecommendationPanel = styled.div`
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 0.65rem;
+
+  > span {
+    flex: 0 0 auto;
+    color: #d8c9a7;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 700px) {
+    align-items: stretch;
+    flex-direction: column;
+  }
+`;
+
+export const RecommendationList = styled.div`
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+`;
+
+export const RecommendationButton = styled.button`
+  display: flex;
+  min-height: 36px;
+  padding: 0.35rem 0.55rem;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  color: #fff3d7;
+  background: #2d281e;
+  border: 1px solid #78643c;
+  border-radius: 10px;
+  cursor: pointer;
+
+  strong,
+  small {
+    display: block;
+  }
+
+  strong {
+    font-size: 0.72rem;
+  }
+
+  small {
+    color: #d8c9a7;
+    font-size: 0.61rem;
+  }
+
+  &:hover:not(:disabled) {
+    background: #453a24;
+    border-color: #d9ad4e;
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.6;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(229, 185, 86, 0.24);
+    outline-offset: 2px;
+  }
+`;
+
 export const InputContainer = styled.div`
   position: relative;
   flex: 1;

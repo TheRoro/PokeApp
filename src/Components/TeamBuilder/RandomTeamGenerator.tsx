@@ -187,6 +187,19 @@ const RandomTeamGenerator: React.FC<Props> = ({
       : mode === 'general'
         ? 'Creates a fully evolved team from all generations or one generation. Legendary and mythical Pokémon can appear.'
         : 'Creates a competitive doubles roster using stat, role, typing, and matchup heuristics. Exact regulation legality is not guaranteed.';
+  const encounterDataNotice =
+    mode === 'adventure' && poolKind === 'game'
+      ? scopeValue === 'scarlet' || scopeValue === 'violet'
+        ? 'Scarlet and Violet'
+        : scopeValue === 'legends-arceus'
+          ? 'Legends: Arceus'
+          : null
+      : null;
+  const visibleMessage =
+    message ||
+    (encounterDataNotice
+      ? `${encounterDataNotice} data note: Nothing is wrong with your team. PokéAPI does not currently publish encounter locations or levels for this selection, so check the in game Pokédex or map for the exact area.`
+      : '');
 
   return (
     <GeneratorPanel>
@@ -289,7 +302,7 @@ const RandomTeamGenerator: React.FC<Props> = ({
           )}
         </GenerateButton>
       </GeneratorControls>
-      <GeneratorMessage role="status">{message}</GeneratorMessage>
+      <GeneratorMessage role="status">{visibleMessage}</GeneratorMessage>
     </GeneratorPanel>
   );
 };

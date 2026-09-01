@@ -1,5 +1,11 @@
 import React from 'react';
-import { FaArrowLeft, FaArrowRight, FaPlus, FaTimes } from 'react-icons/fa';
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaExchangeAlt,
+  FaPlus,
+  FaTimes,
+} from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import typeIcons from '../../Assets/type-icons';
 import { getTypeColor } from '../Tools/TypeBadge';
@@ -40,6 +46,7 @@ type Props = {
   onMoveLeft: () => void;
   onMoveRight: () => void;
   onRemove: () => void;
+  onReplace: () => void;
   onSelect: () => void;
 };
 
@@ -55,6 +62,7 @@ const Pokemon: React.FC<Props> = ({
   onMoveLeft,
   onMoveRight,
   onRemove,
+  onReplace,
   onSelect,
 }) => (
   <SlotCard
@@ -82,6 +90,14 @@ const Pokemon: React.FC<Props> = ({
             onClick={onMoveRight}
           >
             <FaArrowRight aria-hidden="true" />
+          </CardIconButton>
+          <CardIconButton
+            type="button"
+            aria-label={`Replace ${pokemon.displayName}`}
+            disabled={exiting || disabled}
+            onClick={onReplace}
+          >
+            <FaExchangeAlt aria-hidden="true" />
           </CardIconButton>
           <CardIconButton
             $danger

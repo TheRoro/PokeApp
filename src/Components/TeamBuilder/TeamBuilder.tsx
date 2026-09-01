@@ -9,7 +9,6 @@ import Pokemon from './Pokemon';
 import TeamPicker from './TeamPicker';
 import RandomTeamGenerator from './RandomTeamGenerator';
 import type { TeamGeneratorContext } from './RandomTeamGenerator';
-import ShowdownTeamTransfer from './ShowdownTeamTransfer';
 import type { TeamGeneratorMode } from './balancedTeamGenerator';
 import {
   analyzeOffensiveCoverage,
@@ -51,14 +50,19 @@ import {
   TEAM_STORAGE_KEY,
 } from './teamPersistence';
 import type { VgcTeamPreset } from './vgcTeamPresets';
+import type { CoverageRecommendation } from './coverageRecommendations';
 import {
   ADVENTURE_GAME_NAMES,
   adventureRegionForGame,
+  adventureStarterSpecies,
 } from './adventureStarters';
 import { toPokemonApiSlug } from '../Tools/pokemonNames';
 
 const VgcTeamPresetLoader = React.lazy(
   () => import('./VgcTeamPresetLoader'),
+);
+const ShowdownTeamTransfer = React.lazy(
+  () => import('./ShowdownTeamTransfer'),
 );
 
 type TeamSlot = {
@@ -152,6 +156,10 @@ const TeamBuilder: React.FC = () => {
   const [generatingTeam, setGeneratingTeam] = useState(false);
   const [generatorMode, setGeneratorMode] =
     useState<TeamGeneratorMode>('adventure');
+  const [replacingSlotId, setReplacingSlotId] = useState<number | null>(null);
+  const [coverageRecommendations, setCoverageRecommendations] = useState<
+    CoverageRecommendation[]
+  >([]);
   const [teamRevision, setTeamRevision] = useState(0);
   const [generatorContext, setGeneratorContext] =
     useState<TeamGeneratorContext>({
@@ -177,6 +185,13 @@ const TeamBuilder: React.FC = () => {
         .map(slot => slot.pokemon)
         .filter((pokemon): pokemon is TeamPokemon => pokemon !== null),
     [slots],
+  );
+  const replacementPokemon = useMemo(
+    () =>
+      replacingSlotId === null
+        ? null
+        : slots.find(slot => slot.id === replacingSlotId)?.pokemon ?? null,
+    [replacingSlotId, slots],
   );
   const analysis = useMemo(() => analyzeTeam(team), [team]);
   const offensiveCoverage = useMemo(
@@ -220,6 +235,78 @@ const TeamBuilder: React.FC = () => {
     [],
   );
 
+  useEffect(() => {
+    let active = true;
+    const recommendationTeam = replacementPokemon
+      ? team.filter(member => member.id !== replacementPokemon.id)
+      : team;
+    if (recommendationTeam.length === 0) {
+      setCoverageRecommendations([]);
+      return () => {
+        active = false;
+      };
+    }
+
+    const adventureScope =
+      generatorContext.mode === 'adventure' &&
+      (generatorContext.scope.kind === 'game' ||
+        generatorContext.scope.kind === 'region')
+        ? inferAdventureScope(team) ?? generatorContext.scope
+        : null;
+    const recommendationRequest = adventureScope
+      ? Promise.all([
+          import('./coverageRecommendations'),
+          import('./balancedTeamGenerator').then(
+            ({ resolvePokemonSpeciesPool }) =>
+              resolvePokemonSpeciesPool(adventureScope),
+          ),
+        ])
+      : import('./coverageRecommendations').then(module => [module, null] as const);
+
+    void recommendationRequest
+      .then(([{ recommendCoveragePokemon }, pool]) => {
+        if (active) {
+          const existingStarter = recommendationTeam.some(
+            member =>
+              member.adventureInfo?.encounterMethod === 'Starter gift',
+          );
+          const excludedStarters =
+            existingStarter && adventureScope
+              ? adventureStarterSpecies(
+                  adventureScope.kind,
+                  adventureScope.value,
+                )
+              : new Set<string>();
+          setCoverageRecommendations(
+            recommendCoveragePokemon(recommendationTeam, {
+              allowedSpecies: pool
+                ? new Set(
+                    pool
+                      .map(species => species.name)
+                      .filter(species => !excludedStarters.has(species)),
+                  )
+                : undefined,
+              version:
+                adventureScope?.kind === 'game'
+                  ? adventureScope.value
+                  : undefined,
+            }),
+          );
+        }
+      })
+      .catch(() => {
+        if (active) setCoverageRecommendations([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [generatorContext, replacementPokemon, team]);
+
+  useEffect(() => {
+    if (replacingSlotId !== null) pickerInputRef.current?.focus();
+  }, [pickerGeneration, replacingSlotId]);
+
   const animateAddition = (pokemonId: number) => {
     const currentTimer = animationTimersRef.current.get(pokemonId);
     if (currentTimer) clearTimeout(currentTimer);
@@ -250,6 +337,7 @@ const TeamBuilder: React.FC = () => {
     resettingRef.current = false;
     setRemovingSlotIds(new Set());
     setResetting(false);
+    setReplacingSlotId(null);
 
     const uniqueMembers = members.filter(
       (member, index) =>
@@ -339,14 +427,27 @@ const TeamBuilder: React.FC = () => {
     signal: AbortSignal,
   ): Promise<string | null> => {
     if (resettingRef.current) return null;
-    if (slotsRef.current.some(slot => slot.pokemon?.id === pokemon.id)) {
+    if (
+      slotsRef.current.some(
+        slot =>
+          slot.id !== replacingSlotId && slot.pokemon?.id === pokemon.id,
+      )
+    ) {
       return `${pokemon.displayName} is already on your team.`;
     }
 
     const targetSlot =
+      (replacingSlotId === null
+        ? undefined
+        : slotsRef.current.find(
+            slot => slot.id === replacingSlotId && slot.pokemon,
+          )) ??
       slotsRef.current.find(slot => slot.id === selectedSlotId && !slot.pokemon) ??
       slotsRef.current.find(slot => !slot.pokemon);
     if (!targetSlot) return 'Your team already has six Pokémon.';
+    if (targetSlot.pokemon?.id === pokemon.id) {
+      return `${pokemon.displayName} is already in this slot.`;
+    }
 
     let teamMember = pokemon;
     if (
@@ -373,18 +474,39 @@ const TeamBuilder: React.FC = () => {
         signal,
       });
       if (signal.aborted) return null;
+      if (
+        adventureInfo.encounterMethod === 'Starter gift' &&
+        slotsRef.current.some(
+          slot =>
+            slot.id !== targetSlot.id &&
+            slot.pokemon?.adventureInfo?.encounterMethod === 'Starter gift',
+        )
+      ) {
+        return 'Adventure teams can include only one starter from the selected game.';
+      }
       teamMember = { ...pokemon, adventureInfo };
     }
 
-    if (slotsRef.current.some(slot => slot.pokemon?.id === pokemon.id)) {
+    if (
+      slotsRef.current.some(
+        slot =>
+          slot.id !== targetSlot.id && slot.pokemon?.id === pokemon.id,
+      )
+    ) {
       return `${pokemon.displayName} is already on your team.`;
     }
+    const replacedPokemon = targetSlot.pokemon;
     const nextSlots = slotsRef.current.map(slot =>
       slot.id === targetSlot.id ? { ...slot, pokemon: teamMember } : slot,
     );
     commitSlots(nextSlots);
+    setReplacingSlotId(null);
     setSelectedSlotId(nextSlots.find(slot => !slot.pokemon)?.id ?? 0);
-    setStatus(`${pokemon.displayName} joined the team.`);
+    setStatus(
+      replacedPokemon
+        ? `${replacedPokemon.displayName} was replaced by ${pokemon.displayName}.`
+        : `${pokemon.displayName} joined the team.`,
+    );
     animateAddition(teamMember.id);
     return null;
   };
@@ -406,6 +528,7 @@ const TeamBuilder: React.FC = () => {
       setRemovingSlotIds(remainingRemovals);
       commitSlots(nextSlots);
       setSelectedSlotId(nextSlots.find(slot => !slot.pokemon)?.id ?? 0);
+      if (replacingSlotId === slotId) setReplacingSlotId(null);
       setStatus('Team member removed.');
       removalTimersRef.current.delete(slotId);
     }, 220);
@@ -450,6 +573,7 @@ const TeamBuilder: React.FC = () => {
     resettingRef.current = true;
     setResetting(true);
     setPickerGeneration(current => current + 1);
+    setReplacingSlotId(null);
 
     resetTimerRef.current = setTimeout(() => {
       const emptyTeam = createEmptyTeam();
@@ -544,7 +668,7 @@ const TeamBuilder: React.FC = () => {
         </React.Suspense>
       )}
 
-      {team.length < 6 && (
+      {(team.length < 6 || replacingSlotId !== null) && (
         <TeamPicker
           disabled={
             hydrating ||
@@ -555,6 +679,8 @@ const TeamBuilder: React.FC = () => {
           inputRef={pickerInputRef}
           key={pickerGeneration}
           onBusyChange={setAddingPokemon}
+          recommendations={coverageRecommendations}
+          replacingPokemonName={replacementPokemon?.displayName}
           slotNumber={
             slots.findIndex(slot => slot.id === selectedSlotId) + 1 ||
             team.length + 1
@@ -588,26 +714,34 @@ const TeamBuilder: React.FC = () => {
             onMoveLeft={() => movePokemon(slot.id, -1)}
             onMoveRight={() => movePokemon(slot.id, 1)}
             onRemove={() => removePokemon(slot.id)}
+            onReplace={() => {
+              setSelectedSlotId(slot.id);
+              setReplacingSlotId(slot.id);
+              setPickerGeneration(current => current + 1);
+            }}
             onSelect={() => {
               setSelectedSlotId(slot.id);
+              setReplacingSlotId(null);
               pickerInputRef.current?.focus();
             }}
           />
         ))}
       </TeamGrid>
 
-      <ShowdownTeamTransfer
-        disabled={
-          hydrating ||
-          addingPokemon ||
-          loadingTeam ||
-          generatingTeam ||
-          resetting ||
-          removingSlotIds.size > 0
-        }
-        team={team}
-        onImport={members => void loadTeam(members, 'Showdown')}
-      />
+      <React.Suspense fallback={null}>
+        <ShowdownTeamTransfer
+          disabled={
+            hydrating ||
+            addingPokemon ||
+            loadingTeam ||
+            generatingTeam ||
+            resetting ||
+            removingSlotIds.size > 0
+          }
+          team={team}
+          onImport={members => void loadTeam(members, 'Showdown')}
+        />
+      </React.Suspense>
 
       <BuilderToolbar>
         <UtilityButton

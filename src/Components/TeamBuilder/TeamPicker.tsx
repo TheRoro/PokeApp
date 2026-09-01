@@ -4,6 +4,7 @@ import PokemonList from '../Tools/PokemonList';
 import { formatPokemonName } from '../Tools/pokemonNames';
 import { describeApiError } from '../Tools/ApiError/apiErrors';
 import { getPokemonSuggestions } from './pokemonSuggestions';
+import type { CoverageRecommendation } from './coverageRecommendations';
 import { TeamPokemon } from './teamAnalysis';
 import { fetchTeamPokemon } from './teamPokemonApi';
 import {
@@ -14,6 +15,9 @@ import {
   PickerHeader,
   PickerHint,
   PickerPanel,
+  RecommendationButton,
+  RecommendationList,
+  RecommendationPanel,
   LoadingSpinner,
   SearchButton,
   SearchInput,
@@ -25,6 +29,8 @@ type Props = {
   disabled: boolean;
   inputRef: React.RefObject<HTMLInputElement>;
   onBusyChange: (busy: boolean) => void;
+  recommendations: CoverageRecommendation[];
+  replacingPokemonName?: string;
   slotNumber: number;
   teamEmpty: boolean;
   onLoaded: (
@@ -37,6 +43,8 @@ const TeamPicker: React.FC<Props> = ({
   disabled,
   inputRef,
   onBusyChange,
+  recommendations,
+  replacingPokemonName,
   slotNumber,
   teamEmpty,
   onLoaded,
@@ -148,6 +156,8 @@ const TeamPicker: React.FC<Props> = ({
         <strong>
           {disabled
             ? 'Team update in progress'
+            : replacingPokemonName
+              ? `Replace ${replacingPokemonName}`
             : teamEmpty
               ? 'Choose your first Pokémon'
               : `Add to slot ${slotNumber}`}
@@ -157,6 +167,8 @@ const TeamPicker: React.FC<Props> = ({
             ? 'Loading Pokémon and Adventure encounter details.'
             : disabled
               ? 'The picker will return when the current update finishes.'
+              : replacingPokemonName
+                ? `Choose a new Pokémon for slot ${slotNumber}.`
               : teamEmpty
                 ? 'Search by name or Pokédex number to start your team.'
                 : 'Search once, then choose any empty team slot.'}
@@ -225,6 +237,24 @@ const TeamPicker: React.FC<Props> = ({
           )}
         </SearchButton>
       </PickerForm>
+      {recommendations.length > 0 && (
+        <RecommendationPanel aria-label="Coverage suggestions">
+          <span>Coverage suggestions</span>
+          <RecommendationList>
+            {recommendations.map(recommendation => (
+              <RecommendationButton
+                type="button"
+                disabled={disabled || loading}
+                key={recommendation.name}
+                onClick={() => void loadPokemon(recommendation.name)}
+              >
+                <strong>{formatPokemonName(recommendation.name)}</strong>
+                <small>{recommendation.reason}</small>
+              </RecommendationButton>
+            ))}
+          </RecommendationList>
+        </RecommendationPanel>
+      )}
       {error && <ErrorText role="alert">{error}</ErrorText>}
     </PickerPanel>
   );

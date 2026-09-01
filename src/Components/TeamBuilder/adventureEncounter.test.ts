@@ -126,3 +126,84 @@ test('uses a representative version when showing regional encounters', async () 
   expect(result.version).toBe('Heartgold');
   expect(result.location).toBe('Johto Route 32');
 });
+
+test('reports unavailable Scarlet encounter data without claiming no wild encounter', async () => {
+  const chain: EvolutionNode = {
+    species: resource('lechonk'),
+    evolves_to: [],
+  };
+  const result = await buildAdventureEncounterInfo({
+    apiClient: mockClient({ 'pokemon/lechonk/encounters': [] }),
+    chain,
+    encounterCache: new Map(),
+    isStarter: false,
+    scope: { kind: 'game', value: 'scarlet' },
+    targetSpecies: 'lechonk',
+  });
+
+  expect(result).toMatchObject({
+    encounterMethod: 'Check the in-game Pokédex or map',
+    levelRange: 'Varies by area',
+    location: 'Encounter location data is unavailable for Scarlet',
+    version: 'Scarlet',
+  });
+  expect(result.location).not.toBe('No wild encounter listed');
+});
+
+test('treats partner Eevee as a non-evolving starter gift', async () => {
+  const chain: EvolutionNode = {
+    species: resource('eevee'),
+    evolves_to: [
+      {
+        species: resource('vaporeon'),
+        evolution_details: [
+          {
+            item: resource('water-stone'),
+            trigger: resource('use-item'),
+          },
+        ],
+        evolves_to: [],
+      },
+    ],
+  };
+
+  await expect(
+    buildAdventureEncounterInfo({
+      apiClient: mockClient({}),
+      chain,
+      encounterCache: new Map(),
+      isStarter: true,
+      scope: { kind: 'game', value: 'lets-go-eevee' },
+      targetSpecies: 'eevee',
+    }),
+  ).resolves.toMatchObject({
+    encounterMethod: 'Starter gift',
+    evolutionMethod: 'No evolution required',
+    sourcePokemon: 'Eevee',
+    version: 'Lets Go Eevee',
+  });
+});
+
+test('reports unavailable Legends Arceus encounter data accurately', async () => {
+  const chain: EvolutionNode = {
+    species: resource('bidoof'),
+    evolves_to: [],
+  };
+  const result = await buildAdventureEncounterInfo({
+    apiClient: mockClient({ 'pokemon/bidoof/encounters': [] }),
+    chain,
+    encounterCache: new Map(),
+    isStarter: false,
+    scope: { kind: 'game', value: 'legends-arceus' },
+    targetSpecies: 'bidoof',
+  });
+
+  expect(result).toMatchObject({
+    encounterMethod: 'Check the in-game Pokédex or map',
+    levelRange: 'Varies by area',
+    location:
+      'Encounter location data is unavailable for Legends Arceus',
+    version: 'Legends Arceus',
+  });
+  expect(result.location).not.toBe('No wild encounter listed');
+});

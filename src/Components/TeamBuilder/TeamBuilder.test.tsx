@@ -5,7 +5,10 @@ import TeamBuilder from './TeamBuilder';
 import { fetchTeamPokemon } from './teamPokemonApi';
 import { TEAM_STORAGE_KEY } from './teamPersistence';
 import { TeamPokemon } from './teamAnalysis';
-import { generateBalancedTeam } from './balancedTeamGenerator';
+import {
+  generateBalancedTeam,
+  resolvePokemonSpeciesPool,
+} from './balancedTeamGenerator';
 import { loadTeamFilterCatalog } from './teamFilterCatalog';
 import { loadAdventureEncounterInfo } from './adventureEncounter';
 
@@ -15,6 +18,7 @@ vi.mock('./teamPokemonApi', () => ({
 
 vi.mock('./balancedTeamGenerator', () => ({
   generateBalancedTeam: vi.fn(),
+  resolvePokemonSpeciesPool: vi.fn(),
 }));
 
 vi.mock('./teamFilterCatalog', () => ({
@@ -32,6 +36,7 @@ vi.mock('./adventureEncounter', async importOriginal => {
 
 const mockedFetchTeamPokemon = vi.mocked(fetchTeamPokemon);
 const mockedGenerateBalancedTeam = vi.mocked(generateBalancedTeam);
+const mockedResolvePokemonSpeciesPool = vi.mocked(resolvePokemonSpeciesPool);
 const mockedLoadTeamFilterCatalog = vi.mocked(loadTeamFilterCatalog);
 const mockedLoadAdventureEncounterInfo = vi.mocked(
   loadAdventureEncounterInfo,
@@ -66,6 +71,13 @@ async function addPokemon(name: string) {
 beforeEach(() => {
   mockedFetchTeamPokemon.mockReset();
   mockedGenerateBalancedTeam.mockReset();
+  mockedResolvePokemonSpeciesPool.mockReset();
+  mockedResolvePokemonSpeciesPool.mockResolvedValue([
+    { name: 'swampert', url: 'pokemon-species/swampert' },
+    { name: 'gastrodon', url: 'pokemon-species/gastrodon' },
+    { name: 'mamoswine', url: 'pokemon-species/mamoswine' },
+    { name: 'rotom', url: 'pokemon-species/rotom' },
+  ]);
   mockedLoadTeamFilterCatalog.mockReset();
   mockedLoadAdventureEncounterInfo.mockReset();
   mockedLoadAdventureEncounterInfo.mockResolvedValue({
@@ -147,6 +159,133 @@ test('selects an empty slot and loads the new member into it', async () => {
     }),
   ).toBeInTheDocument();
   expect(screen.getByText('Add to slot 1')).toBeInTheDocument();
+});
+
+test('replaces a Pokémon directly from its card', async () => {
+  mockedFetchTeamPokemon.mockImplementation(async value =>
+    String(value).toLowerCase() === 'charmander'
+      ? pokemon(4, 'charmander', ['fire'])
+      : pokemon(25, 'pikachu', ['electric']),
+  );
+  renderBuilder();
+  await addPokemon('Pikachu');
+
+  await userEvent.click(
+    screen.getByRole('button', { name: 'Replace Pikachu' }),
+  );
+  expect(screen.getByText('Replace Pikachu')).toBeInTheDocument();
+  expect(
+    screen.getByRole('combobox', { name: 'Team Pokémon search' }),
+  ).toHaveFocus();
+  await addPokemon('Charmander');
+
+  expect(
+    within(screen.getByLabelText('Team slot 1')).getByRole('heading', {
+      name: 'Charmander',
+    }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('heading', { name: 'Pikachu' }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByText('Pikachu was replaced by Charmander.'),
+  ).toBeInTheDocument();
+});
+
+test('shows coverage suggestions after the first team member is added', async () => {
+  mockedFetchTeamPokemon.mockResolvedValue(
+    pokemon(6, 'charizard', ['fire', 'flying']),
+  );
+  renderBuilder();
+  await addPokemon('Charizard');
+
+  expect(
+    await screen.findByLabelText('Coverage suggestions'),
+  ).toBeInTheDocument();
+  expect(
+    within(screen.getByLabelText('Coverage suggestions')).getAllByRole(
+      'button',
+    ),
+  ).toHaveLength(4);
+});
+
+test('allows only one selected game starter in an Adventure team', async () => {
+  mockedFetchTeamPokemon.mockImplementation(async value =>
+    String(value).toLowerCase() === 'charmander'
+      ? pokemon(4, 'charmander', ['fire'])
+      : pokemon(1, 'bulbasaur', ['grass', 'poison']),
+  );
+  mockedLoadAdventureEncounterInfo.mockImplementation(async ({ pokemonName }) => ({
+    encounterMethod: 'Starter gift',
+    evolutionMethod: 'No evolution required',
+    levelRange: 'Usually level 5',
+    location: 'Starter selection',
+    sourcePokemon:
+      pokemonName === 'charmander' ? 'Charmander' : 'Bulbasaur',
+    tradeRequired: false,
+    version: 'Red',
+  }));
+  renderBuilder();
+
+  await addPokemon('Bulbasaur');
+  await addPokemon('Charmander');
+
+  expect(
+    await screen.findByText(
+      'Adventure teams can include only one starter from the selected game.',
+    ),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('heading', { name: 'Charmander' }),
+  ).not.toBeInTheDocument();
+  expect(screen.getByText('1 / 6')).toBeInTheDocument();
+
+  await userEvent.click(
+    screen.getByRole('button', { name: 'Replace Bulbasaur' }),
+  );
+  await addPokemon('Charmander');
+  expect(
+    await screen.findByRole('heading', { name: 'Charmander' }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('heading', { name: 'Bulbasaur' }),
+  ).not.toBeInTheDocument();
+});
+
+test('warns when Scarlet encounter locations are unavailable upstream', async () => {
+  mockedLoadTeamFilterCatalog.mockResolvedValue({
+    all: { label: 'All Pokémon', value: 'all' },
+    generations: [],
+    regions: [{ label: 'Paldea', value: 'paldea' }],
+    games: [{ label: 'Scarlet', value: 'scarlet' }],
+  });
+  renderBuilder();
+
+  expect(
+    await screen.findByText(/Scarlet and Violet data note:/i),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(/Nothing is wrong with your team/i),
+  ).toBeInTheDocument();
+});
+
+test('warns when Legends Arceus encounter locations are unavailable upstream', async () => {
+  mockedLoadTeamFilterCatalog.mockResolvedValue({
+    all: { label: 'All Pokémon', value: 'all' },
+    generations: [],
+    regions: [{ label: 'Hisui', value: 'hisui' }],
+    games: [
+      { label: 'Legends Arceus', value: 'legends-arceus' },
+    ],
+  });
+  renderBuilder();
+
+  expect(
+    await screen.findByText(/Legends: Arceus data note:/i),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(/Nothing is wrong with your team/i),
+  ).toBeInTheDocument();
 });
 
 test('selects autocomplete suggestions with the keyboard', async () => {

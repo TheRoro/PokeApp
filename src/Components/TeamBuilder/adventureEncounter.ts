@@ -5,7 +5,10 @@ import {
   PokeApiClient,
   throwIfAborted,
 } from './pokeApiClient';
-import { adventureStarterRoots } from './adventureStarters';
+import {
+  adventureStarterDoesNotEvolve,
+  isAdventureStarter,
+} from './adventureStarters';
 import type { AdventureEncounterInfo } from './adventureEncounterInfo';
 import { TeamGenerationScope } from './teamFilterCatalog';
 
@@ -78,6 +81,12 @@ const REGION_VERSION_PRIORITY: Record<string, readonly string[]> = {
   hisui: ['legends-arceus'],
   paldea: ['scarlet', 'violet'],
 };
+
+const VERSIONS_WITHOUT_ENCOUNTER_LOCATIONS = new Set([
+  'legends-arceus',
+  'scarlet',
+  'violet',
+]);
 
 type EncounterCandidate = {
   detail: EncounterDetail;
@@ -301,12 +310,21 @@ export async function buildAdventureEncounterInfo({
       : REGION_VERSION_PRIORITY[scope.value.trim().toLowerCase()] ?? [];
 
   if (isStarter) {
+    const doesNotEvolve = adventureStarterDoesNotEvolve(
+      scope.kind,
+      scope.value,
+      targetSpecies,
+    );
     return {
       encounterMethod: 'Starter gift',
-      evolutionMethod: describeEvolution(fullPath),
+      evolutionMethod: doesNotEvolve
+        ? 'No evolution required'
+        : describeEvolution(fullPath),
       levelRange: 'Usually level 5',
       location: 'Starter selection',
-      sourcePokemon: formatPokemonName(fullPath[0].species.name),
+      sourcePokemon: doesNotEvolve
+        ? formatPokemonName(targetSpecies)
+        : formatPokemonName(fullPath[0].species.name),
       tradeRequired: fullPath
         .slice(1)
         .some(node => detailForNode(node)?.trigger.name === 'trade'),
@@ -335,6 +353,22 @@ export async function buildAdventureEncounterInfo({
         .slice(1)
         .some(pathNode => detailForNode(pathNode)?.trigger.name === 'trade'),
       version: formatPokemonName(selected.version),
+    };
+  }
+
+  const fallbackVersion = allowedVersions[0] ?? scope.value;
+  if (VERSIONS_WITHOUT_ENCOUNTER_LOCATIONS.has(fallbackVersion)) {
+    const version = formatPokemonName(fallbackVersion);
+    return {
+      encounterMethod: 'Check the in-game Pokédex or map',
+      evolutionMethod: describeEvolution(fullPath),
+      levelRange: 'Varies by area',
+      location: `Encounter location data is unavailable for ${version}`,
+      sourcePokemon: formatPokemonName(fullPath[0].species.name),
+      tradeRequired: fullPath
+        .slice(1)
+        .some(node => detailForNode(node)?.trigger.name === 'trade'),
+      version,
     };
   }
 
@@ -367,13 +401,16 @@ export async function loadAdventureEncounterInfo({
     signal,
   );
   throwIfAborted(signal);
-  const starterRoots = adventureStarterRoots(scope.kind, scope.value);
-
   return buildAdventureEncounterInfo({
     apiClient,
     chain: evolutionChain.chain,
     encounterCache: new Map(),
-    isStarter: starterRoots.has(evolutionChain.chain.species.name),
+    isStarter: isAdventureStarter(
+      scope.kind,
+      scope.value,
+      species.name,
+      evolutionChain.chain.species.name,
+    ),
     scope,
     signal,
     targetSpecies: species.name,

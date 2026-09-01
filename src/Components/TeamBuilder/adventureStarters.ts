@@ -100,6 +100,26 @@ const FINAL_SPECIES_BY_STARTER: Record<string, readonly string[]> = {
   ],
 };
 
+const PARTNER_STARTERS_BY_GAME: Record<string, string> = {
+  yellow: 'pikachu',
+  'lets-go-pikachu': 'pikachu',
+  'lets-go-eevee': 'eevee',
+};
+
+const STARTER_VARIETIES_BY_GAME: Record<string, Record<string, string>> = {
+  'lets-go-pikachu': {
+    pikachu: 'pikachu-starter',
+  },
+  'lets-go-eevee': {
+    eevee: 'eevee-starter',
+  },
+  'legends-arceus': {
+    decidueye: 'decidueye-hisui',
+    typhlosion: 'typhlosion-hisui',
+    samurott: 'samurott-hisui',
+  },
+};
+
 export const ADVENTURE_GAME_NAMES = new Set([
   ...Object.keys(GAME_REGIONS),
   ...Object.keys(GAME_STARTER_OVERRIDES),
@@ -128,4 +148,47 @@ export function finalStarterSpecies(
   return new Set(
     [...starterRoots].flatMap(root => FINAL_SPECIES_BY_STARTER[root] ?? []),
   );
+}
+
+export function adventureStarterSpecies(
+  kind: 'game' | 'region',
+  value: string,
+): ReadonlySet<string> {
+  const normalizedValue = value.trim().toLowerCase();
+  const partnerStarter =
+    kind === 'game' ? PARTNER_STARTERS_BY_GAME[normalizedValue] : undefined;
+  return partnerStarter
+    ? new Set([partnerStarter])
+    : finalStarterSpecies(adventureStarterRoots(kind, normalizedValue));
+}
+
+export function adventureStarterDoesNotEvolve(
+  kind: 'game' | 'region',
+  value: string,
+  speciesName: string,
+): boolean {
+  if (kind !== 'game') return false;
+  return PARTNER_STARTERS_BY_GAME[value.trim().toLowerCase()] === speciesName;
+}
+
+export function isAdventureStarter(
+  kind: 'game' | 'region',
+  value: string,
+  speciesName: string,
+  evolutionRoot: string,
+): boolean {
+  const normalizedValue = value.trim().toLowerCase();
+  const partnerStarter =
+    kind === 'game' ? PARTNER_STARTERS_BY_GAME[normalizedValue] : undefined;
+  if (partnerStarter) return speciesName === partnerStarter;
+  return adventureStarterRoots(kind, normalizedValue).has(evolutionRoot);
+}
+
+export function adventureStarterVariety(
+  kind: 'game' | 'region',
+  value: string,
+  speciesName: string,
+): string | undefined {
+  if (kind !== 'game') return undefined;
+  return STARTER_VARIETIES_BY_GAME[value.trim().toLowerCase()]?.[speciesName];
 }

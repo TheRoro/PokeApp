@@ -1,6 +1,9 @@
 import Bidoof404 from '../../Assets/404-bidoof.png';
 import { formatPokemonName } from '../Tools/pokemonNames';
 import {
+  adventureStarterDoesNotEvolve,
+  adventureStarterSpecies,
+  adventureStarterVariety,
   adventureStarterRoots,
   finalStarterSpecies,
 } from './adventureStarters';
@@ -24,6 +27,7 @@ import {
   throwIfAborted,
 } from './pokeApiClient';
 import { TeamGenerationScope } from './teamFilterCatalog';
+import { isSpeciesAvailableInVersion } from './versionAvailability';
 
 const TEAM_SIZE = 6;
 const DEFAULT_CANDIDATE_COUNT = 30;
@@ -342,10 +346,17 @@ function mapGeneratedPokemon(
   isStarter: boolean,
   speciesName: string,
 ): GeneratedTeamPokemon {
+  const formDisplayNames: Record<string, string> = {
+    'decidueye-hisui': 'Hisuian Decidueye',
+    'eevee-starter': 'Eevee',
+    'pikachu-starter': 'Pikachu',
+    'samurott-hisui': 'Hisuian Samurott',
+    'typhlosion-hisui': 'Hisuian Typhlosion',
+  };
   return {
     id: data.id,
     name: data.name,
-    displayName: formatPokemonName(data.name),
+    displayName: formDisplayNames[data.name] ?? formatPokemonName(data.name),
     imageUrl:
       data.sprites.other['official-artwork'].front_default ??
       data.sprites.front_default ??
@@ -407,6 +418,8 @@ async function loadDefaultVariety(
   encounterCache: Map<string, Promise<EncounterResponse>>,
   mode: TeamGeneratorMode,
   allowedStarterRoots: ReadonlySet<string>,
+  allowedStarterSpecies: ReadonlySet<string>,
+  scope: TeamGenerationScope,
   gameAvailability?: GameAvailability,
   signal?: AbortSignal,
 ): Promise<GeneratedTeamPokemon | null> {
@@ -432,8 +445,36 @@ async function loadDefaultVariety(
   const chain = await evolutionChain;
   chainsBySpecies.set(speciesData.name, chain.chain);
   throwIfAborted(signal);
-  if (!isFinalEvolution(chain.chain, speciesData.name)) return null;
-  const isStarter = allowedStarterRoots.has(chain.chain.species.name);
+  const usesGameSpecificStarter =
+    mode === 'adventure' &&
+    (scope.kind === 'game' || scope.kind === 'region');
+  const isStarter = usesGameSpecificStarter
+    ? allowedStarterSpecies.has(speciesData.name)
+    : allowedStarterRoots.has(chain.chain.species.name);
+  const starterDoesNotEvolve =
+    isStarter &&
+    (scope.kind === 'game' || scope.kind === 'region') &&
+    adventureStarterDoesNotEvolve(
+      scope.kind,
+      scope.value,
+      speciesData.name,
+    );
+  if (
+    !starterDoesNotEvolve &&
+    !isFinalEvolution(chain.chain, speciesData.name)
+  ) {
+    return null;
+  }
+  if (
+    gameAvailability &&
+    !isStarter &&
+    !isSpeciesAvailableInVersion(
+      speciesData.name,
+      gameAvailability.selectedVersion,
+    )
+  ) {
+    return null;
+  }
   if (
     gameAvailability &&
     !isStarter &&
@@ -448,7 +489,16 @@ async function loadDefaultVariety(
     return null;
   }
 
+  const preferredVariety =
+    isStarter &&
+    mode === 'adventure' &&
+    (scope.kind === 'game' || scope.kind === 'region')
+      ? adventureStarterVariety(scope.kind, scope.value, speciesData.name)
+      : undefined;
   const variety =
+    speciesData.varieties.find(
+      candidate => candidate.pokemon.name === preferredVariety,
+    ) ??
     speciesData.varieties.find(candidate => candidate.is_default) ??
     speciesData.varieties[0];
 
@@ -707,6 +757,11 @@ export async function generateBalancedTeam(
       'No starter data is available for the selected adventure.',
     );
   }
+  const allowedStarterSpecies =
+    mode === 'adventure' &&
+    (scope.kind === 'region' || scope.kind === 'game')
+      ? adventureStarterSpecies(scope.kind, scope.value)
+      : finalStarterSpecies(allowedStarterRoots);
   let gameAvailability: GameAvailability | undefined;
   if (scope.kind === 'game') {
     const versionName = encodeURIComponent(scope.value.trim().toLowerCase());
@@ -739,16 +794,15 @@ export async function generateBalancedTeam(
   const sampledSpecies = (() => {
     if (mode !== 'adventure') return shuffledPool.slice(0, sampleSize);
 
-    const allowedFinalStarters = finalStarterSpecies(allowedStarterRoots);
     const starterCandidates = shuffledPool.filter(species =>
-      allowedFinalStarters.has(species.name),
+      allowedStarterSpecies.has(species.name),
     );
     const starterQuota = Math.min(
       starterCandidates.length,
       Math.max(1, Math.min(3, sampleSize - (TEAM_SIZE - 1))),
     );
     const ordinaryCandidates = shuffledPool.filter(
-      species => !allowedFinalStarters.has(species.name),
+      species => !allowedStarterSpecies.has(species.name),
     );
     return [
       ...starterCandidates.slice(0, starterQuota),
@@ -772,6 +826,8 @@ export async function generateBalancedTeam(
           encounterCache,
           mode,
           allowedStarterRoots,
+          allowedStarterSpecies,
+          scope,
           gameAvailability,
           signal,
         );
