@@ -21,12 +21,14 @@ import {
   PokemonImageLink,
   PokemonName,
   PokemonNameLink,
+  ShinyBadge,
   CompetitiveDetails,
   CompetitiveMeta,
   CompetitiveMetaItem,
   CompetitiveMoves,
   CompetitiveSummary,
   SlotCard,
+  SlotHeading,
   SlotLabel,
   TeamTypeBadge,
   TeamTypeIcon,
@@ -71,7 +73,13 @@ const Pokemon: React.FC<Props> = ({
     $removing={exiting}
     $selected={selected}
   >
-    <SlotLabel>Pokémon {index + 1}</SlotLabel>
+    <SlotHeading>
+      <SlotLabel>Pokémon {index + 1}</SlotLabel>
+      {pokemon &&
+        (pokemon.isShiny || pokemon.competitiveSet?.shiny) && (
+          <ShinyBadge aria-label="Shiny Pokémon">Shiny</ShinyBadge>
+        )}
+    </SlotHeading>
     {pokemon ? (
       <>
         <CardControls>

@@ -11,9 +11,11 @@ type PokemonResponse = {
   };
   sprites: {
     front_default: string | null;
+    front_shiny?: string | null;
     other: {
       'official-artwork': {
         front_default: string | null;
+        front_shiny?: string | null;
       };
     };
   };
@@ -34,6 +36,10 @@ export function mapTeamPokemon(data: PokemonResponse): TeamPokemon {
       data.sprites.other['official-artwork'].front_default ??
       data.sprites.front_default ??
       Bidoof404,
+    shinyImageUrl:
+      data.sprites.other['official-artwork'].front_shiny ??
+      data.sprites.front_shiny ??
+      undefined,
     types: data.types.map(entry => entry.type.name),
     baseStats: Object.fromEntries(
       (data.stats ?? []).map(entry => [entry.stat.name, entry.base_stat]),

@@ -43,6 +43,16 @@ const adventureCharizard: TeamPokemon = {
   },
 };
 
+const shinyPikachu: TeamPokemon = {
+  id: 25,
+  imageUrl: 'pikachu-shiny.png',
+  isShiny: true,
+  name: 'pikachu',
+  shinyImageUrl: 'pikachu-shiny.png',
+  displayName: 'Pikachu',
+  types: ['electric'],
+};
+
 describe('team persistence', () => {
   test('normalizes, deduplicates, and caps teams at six members', () => {
     expect(
@@ -120,6 +130,16 @@ describe('team persistence', () => {
         name: 'charizard',
         adventureInfo: adventureCharizard.adventureInfo,
       },
+    ]);
+  });
+
+  test('round trips shiny team members through saves and shares', () => {
+    const search = createTeamSearch([shinyPikachu]);
+    expect(parseTeamSearch(search)).toEqual([
+      { name: 'pikachu', isShiny: true },
+    ]);
+    expect(parseSavedTeam(serializeTeam([shinyPikachu]))).toEqual([
+      { name: 'pikachu', isShiny: true },
     ]);
   });
 

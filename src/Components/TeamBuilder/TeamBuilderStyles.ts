@@ -611,9 +611,16 @@ export const SlotCard = styled.section<{
   }
 `;
 
+export const SlotHeading = styled.div`
+  display: flex;
+  min-height: 32px;
+  padding-right: 9.5rem;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
 export const SlotLabel = styled.span`
   display: block;
-  margin-bottom: 0.25rem;
   color: #c2c6cd;
   font-size: 0.75rem;
   font-weight: 800;
@@ -891,6 +898,26 @@ export const PokemonImageLink = styled.a`
     outline: 3px solid rgba(255, 222, 0, 0.75);
     outline-offset: 3px;
   }
+`;
+
+export const ShinyBadge = styled.span`
+  display: inline-flex;
+  min-height: 24px;
+  padding: 0.22rem 0.45rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: #211600;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #ffe36a, #e5a932);
+  border: 1px solid #fff0a8;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(229, 169, 50, 0.35);
 `;
 
 export const PokemonName = styled.h2`

@@ -157,9 +157,11 @@ type PokemonResponse = {
   name: string;
   sprites: {
     front_default: string | null;
+    front_shiny?: string | null;
     other: {
       'official-artwork': {
         front_default: string | null;
+        front_shiny?: string | null;
       };
     };
   };
@@ -199,6 +201,7 @@ export type GenerateBalancedTeamOptions = ResolveTeamScopeOptions & {
   mode?: TeamGeneratorMode;
   random?: () => number;
   restrictions?: AdventureRestrictions;
+  shinyRandom?: () => number;
   scope: TeamGenerationScope;
   selectionWindow?: number;
 };
@@ -403,6 +406,7 @@ function mapGeneratedPokemon(
   data: PokemonResponse,
   isLegendary: boolean,
   isStarter: boolean,
+  shinyRandom: () => number,
   speciesName: string,
 ): GeneratedTeamPokemon {
   const formDisplayNames: Record<string, string> = {
@@ -412,14 +416,24 @@ function mapGeneratedPokemon(
     'samurott-hisui': 'Hisuian Samurott',
     'typhlosion-hisui': 'Hisuian Typhlosion',
   };
+  const shinyImageUrl =
+    data.sprites.other['official-artwork'].front_shiny ??
+    data.sprites.front_shiny ??
+    undefined;
+  const isShiny =
+    Boolean(shinyImageUrl) &&
+    Math.floor(randomUnit(shinyRandom) * 100) === 0;
   return {
     id: data.id,
     name: data.name,
     displayName: formDisplayNames[data.name] ?? formatPokemonName(data.name),
-    imageUrl:
-      data.sprites.other['official-artwork'].front_default ??
-      data.sprites.front_default ??
-      Bidoof404,
+    imageUrl: isShiny
+      ? shinyImageUrl!
+      : data.sprites.other['official-artwork'].front_default ??
+        data.sprites.front_default ??
+        Bidoof404,
+    isShiny: isShiny || undefined,
+    shinyImageUrl,
     types: data.types.map(entry => entry.type.name),
     baseStats: Object.fromEntries(
       data.stats.map(entry => [entry.stat.name, entry.base_stat]),
@@ -509,6 +523,7 @@ async function loadDefaultVariety(
   allowedStarterRoots: ReadonlySet<string>,
   allowedStarterSpecies: ReadonlySet<string>,
   restrictions: AdventureRestrictions,
+  shinyRandom: () => number,
   scope: TeamGenerationScope,
   gameAvailability?: GameAvailability,
   signal?: AbortSignal,
@@ -609,6 +624,7 @@ async function loadDefaultVariety(
     pokemon,
     speciesData.is_legendary,
     isStarter,
+    shinyRandom,
     speciesData.name,
   );
 }
@@ -810,6 +826,7 @@ export async function generateBalancedTeam(
     apiClient = defaultPokeApiClient,
     random = Math.random,
     restrictions = DEFAULT_ADVENTURE_RESTRICTIONS,
+    shinyRandom = Math.random,
     scope,
     signal,
   } = options;
@@ -922,6 +939,7 @@ export async function generateBalancedTeam(
           allowedStarterRoots,
           allowedStarterSpecies,
           restrictions,
+          shinyRandom,
           scope,
           gameAvailability,
           signal,

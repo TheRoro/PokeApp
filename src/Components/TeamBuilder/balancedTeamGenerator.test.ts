@@ -31,13 +31,20 @@ function pokemonResponse(
   name: string,
   types: string[],
   stats: Record<string, number>,
+  shinyImageUrl?: string,
 ) {
   return {
     id,
     name,
     sprites: {
       front_default: `${name}.png`,
-      other: { 'official-artwork': { front_default: null } },
+      front_shiny: shinyImageUrl,
+      other: {
+        'official-artwork': {
+          front_default: null,
+          front_shiny: shinyImageUrl,
+        },
+      },
     },
     stats: Object.entries(stats).map(([statName, baseStat]) => ({
       base_stat: baseStat,
@@ -76,6 +83,7 @@ function adventureGameResponses(
   game: string,
   starterSpecies: string,
   starterPokemon: string,
+  shinyStarter = false,
 ): Record<string, unknown> {
   const ordinarySpecies = [
     'arcanine',
@@ -179,6 +187,9 @@ function adventureGameResponses(
       isStarter ? starterPokemon : name,
       ['normal'],
       balancedStats,
+      isStarter && shinyStarter
+        ? `${starterPokemon}-shiny.png`
+        : undefined,
     );
     if (!isStarter) {
       responses[`pokemon/${name}/encounters`] = [];
@@ -346,6 +357,31 @@ describe('random team scope resolution', () => {
 });
 
 describe('balanced random team generation', () => {
+  test('uses shiny artwork when a generated member wins the shiny roll', async () => {
+    const team = await generateBalancedTeam({
+      apiClient: mockApiClient(
+        adventureGameResponses(
+          'yellow',
+          'pikachu',
+          'pikachu',
+          true,
+        ),
+      ),
+      candidateCount: 6,
+      mode: 'adventure',
+      random: () => 0,
+      scope: { kind: 'game', value: 'yellow' },
+      selectionWindow: 1,
+      shinyRandom: () => 0,
+    });
+
+    expect(team.find(member => member.isStarter)).toMatchObject({
+      imageUrl: 'pikachu-shiny.png',
+      isShiny: true,
+      shinyImageUrl: 'pikachu-shiny.png',
+    });
+  });
+
   test.each([
     ['yellow', 'pikachu', 'pikachu'],
     ['lets-go-pikachu', 'pikachu', 'pikachu-starter'],

@@ -12,6 +12,14 @@ vi.mock('axios', () => ({
 
 const mockedGet = vi.mocked(axios.get);
 
+beforeEach(() => {
+  mockedGet.mockReset();
+});
+
+afterAll(() => {
+  vi.restoreAllMocks();
+});
+
 function pokemon(name: string, id: number) {
   return {
     name,
@@ -24,7 +32,7 @@ function pokemon(name: string, id: number) {
       other: {
         'official-artwork': {
           front_default: `${name}.png`,
-          front_shiny: null,
+          front_shiny: null as string | null,
         },
       },
     },
@@ -37,6 +45,30 @@ function ChangePokemon() {
   const navigate = useNavigate();
   return <button onClick={() => navigate('/search/charmander')}>Next Pokémon</button>;
 }
+
+test('shows official shiny artwork when the shiny roll succeeds', async () => {
+  vi.spyOn(Math, 'random').mockReturnValue(0);
+  const shinyPokemon = pokemon('pikachu', 25);
+  shinyPokemon.sprites.other['official-artwork'].front_shiny =
+    'pikachu-shiny.png';
+  mockedGet.mockResolvedValueOnce({ data: shinyPokemon });
+  vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue();
+  vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {});
+
+  render(
+    <MemoryRouter initialEntries={['/search/pikachu']}>
+      <Routes>
+        <Route path="/search/:name" element={<PokemonStats />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+
+  expect(await screen.findByText('Shiny')).toBeInTheDocument();
+  expect(screen.getByAltText('pikachu')).toHaveAttribute(
+    'src',
+    'pikachu-shiny.png',
+  );
+});
 
 test('refreshes Pokémon data when the route parameter changes', async () => {
   const playSpy = vi

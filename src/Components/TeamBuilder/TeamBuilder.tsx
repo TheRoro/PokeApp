@@ -397,11 +397,24 @@ const TeamBuilder: React.FC = () => {
 
     try {
       const members = await Promise.all(
-        entries.map(async entry => ({
-          ...(await fetchTeamPokemon(entry.name, controller.signal)),
-          adventureInfo: entry.adventureInfo,
-          competitiveSet: entry.competitiveSet,
-        })),
+        entries.map(async entry => {
+          const pokemon = await fetchTeamPokemon(
+            entry.name,
+            controller.signal,
+          );
+          const isShiny =
+            entry.isShiny === true || entry.competitiveSet?.shiny === true;
+          return {
+            ...pokemon,
+            adventureInfo: entry.adventureInfo,
+            competitiveSet: entry.competitiveSet,
+            imageUrl:
+              isShiny && pokemon.shinyImageUrl
+                ? pokemon.shinyImageUrl
+                : pokemon.imageUrl,
+            isShiny: isShiny || undefined,
+          };
+        }),
       );
       if (controller.signal.aborted) return;
       if (teamRevisionRef.current !== startingRevision) {

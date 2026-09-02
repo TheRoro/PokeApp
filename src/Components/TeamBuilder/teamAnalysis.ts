@@ -6,7 +6,9 @@ import type { AdventureEncounterInfo } from './adventureEncounterInfo';
 
 export type TeamPokemon = {
   id: number;
+  isShiny?: boolean;
   name: string;
+  shinyImageUrl?: string;
   speciesName?: string;
   displayName: string;
   imageUrl: string;

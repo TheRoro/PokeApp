@@ -135,7 +135,6 @@ const PokemonStats: React.FC = () =>{
                     ?? '',
                 );
 
-                // 1/100 chance of shiny!
                 const shinyRoll = Math.floor(Math.random() * 100) === 0;
                 const shinyUrl = resp.data.sprites.other['official-artwork'].front_shiny;
                 const defaultUrl = resp.data.sprites.other['official-artwork'].front_default;
@@ -146,19 +145,25 @@ const PokemonStats: React.FC = () =>{
                         position: 'absolute',
                         top: '10px',
                         right: '10px',
-                        background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                        color: '#000',
+                        display: 'inline-flex',
+                        minHeight: '30px',
+                        padding: '0.32rem 0.65rem',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'linear-gradient(135deg, #ffe36a, #e5a932)',
+                        color: '#211600',
                         fontWeight: 900,
                         fontSize: '0.75rem',
-                        padding: '0.3rem 0.7rem',
                         borderRadius: '999px',
-                        letterSpacing: '0.1em',
+                        letterSpacing: '0.06em',
+                        lineHeight: 1,
+                        textAlign: 'center' as const,
                         textTransform: 'uppercase' as const,
-                        boxShadow: '0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3)',
-                        animation: 'shinyPulse 1.5s ease-in-out infinite',
+                        border: '1px solid #fff0a8',
+                        boxShadow: '0 2px 8px rgba(229, 169, 50, 0.35)',
                         zIndex: 10,
                     }}>
-                        ✨ Shiny!
+                        Shiny
                     </div>
                 )}</div>);
                 setType1(capitalize(resp.data.types[0].type.name));

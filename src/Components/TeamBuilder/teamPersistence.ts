@@ -14,6 +14,7 @@ export const TEAM_STORAGE_KEY = 'pokeapp-team';
 export type PersistedTeamMember = {
   adventureInfo?: AdventureEncounterInfo;
   competitiveSet?: CompetitivePokemonSet;
+  isShiny?: boolean;
   name: string;
 };
 
@@ -57,10 +58,15 @@ function normalizePersistedMembers(
             (value as Record<string, unknown>).adventureInfo,
           )
         : undefined;
+    const isShiny =
+      typeof value === 'object' &&
+      value !== null &&
+      (value as Record<string, unknown>).isShiny === true;
     members.push({
       name,
       ...(adventureInfo ? { adventureInfo } : {}),
       ...(competitiveSet ? { competitiveSet } : {}),
+      ...(isShiny ? { isShiny: true } : {}),
     });
     if (members.length === 6) break;
   }
@@ -88,6 +94,9 @@ export function parseTeamSearch(search: string): PersistedTeamMember[] {
   };
   const parsedSets = parseRecord('sets');
   const parsedAdventure = parseRecord('adventure');
+  const shinyNames = new Set(
+    normalizeTeamNames((params.get('shiny') ?? '').split(',')),
+  );
 
   return members.map(member => {
     const adventureInfo = normalizeAdventureEncounterInfo(
@@ -98,6 +107,7 @@ export function parseTeamSearch(search: string): PersistedTeamMember[] {
       ...member,
       ...(adventureInfo ? { adventureInfo } : {}),
       ...(competitiveSet ? { competitiveSet } : {}),
+      ...(shinyNames.has(member.name) ? { isShiny: true } : {}),
     };
   });
 }
@@ -109,6 +119,7 @@ export function createTeamSearch(team: readonly TeamPokemon[]): string {
       name: member.name,
       adventureInfo: member.adventureInfo,
       competitiveSet: member.competitiveSet,
+      isShiny: member.isShiny || member.competitiveSet?.shiny,
     })),
   );
   if (members.length > 0) {
@@ -134,6 +145,10 @@ export function createTeamSearch(team: readonly TeamPokemon[]): string {
   if (Object.keys(adventure).length > 0) {
     params.set('adventure', JSON.stringify(adventure));
   }
+  const shiny = members
+    .filter(member => member.isShiny)
+    .map(member => member.name);
+  if (shiny.length > 0) params.set('shiny', shiny.join(','));
   const query = params.toString();
   return query ? `?${query}` : '';
 }
@@ -145,6 +160,7 @@ export function serializeTeam(team: readonly TeamPokemon[]): string {
         name: member.name,
         adventureInfo: member.adventureInfo,
         competitiveSet: member.competitiveSet,
+        isShiny: member.isShiny || member.competitiveSet?.shiny,
       })),
     ),
   );

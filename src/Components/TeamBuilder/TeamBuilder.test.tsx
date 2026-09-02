@@ -611,6 +611,13 @@ test('generates a balanced team from a selected game Pokédex', async () => {
     ...member,
     ...(index === 0
       ? {
+          imageUrl: 'venusaur-shiny.png',
+          isShiny: true,
+          shinyImageUrl: 'venusaur-shiny.png',
+        }
+      : {}),
+    ...(index === 0
+      ? {
           adventureInfo: {
             encounterMethod: 'Starter gift',
             evolutionMethod:
@@ -669,6 +676,9 @@ test('generates a balanced team from a selected game Pokédex', async () => {
   );
   expect(
     await screen.findByRole('heading', { name: 'Venusaur' }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByLabelText('Shiny Pokémon'),
   ).toBeInTheDocument();
   expect(screen.getByText('6 / 6')).toBeInTheDocument();
   expect(screen.queryByText('Your team is complete')).not.toBeInTheDocument();
